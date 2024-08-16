@@ -1,6 +1,6 @@
 import React from "react";
 import { Modal, Box, Typography } from "@mui/material";
-import guitarImage from "../assets/guitarimage.jpg";
+import guitarImage from "../assets/guitarImage.jpg";
 
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import ShareSharpIcon from "@mui/icons-material/ShareSharp";
@@ -32,7 +32,7 @@ const DownloadModal = ({ open, handleClose }) => {
         <div className="relative flex items-center text-white w-full h-full space-x-8">
           <div className="w-[50%] space-y-4">
             <img
-              className="object-cover"
+              className="object-cover max-w-80"
               src={guitarImage}
               alt=""
             />
