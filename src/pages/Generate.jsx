@@ -3,6 +3,7 @@ import BrowserUpdatedIcon from "@mui/icons-material/BrowserUpdated";
 import ImageIcon from "@mui/icons-material/Image";
 import downloadIcon from "../assets/downloadIcon.png";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import "./Generate.css";
 
 const Generate = () => {
   return (
@@ -51,12 +52,14 @@ const Generate = () => {
         <hr className="md:hidden border border-[#B276AA] border-opacity-30 w-full my-10 sm:my-16" />
 
         <div className="hidden md:flex h-[67vh] -mt-10 border-l mx-[5%] border border-[#B276AA] border-opacity-30"></div>
+
         {/* Right side: Blank canvas for generated image */}
-        <div className="mb-24 md:mb-0 relative w-[100%] md:w-[50%] flex items-center justify-center bg-white border rounded-md">
-          <div className="relative w-full h-[350px] flex items-center justify-center">
+        <div className="section-with-dots mb-24 relative w-[100%] md:w-[50%] flex items-center justify-center rounded-md">
+          <div className="w-full h-[350px] flex items-center justify-center">
             {/* This is where the generated image would be displayed */}
-            <p className="text-gray-500 mx-4 text-center">Generated image will appear</p>
-            <ImageIcon className="absolute top-[37%] left-[47.5%] opacity-50" />
+            <p className="text-gray-500 mx-[5%] text-center pt-2.5 pb-1 w-full bg-[#161616]">
+              Generated image will appear here
+            </p>
           </div>
           <div className="cursor-pointer absolute top-4 right-4 bg-[#1D1D1D] rounded-md py-3 px-3">
             <img src={downloadIcon} alt="" className="w-4" />

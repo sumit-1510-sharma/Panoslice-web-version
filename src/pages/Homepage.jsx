@@ -4,7 +4,6 @@ import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import spaceImage from "../assets/spaceimage.jpg";
 import guitarImage from "../assets/guitarImage.jpg";
 import octoberImage from "../assets/october.jpg";
-import "./Homepage.css";
 import { useNavigate } from "react-router-dom";
 import carouselMaker from "../assets/carouselmaker.png";
 import blogToCarousel from "../assets/blogtocarousel.png";
@@ -18,6 +17,7 @@ import bulkEditor from "../assets/bulkeditor.png";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import ShareSharpIcon from "@mui/icons-material/ShareSharp";
 import DownloadModal from "../components/DownloadModal";
+import Marquee from "react-fast-marquee";
 
 const guitar = [
   guitarImage,
@@ -38,54 +38,6 @@ const october = [
 ];
 
 const allImages = [...guitar, ...space, ...october];
-
-const toptools = [
-  {
-    title: "AI Carousel Maker",
-    image: carouselMaker,
-    link: "https://panoslicepro.page.link/XH3T",
-  },
-  {
-    title: "Blog To Carousel",
-    image: blogToCarousel,
-    link: "https://panoslicepro.page.link/XH3T",
-  },
-  {
-    title: "AI Art Generator",
-    image: aiArtGenerator,
-    link: "https://panoslicepro.page.link/XH3T",
-  },
-  {
-    title: "BG Remover",
-    image: bgRemover,
-    link: "https://panoslicepro.page.link/XH3T",
-  },
-  {
-    title: "AI Reel Maker",
-    image: aiReelMaker,
-    link: "https://apps.apple.com/in/app/lono-ai-reel-video-editor/id1632742723",
-  },
-  {
-    title: "AI Color Grading",
-    image: aiColorGrader,
-    link: "https://apps.apple.com/in/app/lono-ai-reel-video-editor/id1632742723",
-  },
-  {
-    title: "AI Hashtag Generator",
-    image: aiHashtagGenerator,
-    link: "https://panoslicepro.page.link/XH3T",
-  },
-  {
-    title: "AI Caption Writer",
-    image: aiCaptionWriter,
-    link: "https://panoslicepro.page.link/XH3T",
-  },
-  {
-    title: "Bulk Editor",
-    image: bulkEditor,
-    link: "https://apps.apple.com/in/app/lono-ai-reel-video-editor/id1632742723",
-  },
-];
 
 const Homepage = () => {
   const [category, setCategory] = useState("all");
@@ -130,9 +82,20 @@ const Homepage = () => {
 
   const categories = ["all", "guitar", "space", "october"];
 
+  const handleRedirectPanoslice = () => {
+    window.location.href = "https://panoslicepro.page.link/XH3T";
+  };
+
+  const handleRedirectLono = () => {
+    window.location.href =
+      "https://apps.apple.com/in/app/lono-ai-reel-video-editor/id1632742723";
+  };
+
   return (
     <div>
       <div className="flex flex-col items-center text-white mx-12 sm:mx-16">
+        {/* marqee component */}
+
         <div className="bg-[#1D1D1D] rounded-full py-1 px-4 mt-32 shadow-[0_0_24px_10px_rgba(178,118,170,0.5)] z-10">
           <div className="flex items-center w-[35vw]">
             <p
@@ -141,27 +104,70 @@ const Homepage = () => {
             >
               Top AI Tools:
             </p>
-            <p className="hidden xl:flex">sumit sharma</p>
-            {/* <div className="flex items-center mt-1.5 w-[76%]">
-              <Marquee>
-                {toptools.map((tool, index) => (
+            <div className="flex items-center w-[77%]">
+              <Marquee className="" pauseOnHover={true}>
+                <div className="flex items-center space-x-4 mx-2">
                   <div
-                    key={`tool-${index}`}
-                    className="cursor-pointer px-2.5"
-                    onClick={() => (window.location.href = tool.link)}
+                    className="cursor-pointer"
+                    onClick={handleRedirectPanoslice}
                   >
-                    <Tool title={tool.title} image={tool.image} />
+                    <Tool title="AI Carousel Maker" image={carouselMaker} />
                   </div>
-                ))}
+                  <div
+                    className="cursor-pointer"
+                    onClick={handleRedirectPanoslice}
+                  >
+                    <Tool title="Blog To Carousel" image={blogToCarousel} />
+                  </div>
+                  <div
+                    className="cursor-pointer"
+                    onClick={handleRedirectPanoslice}
+                  >
+                    <Tool title="AI Art Generator" image={aiArtGenerator} />
+                  </div>
+                  <div
+                    className="cursor-pointer"
+                    onClick={handleRedirectPanoslice}
+                  >
+                    <Tool title="BG Remover" image={bgRemover} />
+                  </div>
+                  <div className="cursor-pointer" onClick={handleRedirectLono}>
+                    <Tool title="AI Reel Maker" image={aiReelMaker} />
+                  </div>
+                  <div className="cursor-pointer" onClick={handleRedirectLono}>
+                    <Tool title="AI Color Grading" image={aiColorGrader} />
+                  </div>
+                  <div
+                    className="cursor-pointer"
+                    onClick={handleRedirectPanoslice}
+                  >
+                    <Tool
+                      title="AI Hashtag Generator"
+                      image={aiHashtagGenerator}
+                    />
+                  </div>
+                  <div
+                    className="cursor-pointer"
+                    onClick={handleRedirectPanoslice}
+                  >
+                    <Tool title="AI Caption Writer" image={aiCaptionWriter} />
+                  </div>
+                  <div className="cursor-pointer" onClick={handleRedirectLono}>
+                    <Tool title="Bulk Editor" image={bulkEditor} />
+                  </div>
+                </div>
               </Marquee>
-            </div> */}
+            </div>
           </div>
         </div>
+
         <div className="flex flex-col items-center space-y-5 mt-12">
           <p className="text-[40px] sm:text-[44px] leading-tight sm:leading-tight max-w-lg text-center">
             Best AI Art for your posts, blogs, brand
           </p>
-          <p className="text-center">Free forever. Stop Reading, Start Creating.</p>
+          <p className="text-center">
+            Free forever. Stop Reading, Start Creating.
+          </p>
           <button
             onClick={() => navigate("/generate")}
             className="bg-white rounded-full text-black px-16 sm:px-24 py-1.5"
