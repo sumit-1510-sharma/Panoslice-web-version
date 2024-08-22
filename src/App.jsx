@@ -6,6 +6,8 @@ import Homepage from "./pages/Homepage";
 import Generate from "./pages/Generate";
 import TopTools from "./pages/TopTools";
 import Creator from "./pages/Creator";
+import UploadImage from "./pages/UploadImage";
+import ImageGallery from "./pages/ImageGallery";
 
 function App() {
   return (
@@ -19,6 +21,8 @@ function App() {
               <Route path="/generate" element={<Generate />} />
               <Route path="/toptools" element={<TopTools />} />
               <Route path="/creator" element={<Creator />} />
+              <Route path="/upload" element={<UploadImage />} />
+              <Route path="/gallery" element={<ImageGallery />} />
             </Routes>
           </div>
           <Footer />

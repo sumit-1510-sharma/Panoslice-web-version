@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import Tool from "../components/Tool";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
-import spaceImage from "../assets/spaceimage.jpg";
-import guitarImage from "../assets/guitarImage.jpg";
-import octoberImage from "../assets/october.jpg";
 import { useNavigate } from "react-router-dom";
+import SaveAltIcon from "@mui/icons-material/SaveAlt";
+import ShareSharpIcon from "@mui/icons-material/ShareSharp";
+import DownloadModal from "../components/DownloadModal";
+import Marquee from "react-fast-marquee";
+import { getFirestore, collection, getDocs } from "firebase/firestore";
 import carouselMaker from "../assets/carouselmaker.png";
 import blogToCarousel from "../assets/blogtocarousel.png";
 import aiArtGenerator from "../assets/aiartgenerator.png";
@@ -14,37 +16,14 @@ import aiColorGrader from "../assets/aicolorgrader.png";
 import aiHashtagGenerator from "../assets/aihashtaggenerator.png";
 import aiCaptionWriter from "../assets/aicaptionwriter.png";
 import bulkEditor from "../assets/bulkeditor.png";
-import SaveAltIcon from "@mui/icons-material/SaveAlt";
-import ShareSharpIcon from "@mui/icons-material/ShareSharp";
-import DownloadModal from "../components/DownloadModal";
-import Marquee from "react-fast-marquee";
-
-const guitar = [
-  guitarImage,
-  guitarImage,
-  guitarImage,
-  guitarImage,
-  guitarImage,
-];
-
-const space = [spaceImage, spaceImage, spaceImage, spaceImage, spaceImage];
-
-const october = [
-  octoberImage,
-  octoberImage,
-  octoberImage,
-  octoberImage,
-  octoberImage,
-];
-
-const allImages = [...guitar, ...space, ...october];
 
 const Homepage = () => {
   const [category, setCategory] = useState("all");
-  const [displayedImages, setDisplayedImages] = useState(allImages);
+  const [displayedImages, setDisplayedImages] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const db = getFirestore();
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -54,26 +33,36 @@ const Homepage = () => {
     setIsModalOpen(false);
   };
 
-  // useEffect(() => {
-  //   if (category === "all") {
-  //     const shuffledImages = [...allImages].sort(() => Math.random() - 0.5);
-  //     setDisplayedImages(shuffledImages);
-  //   }
-  // }, [category]);
+  useEffect(() => {
+    const fetchImages = async () => {
+      let images = [];
+      if (category === "all") {
+        const categories = ["guitar", "space"];
+        for (let cat of categories) {
+          const catCollection = collection(
+            db,
+            "Artificial Intelligence (AI) & Machine Learning"
+          );
+          const catSnapshot = await getDocs(catCollection);
+          catSnapshot.forEach((doc) => {
+            images.push(doc.data().downloadURL);
+          });
+        }
+      } else {
+        const catCollection = collection(db, category);
+        const catSnapshot = await getDocs(catCollection);
+        catSnapshot.forEach((doc) => {
+          images.push(doc.data().downloadURL);
+        });
+      }
+      setDisplayedImages(images.sort(() => Math.random() - 0.5));
+    };
+
+    fetchImages();
+  }, [category, db]);
 
   const handleCategoryChange = (cat) => {
     setCategory(cat);
-    if (cat === "all") {
-      const shuffledImages = [...allImages].sort(() => Math.random() - 0.5);
-      setDisplayedImages(shuffledImages);
-    } else {
-      const imagesMap = {
-        guitar,
-        space,
-        october,
-      };
-      setDisplayedImages(imagesMap[cat]);
-    }
   };
 
   const toggleMenu = () => {
@@ -94,8 +83,6 @@ const Homepage = () => {
   return (
     <div>
       <div className="flex flex-col items-center text-white mx-12 sm:mx-16">
-        {/* marqee component */}
-
         <div className="bg-[#1D1D1D] rounded-full py-1 px-4 mt-32 shadow-[0_0_24px_10px_rgba(178,118,170,0.5)] z-10">
           <div className="flex items-center w-[35vw]">
             <p
@@ -165,15 +152,6 @@ const Homepage = () => {
           <p className="text-[40px] sm:text-[44px] leading-tight sm:leading-tight max-w-lg text-center">
             Best AI Art for your posts, blogs, brand
           </p>
-
-          {/* <div className="-space-y-2">
-            <p className="text-[40px] sm:text-[44px] leading-tight sm:leading-tight max-w-lg text-center">
-              Best AI art for your
-            </p>
-            <p className="text-[40px] font-bold sm:text-[44px] leading-tight sm:leading-tight max-w-lg text-center">
-              Posts, Blogs, Brands
-            </p>
-          </div> */}
 
           <p className="text-center">
             Free forever. Stop Reading, Start Creating.

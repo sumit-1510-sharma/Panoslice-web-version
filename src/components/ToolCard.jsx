@@ -1,5 +1,5 @@
 import React from "react";
-import appsImage from "../assets/appsimage.jpg";
+import appsImage from "../assets/guitarimage.jpg";
 
 const ToolCard = ({ title, image }) => {
   return (
