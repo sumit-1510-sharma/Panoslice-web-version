@@ -105,7 +105,7 @@ const Homepage = () => {
               Top AI Tools:
             </p>
             <div className="flex items-center w-[77%]">
-              <Marquee className="" pauseOnHover={true}>
+              <Marquee pauseOnHover={true}>
                 <div className="flex items-center space-x-4 mx-2">
                   <div
                     className="cursor-pointer"
@@ -165,6 +165,16 @@ const Homepage = () => {
           <p className="text-[40px] sm:text-[44px] leading-tight sm:leading-tight max-w-lg text-center">
             Best AI Art for your posts, blogs, brand
           </p>
+
+          {/* <div className="-space-y-2">
+            <p className="text-[40px] sm:text-[44px] leading-tight sm:leading-tight max-w-lg text-center">
+              Best AI art for your
+            </p>
+            <p className="text-[40px] font-bold sm:text-[44px] leading-tight sm:leading-tight max-w-lg text-center">
+              Posts, Blogs, Brands
+            </p>
+          </div> */}
+
           <p className="text-center">
             Free forever. Stop Reading, Start Creating.
           </p>
@@ -175,6 +185,7 @@ const Homepage = () => {
             Generate
           </button>
         </div>
+
         <div className="flex items-center justify-between w-full mt-2 sticky top-[44px] sm:top-[60px] py-4 border-b border-[#B276AA] border-opacity-25 bg-[#161616] z-10">
           <p>Browse Images</p>
           <div className="relative">

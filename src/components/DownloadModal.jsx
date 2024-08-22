@@ -4,6 +4,7 @@ import guitarImage from "../assets/guitarImage.jpg";
 
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import ShareSharpIcon from "@mui/icons-material/ShareSharp";
+import { useNavigate } from "react-router-dom";
 
 const modalStyle = {
   position: "absolute",
@@ -18,6 +19,8 @@ const modalStyle = {
 };
 
 const DownloadModal = ({ open, handleClose }) => {
+  const navigate = useNavigate();
+
   return (
     <Modal
       open={open}
@@ -31,12 +34,11 @@ const DownloadModal = ({ open, handleClose }) => {
       <Box sx={modalStyle}>
         <div className="relative flex items-center text-white w-full h-full space-x-8">
           <div className="w-[50%] space-y-4">
-            <img
-              className="object-cover max-w-80"
-              src={guitarImage}
-              alt=""
-            />
-            <div className="flex items-center space-x-4">
+            <img className="object-cover max-w-80" src={guitarImage} alt="" />
+            <div
+              onClick={() => navigate("/creator")}
+              className="cursor-pointer flex items-center space-x-4"
+            >
               <img
                 className="rounded-full w-12 h-12"
                 src={guitarImage}
@@ -62,15 +64,14 @@ const DownloadModal = ({ open, handleClose }) => {
             </div>
           </div>
           <div className="absolute bottom-0 right-48 bg-white rounded-md text-black px-16 sm:px-8 py-1.5 space-x-2">
-          <button>Share</button>
-          <ShareSharpIcon />
+            <button>Share</button>
+            <ShareSharpIcon />
+          </div>
+          <div className="absolute bottom-0 right-0 bg-[#1D1D1D] rounded-md text-white px-16 sm:px-8 py-1.5 space-x-2">
+            <button>Download</button>
+            <SaveAltIcon />
+          </div>
         </div>
-        <div className="absolute bottom-0 right-0 bg-[#1D1D1D] rounded-md text-white px-16 sm:px-8 py-1.5 space-x-2">
-          <button>Download</button>
-          <SaveAltIcon />
-        </div>
-        </div>
-        
       </Box>
     </Modal>
   );

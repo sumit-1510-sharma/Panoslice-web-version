@@ -5,6 +5,7 @@ import Navbar from "./components/Navbar";
 import Homepage from "./pages/Homepage";
 import Generate from "./pages/Generate";
 import TopTools from "./pages/TopTools";
+import Creator from "./pages/Creator";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
               <Route path="/" element={<Homepage />} />
               <Route path="/generate" element={<Generate />} />
               <Route path="/toptools" element={<TopTools />} />
+              <Route path="/creator" element={<Creator />} />
             </Routes>
           </div>
           <Footer />
