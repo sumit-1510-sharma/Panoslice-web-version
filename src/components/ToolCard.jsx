@@ -1,12 +1,12 @@
 import React from "react";
-import appsImage from "../assets/guitarimage.jpg";
+import guitarImage from "../assets/guitarImage.jpg";
 
 const ToolCard = ({ title, image }) => {
   return (
     <div className="cursor-pointer h-full relative">
       <div className="hover:opacity-85 transition-opacity duration-300">
         <img
-          src={appsImage}
+          src={guitarImage}
           alt=""
           className="border border-[#B276AA] border-opacity-25 rounded-sm"
         />
