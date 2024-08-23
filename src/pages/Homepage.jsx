@@ -16,6 +16,7 @@ import aiColorGrader from "../assets/aicolorgrader.png";
 import aiHashtagGenerator from "../assets/aihashtaggenerator.png";
 import aiCaptionWriter from "../assets/aicaptionwriter.png";
 import bulkEditor from "../assets/bulkeditor.png";
+import { Skeleton } from "@mui/material";
 
 const Homepage = () => {
   const [category, setCategory] = useState("all");
@@ -23,6 +24,7 @@ const Homepage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const db = getFirestore();
 
   const handleOpenModal = () => {
@@ -35,6 +37,8 @@ const Homepage = () => {
 
   useEffect(() => {
     const fetchImages = async () => {
+      setIsLoading(true); // Set loading to true when fetching starts
+
       let images = [];
       if (category === "all") {
         const categories = ["guitar", "space"];
@@ -55,7 +59,15 @@ const Homepage = () => {
           images.push(doc.data().downloadURL);
         });
       }
-      setDisplayedImages(images.sort(() => Math.random() - 0.5));
+
+      // Sort the images randomly
+      const sortedImages = images.sort(() => Math.random() - 0.5);
+
+      // Introduce a delay to showcase the shimmer effect
+      setTimeout(() => {
+        setDisplayedImages(sortedImages);
+        setIsLoading(false); // Set loading to false when fetching ends
+      }, 500); // 1000ms delay (0.5 second)
     };
 
     fetchImages();
@@ -153,6 +165,15 @@ const Homepage = () => {
             Best AI Art for your posts, blogs, brand
           </p>
 
+          {/* <div className="-space-y-2">
+            <p className="text-[40px] sm:text-[44px] leading-tight sm:leading-tight max-w-lg text-center">
+              Blank Canvas
+            </p>
+            <p className="text-[40px] font-bold sm:text-[44px] leading-tight sm:leading-tight max-w-lg text-center">
+              AI Apps Collection
+            </p>
+          </div> */}
+
           <p className="text-center">
             Free forever. Stop Reading, Start Creating.
           </p>
@@ -205,39 +226,107 @@ const Homepage = () => {
         </div>
 
         {/* Image Gallery */}
-        <div className="columns-1 sm:columns-2 md:columns-3 gap-5 mt-8 mb-24">
-          {displayedImages.map((item, index) => (
-            <div
-              key={index}
-              className="cursor-pointer relative group hover:opacity-85 transition-opacity duration-300"
-            >
-              <img
-                src={item}
-                alt=""
-                className="mb-5 border border-[#B276AA] border-opacity-25 rounded-sm"
-              />
-              <DownloadModal
-                open={isModalOpen}
-                handleClose={handleCloseModal}
-              />
+        {isLoading ? (
+          <div className="w-full opacity-50 columns-1 sm:columns-2 md:columns-3 gap-5 mt-8 mb-24">
+            <Skeleton
+              variant="rectangular"
+              animation="wave"
+              sx={{ bgcolor: "grey.700" }}
+              height={200}
+              className="mb-5 rounded-sm"
+            />
+            <Skeleton
+              variant="rectangular"
+              animation="wave"
+              sx={{ bgcolor: "grey.800" }}
+              height={300}
+              className="mb-5 rounded-sm"
+            />
+            <Skeleton
+              variant="rectangular"
+              animation="wave"
+              sx={{ bgcolor: "grey.900" }}
+              height={400}
+              className="mb-5 rounded-sm"
+            />
+            <Skeleton
+              variant="rectangular"
+              animation="wave"
+              sx={{ bgcolor: "grey.800" }}
+              height={300}
+              className="mb-5 rounded-sm"
+            />
+            <Skeleton
+              variant="rectangular"
+              animation="wave"
+              sx={{ bgcolor: "grey.900" }}
+              height={400}
+              className="mb-5 rounded-sm"
+            />
+            <Skeleton
+              variant="rectangular"
+              animation="wave"
+              sx={{ bgcolor: "grey.800" }}
+              height={200}
+              className="mb-5 rounded-sm"
+            />
+            <Skeleton
+              variant="rectangular"
+              animation="wave"
+              sx={{ bgcolor: "grey.800" }}
+              height={250}
+              className="mb-5 rounded-sm"
+            />
+            <Skeleton
+              variant="rectangular"
+              animation="wave"
+              sx={{ bgcolor: "grey.900" }}
+              height={300}
+              className="mb-5 rounded-sm"
+            />
+            <Skeleton
+              variant="rectangular"
+              animation="wave"
+              sx={{ bgcolor: "grey.800" }}
+              height={350}
+              className="mb-5 rounded-sm"
+            />
+          </div>
+        ) : (
+          <div className="columns-1 sm:columns-2 md:columns-3 gap-5 mt-8 mb-24">
+            {displayedImages.map((item, index) => (
+              <div
+                key={index}
+                className="cursor-pointer relative group hover:opacity-85 transition-opacity duration-300"
+              >
+                <img
+                  src={item}
+                  alt=""
+                  className="mb-5 border border-[#B276AA] border-opacity-25 rounded-sm"
+                />
+                <DownloadModal
+                  open={isModalOpen}
+                  handleClose={handleCloseModal}
+                />
 
-              {/* Share Icon */}
-              <div>
-                <div className="cursor-pointer absolute bottom-3 right-3 bg-black py-1 px-1.5 rounded-md hidden opacity-60 group-hover:flex hover:opacity-100">
-                  <ShareSharpIcon />
-                </div>
+                {/* Share Icon */}
+                <div>
+                  <div className="cursor-pointer absolute bottom-3 right-3 bg-black py-1 px-1.5 rounded-md hidden opacity-60 group-hover:flex hover:opacity-100">
+                    <ShareSharpIcon />
+                  </div>
 
-                {/* Save Icon */}
-                <div
-                  onClick={handleOpenModal}
-                  className="cursor-pointer absolute bottom-3 left-3 bg-black py-1 px-1.5 rounded-md hidden opacity-60 group-hover:flex hover:opacity-100"
-                >
-                  <SaveAltIcon />
+                  {/* Save Icon */}
+                  <div
+                    onClick={handleOpenModal}
+                    className="cursor-pointer absolute bottom-3 left-3 bg-black py-1 px-1.5 rounded-md hidden opacity-60 group-hover:flex hover:opacity-100"
+                  >
+                    <SaveAltIcon />
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

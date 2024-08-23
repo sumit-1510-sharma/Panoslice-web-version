@@ -1,16 +1,49 @@
 /* App.css */
-html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    background-color: #161616; /* Set the background color */
-  }
-  
-  #root {
-    height: 100%;
-  }
-  
-  * {
-    box-sizing: border-box;
-  }
-  
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #161616; /* Set the background color */
+}
+
+#root {
+  height: 100%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Custom Scrollbar Styles */
+
+/* For WebKit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #161616; /* Background color of the track */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #FFD700; /* Color of the scroll thumb */
+  border-radius: 40px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #686868; /* Color of the scroll thumb on hover */
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #4a4a4a #161616;
+}
+
+/* For Internet Explorer */
+body {
+  -ms-overflow-style: none; /* Hides the default scrollbar in IE */
+}
