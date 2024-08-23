@@ -12,7 +12,7 @@ const ToolCard = ({ title, image }) => {
         />
       </div>
       <div className="absolute bottom-0 h-[18%] pb-0.5 bg-black border border-b-[#B276AA] border-x-[#B276AA] border-t-transparent border-opacity-25 w-full text-center bg-opacity-75 flex items-center justify-center">
-        <h2 className="">{title}</h2>
+        <h2 className="font-semibold">{title}</h2>
       </div>
     </div>
   );

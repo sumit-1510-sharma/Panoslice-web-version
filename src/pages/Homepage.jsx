@@ -17,22 +17,23 @@ import aiHashtagGenerator from "../assets/aihashtaggenerator.png";
 import aiCaptionWriter from "../assets/aicaptionwriter.png";
 import bulkEditor from "../assets/bulkeditor.png";
 import { Skeleton } from "@mui/material";
+import spaceImage from "../assets/spaceimage.jpg";
 
 const Homepage = () => {
   const [category, setCategory] = useState("all");
   const [displayedImages, setDisplayedImages] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [openModal, setOpenModal] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const db = getFirestore();
 
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
+  const handleOpenModal = (index) => {
+    setOpenModal(index);
   };
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);
+    setOpenModal(null);
   };
 
   useEffect(() => {
@@ -62,10 +63,9 @@ const Homepage = () => {
 
       // Sort the images randomly
       const sortedImages = images.sort(() => Math.random() - 0.5);
-
+      setDisplayedImages(sortedImages);
       // Introduce a delay to showcase the shimmer effect
       setTimeout(() => {
-        setDisplayedImages(sortedImages);
         setIsLoading(false); // Set loading to false when fetching ends
       }, 500); // 1000ms delay (0.5 second)
     };
@@ -298,16 +298,20 @@ const Homepage = () => {
               <div
                 key={index}
                 className="cursor-pointer relative group hover:opacity-85 transition-opacity duration-300"
+                onClick={() => handleOpenModal(index)} // Open the modal for the clicked image
               >
                 <img
                   src={item}
                   alt=""
                   className="mb-5 border border-[#B276AA] border-opacity-25 rounded-sm"
                 />
-                <DownloadModal
-                  open={isModalOpen}
-                  handleClose={handleCloseModal}
-                />
+                {openModal === index && (
+                  <DownloadModal
+                    open={openModal === index}
+                    handleClose={handleCloseModal}
+                    image={item}
+                  />
+                )}
 
                 {/* Share Icon */}
                 <div>
@@ -317,7 +321,7 @@ const Homepage = () => {
 
                   {/* Save Icon */}
                   <div
-                    onClick={handleOpenModal}
+                    onClick={() => handleOpenModal(index)} // Open the modal for the clicked image
                     className="cursor-pointer absolute bottom-3 left-3 bg-black py-1 px-1.5 rounded-md hidden opacity-60 group-hover:flex hover:opacity-100"
                   >
                     <SaveAltIcon />
