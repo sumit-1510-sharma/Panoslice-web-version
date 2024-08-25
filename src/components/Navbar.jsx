@@ -1,10 +1,35 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
+import { db } from "../firebase"; // Import Firestore
+import { collection, query, where, getDocs } from "firebase/firestore";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
+  const [images, setImages] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      let q = query(
+        collection(db, "Artificial Intelligence (AI) & Machine Learning")
+      );
+
+      if (searchQuery) {
+        q = query(
+          collection(db, "Artificial Intelligence (AI) & Machine Learning"),
+          where("tags", "array-contains", searchQuery)
+        );
+      }
+
+      const querySnapshot = await getDocs(q);
+      const fetchedImages = querySnapshot.docs.map((doc) => doc.data());
+      setImages(fetchedImages);
+    };
+
+    fetchImages();
+  }, [searchQuery]);
 
   return (
     <div className="bg-[#1D1D1D] h-[44px] sm:h-[60px] text-white fixed top-0 w-full z-50">
@@ -21,6 +46,24 @@ const Navbar = () => {
             onClick={() => setShowDropdown(!showDropdown)}
             onBlur={() => setShowDropdown(false)} // Optional: Hide on blur
           />
+
+          {/* <div className="bg-white m-24">
+            <input
+              type="text"
+              placeholder="Search by tag"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <div className="image-gallery">
+              {images.map((image, index) => (
+                <div key={index} className="image-item">
+                  <img src={image.downloadURL} alt={image.category} />
+                  <p>Category: {image.category}</p>
+                  <p>Tags: {image.tags.join(", ")}</p>
+                </div>
+              ))}
+            </div>
+          </div> */}
 
           {showDropdown && (
             <div className="absolute flex flex-col items-start justify-between space-y-4 bg-[#161616] w-[50vw] top-10 -left-20 rounded-md border border-[#707070] p-4">

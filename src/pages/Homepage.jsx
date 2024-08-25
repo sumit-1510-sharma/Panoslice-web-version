@@ -42,12 +42,19 @@ const Homepage = () => {
 
       let images = [];
       if (category === "all") {
-        const categories = ["guitar", "space"];
+        const categories = [
+          "AI and ML",
+          "Climate Tech",
+          "Commerce & Retail",
+          "FinTech",
+          "Gaming",
+          "Healthcare",
+          "HR & Team",
+          "Product Shoot",
+          "Remote Work",
+        ];
         for (let cat of categories) {
-          const catCollection = collection(
-            db,
-            "Artificial Intelligence (AI) & Machine Learning"
-          );
+          const catCollection = collection(db, cat);
           const catSnapshot = await getDocs(catCollection);
           catSnapshot.forEach((doc) => {
             images.push(doc.data().downloadURL);

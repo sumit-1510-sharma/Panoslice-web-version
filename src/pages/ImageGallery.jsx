@@ -5,20 +5,16 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 const ImageGallery = () => {
   const [images, setImages] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState(""); // New state for filtering by category
 
   useEffect(() => {
     const fetchImages = async () => {
-      if (!categoryFilter) {
-        alert("Please select a category to fetch images");
-        return;
-      }
-
-      let q = query(collection(db, categoryFilter)); // Fetch images from the selected category collection
+      let q = query(
+        collection(db, "Artificial Intelligence (AI) & Machine Learning")
+      );
 
       if (searchQuery) {
         q = query(
-          collection(db, categoryFilter),
+          collection(db, "Artificial Intelligence (AI) & Machine Learning"),
           where("tags", "array-contains", searchQuery)
         );
       }
@@ -29,21 +25,15 @@ const ImageGallery = () => {
     };
 
     fetchImages();
-  }, [searchQuery, categoryFilter]);
+  }, [searchQuery]);
 
   return (
-    <div className="m-24">
+    <div className="bg-white m-24">
       <input
         type="text"
         placeholder="Search by tag"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-      />
-      <input
-        type="text"
-        placeholder="Filter by category (e.g., AI, Nature, Sports)"
-        value={categoryFilter}
-        onChange={(e) => setCategoryFilter(e.target.value)}
       />
       <div className="image-gallery">
         {images.map((image, index) => (

@@ -42,7 +42,7 @@ const DownloadModal = ({ open, handleClose, image }) => {
         <div className="relative flex text-white w-full h-full space-x-4">
           <div className="w-[60%] flex flex-col h-full space-y-4">
             <div className="w-full h-[80%] flex bg-[#1D1D1D] items-center justify-center relative rounded-sm">
-              <img className={`w-full h-full ${fitMode}`} src={plantImage} alt="" />
+              <img className={`w-full h-full ${fitMode}`} src={image} alt="" />
               {/* <button
                 onClick={toggleFitMode}
                 className="absolute bottom-2 right-2 bg-white text-black px-4 py-1 rounded"

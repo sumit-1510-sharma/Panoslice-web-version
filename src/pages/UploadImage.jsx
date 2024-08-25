@@ -36,7 +36,7 @@ const UploadImage = () => {
   };
 
   return (
-    <div className="text-pink-500 mt-24 flex items-center space-x-6">
+    <div className="text-pink-500 mt-24 p-12 flex items-center space-x-6">
       <input type="file" onChange={handleImageChange} />
       <input
         type="text"
