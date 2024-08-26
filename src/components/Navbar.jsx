@@ -12,20 +12,38 @@ const Navbar = () => {
 
   useEffect(() => {
     const fetchImages = async () => {
-      let q = query(
-        collection(db, "Artificial Intelligence (AI) & Machine Learning")
-      );
+      const collectionsToSearch = [
+        "AI and ML",
+        "Climate Tech",
+        "Commerce & Retail",
+        "FinTech",
+        "Gaming",
+        "Healthcare",
+        "HR & Team",
+        "Product Shoot",
+        "Remote Work",
+        // Add more collections as needed
+      ];
 
-      if (searchQuery) {
-        q = query(
-          collection(db, "Artificial Intelligence (AI) & Machine Learning"),
-          where("tags", "array-contains", searchQuery)
-        );
+      let allResults = [];
+
+      for (const collectionName of collectionsToSearch) {
+        let q = query(collection(db, collectionName));
+
+        if (searchQuery) {
+          q = query(
+            collection(db, collectionName),
+            where("tags", "array-contains", searchQuery)
+          );
+        }
+
+        const querySnapshot = await getDocs(q);
+        const fetchedImages = querySnapshot.docs.map((doc) => doc.data());
+        allResults = [...allResults, ...fetchedImages];
       }
 
-      const querySnapshot = await getDocs(q);
-      const fetchedImages = querySnapshot.docs.map((doc) => doc.data());
-      setImages(fetchedImages);
+      setImages(allResults);
+      console.log(allResults);
     };
 
     fetchImages();
@@ -43,6 +61,9 @@ const Navbar = () => {
           <input
             className="bg-[#1D1D1D] text-white text-sm opacity-70 focus:outline-none p-1"
             type="text"
+            placeholder="Search by tag"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             onClick={() => setShowDropdown(!showDropdown)}
             onBlur={() => setShowDropdown(false)} // Optional: Hide on blur
           />

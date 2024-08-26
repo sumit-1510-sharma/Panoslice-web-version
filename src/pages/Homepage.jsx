@@ -20,7 +20,7 @@ import { Skeleton } from "@mui/material";
 import spaceImage from "../assets/spaceimage.jpg";
 
 const Homepage = () => {
-  const [category, setCategory] = useState("all");
+  const [category, setCategory] = useState("All");
   const [displayedImages, setDisplayedImages] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
@@ -41,7 +41,7 @@ const Homepage = () => {
       setIsLoading(true); // Set loading to true when fetching starts
 
       let images = [];
-      if (category === "all") {
+      if (category === "All") {
         const categories = [
           "AI and ML",
           "Climate Tech",
@@ -88,7 +88,18 @@ const Homepage = () => {
     setIsOpen(!isOpen);
   };
 
-  const categories = ["all", "guitar", "space", "october"];
+  const categories = [
+    "All",
+    "AI and ML",
+    "Climate Tech",
+    "Commerce & Retail",
+    "FinTech",
+    "Gaming",
+    "Healthcare",
+    "HR & Team",
+    "Product Shoot",
+    "Remote Work",
+  ];
 
   const handleRedirectPanoslice = () => {
     window.location.href = "https://panoslicepro.page.link/XH3T";
