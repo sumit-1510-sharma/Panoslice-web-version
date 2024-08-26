@@ -8,10 +8,11 @@ import TopTools from "./pages/TopTools";
 import Creator from "./pages/Creator";
 import UploadImage from "./pages/UploadImage";
 import ImageGallery from "./pages/ImageGallery";
+import { ImagesProvider } from "./components/ImagesContext"; // Import the provider
 
 function App() {
   return (
-    <div>
+    <ImagesProvider>
       <Router>
         <div className="flex flex-col min-h-screen bg-[#161616]">
           <Navbar />
@@ -28,7 +29,7 @@ function App() {
           <Footer />
         </div>
       </Router>
-    </div>
+    </ImagesProvider>
   );
 }
 

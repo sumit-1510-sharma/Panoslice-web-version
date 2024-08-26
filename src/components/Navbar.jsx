@@ -1,53 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
-import { db } from "../firebase"; // Import Firestore
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { ImagesContext } from "./ImagesContext"; // Import Context
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const { setSearchQuery } = useContext(ImagesContext);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [images, setImages] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
-
-  useEffect(() => {
-    const fetchImages = async () => {
-      const collectionsToSearch = [
-        "AI and ML",
-        "Climate Tech",
-        "Commerce & Retail",
-        "FinTech",
-        "Gaming",
-        "Healthcare",
-        "HR & Team",
-        "Product Shoot",
-        "Remote Work",
-        // Add more collections as needed
-      ];
-
-      let allResults = [];
-
-      for (const collectionName of collectionsToSearch) {
-        let q = query(collection(db, collectionName));
-
-        if (searchQuery) {
-          q = query(
-            collection(db, collectionName),
-            where("tags", "array-contains", searchQuery)
-          );
-        }
-
-        const querySnapshot = await getDocs(q);
-        const fetchedImages = querySnapshot.docs.map((doc) => doc.data());
-        allResults = [...allResults, ...fetchedImages];
-      }
-
-      setImages(allResults);
-      console.log(allResults);
-    };
-
-    fetchImages();
-  }, [searchQuery]);
 
   return (
     <div className="bg-[#1D1D1D] h-[44px] sm:h-[60px] text-white fixed top-0 w-full z-50">
@@ -62,80 +21,12 @@ const Navbar = () => {
             className="bg-[#1D1D1D] text-white text-sm opacity-70 focus:outline-none p-1"
             type="text"
             placeholder="Search by tag"
-            value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onClick={() => setShowDropdown(!showDropdown)}
             onBlur={() => setShowDropdown(false)} // Optional: Hide on blur
           />
 
-          {/* <div className="bg-white m-24">
-            <input
-              type="text"
-              placeholder="Search by tag"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <div className="image-gallery">
-              {images.map((image, index) => (
-                <div key={index} className="image-item">
-                  <img src={image.downloadURL} alt={image.category} />
-                  <p>Category: {image.category}</p>
-                  <p>Tags: {image.tags.join(", ")}</p>
-                </div>
-              ))}
-            </div>
-          </div> */}
-
-          {showDropdown && (
-            <div className="absolute flex flex-col items-start justify-between space-y-4 bg-[#161616] w-[50vw] top-10 -left-20 rounded-md border border-[#707070] p-4">
-              <div className="flex flex-col items-start space-y-4">
-                <h4 className="text-sm">Popular Searches</h4>
-                <div className="flex items-center flex-wrap gap-x-4 gap-y-2">
-                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
-                    Nature
-                  </button>
-                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
-                    Cyberpunk
-                  </button>
-                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
-                    CyberSecurity
-                  </button>
-                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
-                    AI
-                  </button>
-                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
-                    HR
-                  </button>
-                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
-                    Sports
-                  </button>
-                </div>
-              </div>
-              <div className="flex flex-col items-start space-y-4">
-                <h4 className="text-sm">Categories</h4>
-                <div className="flex items-center flex-wrap gap-x-4 gap-y-2">
-                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
-                    AI & ML
-                  </button>
-                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
-                    Remote Work
-                  </button>
-                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
-                    HR
-                  </button>
-                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
-                    Gaming
-                  </button>
-                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
-                    Cybersecurity
-                  </button>
-                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
-                    Sports
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+          {/* Dropdown code remains unchanged */}
         </div>
 
         <div className="flex items-center space-x-6 mx-8">

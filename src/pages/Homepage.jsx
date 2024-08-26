@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Tool from "../components/Tool";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import { useNavigate } from "react-router-dom";
@@ -18,6 +18,7 @@ import aiCaptionWriter from "../assets/aicaptionwriter.png";
 import bulkEditor from "../assets/bulkeditor.png";
 import { Skeleton } from "@mui/material";
 import spaceImage from "../assets/spaceimage.jpg";
+import { ImagesContext } from "../components/ImagesContext";
 
 const Homepage = () => {
   const [category, setCategory] = useState("All");
@@ -26,6 +27,8 @@ const Homepage = () => {
   const navigate = useNavigate();
   const [openModal, setOpenModal] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { images } = useContext(ImagesContext);
+  const { setSearchQuery } = useContext(ImagesContext);
   const db = getFirestore();
 
   const handleOpenModal = (index) => {
@@ -39,8 +42,8 @@ const Homepage = () => {
   useEffect(() => {
     const fetchImages = async () => {
       setIsLoading(true); // Set loading to true when fetching starts
-
-      let images = [];
+      setSearchQuery(null);
+      let homepageImages = [];
       if (category === "All") {
         const categories = [
           "AI and ML",
@@ -57,28 +60,34 @@ const Homepage = () => {
           const catCollection = collection(db, cat);
           const catSnapshot = await getDocs(catCollection);
           catSnapshot.forEach((doc) => {
-            images.push(doc.data().downloadURL);
+            homepageImages.push(doc.data());
           });
         }
       } else {
         const catCollection = collection(db, category);
         const catSnapshot = await getDocs(catCollection);
         catSnapshot.forEach((doc) => {
-          images.push(doc.data().downloadURL);
+          homepageImages.push(doc.data());
         });
       }
 
       // Sort the images randomly
-      const sortedImages = images.sort(() => Math.random() - 0.5);
+      const sortedImages = homepageImages.sort(() => Math.random() - 0.5);
       setDisplayedImages(sortedImages);
-      // Introduce a delay to showcase the shimmer effect
-      setTimeout(() => {
-        setIsLoading(false); // Set loading to false when fetching ends
-      }, 500); // 1000ms delay (0.5 second)
     };
+    // Introduce a delay to showcase the shimmer effect
+    setTimeout(() => {
+      setIsLoading(false); // Set loading to false when fetching ends
+    }, 500); // 1000ms delay (0.5 second)
 
     fetchImages();
   }, [category, db]);
+
+  useEffect(() => {
+    if (images.length > 0) {
+      setDisplayedImages(images);
+    }
+  }, [images]);
 
   const handleCategoryChange = (cat) => {
     setCategory(cat);
@@ -319,7 +328,7 @@ const Homepage = () => {
                 onClick={() => handleOpenModal(index)} // Open the modal for the clicked image
               >
                 <img
-                  src={item}
+                  src={item.downloadURL}
                   alt=""
                   className="mb-5 border border-[#B276AA] border-opacity-25 rounded-sm"
                 />
@@ -327,7 +336,7 @@ const Homepage = () => {
                   <DownloadModal
                     open={openModal === index}
                     handleClose={handleCloseModal}
-                    image={item}
+                    image={item.downloadURL}
                   />
                 )}
 
