@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
 import { ImagesContext } from "./ImagesContext"; // Import Context
+import logo from "../assets/logo.png";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -11,9 +12,11 @@ const Navbar = () => {
   return (
     <div className="bg-[#1D1D1D] h-[44px] sm:h-[60px] text-white fixed top-0 w-full z-50">
       <div className="w-full py-[14px] flex items-center justify-between -mt-1 sm:mt-0.5 md:-mt-0.5">
-        <div onClick={() => navigate("/")} className="cursor-pointer ml-8">
-          Panoslice
-        </div>
+        <img
+          src={logo}
+          onClick={() => navigate("/")}
+          className="cursor-pointer w-[66px] ml-8 "
+        ></img>
 
         <div className="relative sm:flex items-center justify-left w-[30%] border border-[#707070] rounded-md px-1 md:ml-[4%] lg:ml-[20%]">
           <SearchIcon />

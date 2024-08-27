@@ -31,18 +31,12 @@ const Homepage = () => {
   const { setSearchQuery } = useContext(ImagesContext);
   const db = getFirestore();
 
-  const handleOpenModal = (index) => {
-    setOpenModal(index);
-  };
-
-  const handleCloseModal = () => {
-    setOpenModal(null);
-  };
+  // Function to handle clicks outside the modal
 
   useEffect(() => {
     const fetchImages = async () => {
       setIsLoading(true); // Set loading to true when fetching starts
-      setSearchQuery(null);
+
       let homepageImages = [];
       if (category === "All") {
         const categories = [
@@ -89,6 +83,51 @@ const Homepage = () => {
     }
   }, [images]);
 
+  // useEffect(() => {
+  //   const fetchImages = async () => {
+  //     setIsLoading(true); // Set loading to true when fetching starts
+
+  //     let homepageImages = [];
+  //     if (category === "All") {
+  //       const categories = [
+  //         "AI and ML",
+  //         "Climate Tech",
+  //         "Commerce & Retail",
+  //         "FinTech",
+  //         "Gaming",                                                 (This is the new version)
+  //         "Healthcare",
+  //         "HR & Team",
+  //         "Product Shoot",
+  //         "Remote Work",
+  //       ];
+
+  //       for (const cat of categories) {
+  //         const catCollection = collection(db, cat);
+  //         const catSnapshot = await getDocs(catCollection);
+  //         homepageImages = [...homepageImages, ...catSnapshot.docs.map(doc => doc.data())];
+  //       }
+  //     } else {
+  //       const catCollection = collection(db, category);
+  //       const catSnapshot = await getDocs(catCollection);
+  //       homepageImages = catSnapshot.docs.map(doc => doc.data());
+  //     }
+
+  //     // Sort images if needed
+  //     // homepageImages = homepageImages.sort(() => Math.random() - 0.5);
+
+  //     setImages(homepageImages);
+  //     setIsLoading(false); // Set loading to false when fetching ends
+  //   };
+
+  //   fetchImages();
+  // }, [category]);
+
+  // useEffect(() => {
+  //   if (images.length > 0) {
+  //     setDisplayedImages(images);
+  //   }
+  // }, [images]);
+
   const handleCategoryChange = (cat) => {
     setCategory(cat);
   };
@@ -131,7 +170,7 @@ const Homepage = () => {
               Top AI Tools:
             </p>
             <div className="flex items-center w-[77%]">
-              <Marquee pauseOnHover={true}>
+              <Marquee pauseOnHover={true} speed={27}>
                 <div className="flex items-center space-x-4 mx-2">
                   <div
                     className="cursor-pointer"
@@ -325,7 +364,7 @@ const Homepage = () => {
               <div
                 key={index}
                 className="cursor-pointer relative group hover:opacity-85 transition-opacity duration-300"
-                onClick={() => handleOpenModal(index)} // Open the modal for the clicked image
+                onClick={() => setOpenModal(index)} // Open the modal for the clicked image
               >
                 <img
                   src={item.downloadURL}
@@ -333,11 +372,14 @@ const Homepage = () => {
                   className="mb-5 border border-[#B276AA] border-opacity-25 rounded-sm"
                 />
                 {openModal === index && (
-                  <DownloadModal
-                    open={openModal === index}
-                    handleClose={handleCloseModal}
-                    image={item.downloadURL}
-                  />
+                  <div className="modal-content">
+                    <DownloadModal
+                      open={openModal === index}
+                      onClose={() => setOpenModal(null)}
+                      image={item.downloadURL}
+                      tags={item.tags}
+                    />
+                  </div>
                 )}
 
                 {/* Share Icon */}
@@ -347,10 +389,7 @@ const Homepage = () => {
                   </div>
 
                   {/* Save Icon */}
-                  <div
-                    onClick={() => handleOpenModal(index)} // Open the modal for the clicked image
-                    className="cursor-pointer absolute bottom-3 left-3 bg-black py-1 px-1.5 rounded-md hidden opacity-60 group-hover:flex hover:opacity-100"
-                  >
+                  <div className="cursor-pointer absolute bottom-3 left-3 bg-black py-1 px-1.5 rounded-md hidden opacity-60 group-hover:flex hover:opacity-100">
                     <SaveAltIcon />
                   </div>
                 </div>

@@ -1,10 +1,12 @@
-import React from "react";
-import spaceImage from "../assets/spaceimage.jpg";
+import React, { useRef } from "react";
 import ToolCard from "../components/ToolCard";
 import { useNavigate } from "react-router-dom";
 
 const TopTools = () => {
   const navigate = useNavigate();
+
+  // Create a ref for the tools gallery section
+  const toolsGalleryRef = useRef(null);
 
   const handleRedirectPanoslice = () => {
     window.location.href = "https://panoslicepro.page.link/XH3T";
@@ -13,6 +15,15 @@ const TopTools = () => {
   const handleRedirectLono = () => {
     window.location.href =
       "https://apps.apple.com/in/app/lono-ai-reel-video-editor/id1632742723";
+  };
+
+  // Function to scroll to the tools gallery with a top margin
+  const scrollToTools = () => {
+    if (toolsGalleryRef.current) {
+      toolsGalleryRef.current.scrollIntoView({ behavior: "smooth" });
+      // Adjust scroll position with a top margin of 20 pixels
+      // window.scrollBy({ top: 330, left: 0, behavior: "smooth" });
+    }
   };
 
   return (
@@ -38,6 +49,7 @@ const TopTools = () => {
             Generate
           </button>
           <button
+            onClick={scrollToTools}
             className="bg-[#161616] border rounded-full px-9 sm:px-[50px] py-1 sm:py-1.5"
           >
             Browse Apps
@@ -46,8 +58,10 @@ const TopTools = () => {
       </div>
 
       {/* Tools gallery */}
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 mt-8 mb-24">
+      <div
+        ref={toolsGalleryRef}
+        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 mt-8 mb-24"
+      >
         <div onClick={handleRedirectPanoslice}>
           <ToolCard title={"AI Carausel Maker"} />
         </div>
