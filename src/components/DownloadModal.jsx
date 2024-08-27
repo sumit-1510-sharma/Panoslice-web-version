@@ -33,15 +33,6 @@ const DownloadModal = ({ open, onClose, image, tags }) => {
     }
   }, [tags]);
 
-  const handleDownload = () => {
-    const link = document.createElement("a");
-    link.href = image; // Set the image URL as the href
-    link.download = "downloaded_image"; // Set the file name
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
   const handleShare = () => {
     navigator.clipboard
       .writeText(image)
@@ -51,6 +42,15 @@ const DownloadModal = ({ open, onClose, image, tags }) => {
       .catch((err) => {
         console.error("Failed to copy: ", err);
       });
+  };
+
+  const handleDownload = () => {
+    const link = document.createElement("a");
+    link.href = image; // Set the image URL as the href
+    link.download = "downloaded_image"; // Set the file name
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
@@ -66,7 +66,20 @@ const DownloadModal = ({ open, onClose, image, tags }) => {
       <Box sx={modalStyle}>
         <div className="relative flex text-white w-full h-full space-x-8">
           {/* Close Button */}
-          
+          <IconButton
+            onClick={onClose}
+            edge="end"
+            color="inherit"
+            aria-label="close"
+            sx={{
+              position: "absolute",
+              top: 8,
+              right: 8,
+              color: "#ffffff",
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
 
           <div className="w-[60%] flex flex-col h-full space-y-4 ">
             <div className="w-full h-[80%] flex bg-[#1D1D1D] items-center justify-center relative rounded-md">

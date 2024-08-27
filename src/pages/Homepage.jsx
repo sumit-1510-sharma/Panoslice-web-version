@@ -66,7 +66,7 @@ const Homepage = () => {
       }
 
       // Sort the images randomly
-      const sortedImages = homepageImages.sort(() => Math.random() - 0.5);
+      const sortedImages = homepageImages.sort();
       setDisplayedImages(sortedImages);
     };
     // Introduce a delay to showcase the shimmer effect
