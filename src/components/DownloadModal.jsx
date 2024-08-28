@@ -44,13 +44,27 @@ const DownloadModal = ({ open, onClose, image, tags }) => {
       });
   };
 
-  const handleDownload = () => {
+  const downloadImage = (url, filename = "downloaded_image.png") => {
+    // Create a temporary anchor element
     const link = document.createElement("a");
-    link.href = image; // Set the image URL as the href
-    link.download = "downloaded_image"; // Set the file name
+    link.href = url;
+    link.download = filename; // Set default filename or use a dynamic filename
+    link.style.display = "none"; // Hide the element
+
+    // Append the link to the document body
     document.body.appendChild(link);
+
+    // Trigger a click event to start the download
     link.click();
+
+    // Remove the link from the document body
     document.body.removeChild(link);
+  };
+
+  const handleDownload = () => {
+    if (image) {
+      downloadImage(image, "generated_image.png");
+    }
   };
 
   return (

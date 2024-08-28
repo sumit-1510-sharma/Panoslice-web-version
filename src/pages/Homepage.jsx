@@ -80,6 +80,8 @@ const Homepage = () => {
   useEffect(() => {
     if (images.length > 0) {
       setDisplayedImages(images);
+    } else {
+      console.log("no images");
     }
   }, [images]);
 

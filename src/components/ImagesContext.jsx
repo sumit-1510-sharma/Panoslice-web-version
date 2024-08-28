@@ -25,19 +25,34 @@ export const ImagesProvider = ({ children }) => {
 
       let allResults = [];
 
+      // Split the searchQuery into an array of tags by spaces
+      const tagsArray = searchQuery
+        .split(" ")
+        .filter((tag) => tag.trim() !== "");
+
       for (const collectionName of collectionsToSearch) {
-        let q = query(collection(db, collectionName));
-
-        if (searchQuery) {
-          q = query(
+        if (tagsArray.length > 0) {
+          // Start by querying for documents that contain the first tag
+          let q = query(
             collection(db, collectionName),
-            where("tags", "array-contains", searchQuery)
+            where("tags", "array-contains", tagsArray[0])
           );
-        }
 
-        const querySnapshot = await getDocs(q);
-        const fetchedImages = querySnapshot.docs.map((doc) => doc.data());
-        allResults = [...allResults, ...fetchedImages];
+          const querySnapshot = await getDocs(q);
+          const fetchedImages = querySnapshot.docs.map((doc) => doc.data());
+
+          // Filter images to keep only those that contain all tags
+          const filteredImages = fetchedImages.filter((image) =>
+            tagsArray.every((tag) => image.tags.includes(tag))
+          );
+
+          allResults = [...allResults, ...filteredImages];
+        } else {
+          // If no tags provided, just fetch all documents
+          const querySnapshot = await getDocs(collection(db, collectionName));
+          const fetchedImages = querySnapshot.docs.map((doc) => doc.data());
+          allResults = [...allResults, ...fetchedImages];
+        }
       }
 
       setImages(allResults);
