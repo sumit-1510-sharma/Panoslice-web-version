@@ -14,13 +14,12 @@ export const ImagesProvider = ({ children }) => {
         "AI and ML",
         "Climate Tech",
         "Commerce & Retail",
-        "FinTech",
+        "Fintech",
         "Gaming",
         "Healthcare",
         "HR & Team",
         "Product Shoot",
         "Remote Work",
-        // Add more collections as needed
       ];
 
       let allResults = [];
@@ -32,21 +31,17 @@ export const ImagesProvider = ({ children }) => {
 
       for (const collectionName of collectionsToSearch) {
         if (tagsArray.length > 0) {
-          // Start by querying for documents that contain the first tag
+          // Query for documents that contain any of the tags
           let q = query(
             collection(db, collectionName),
-            where("tags", "array-contains", tagsArray[0])
+            where("tags", "array-contains-any", tagsArray)
           );
 
           const querySnapshot = await getDocs(q);
           const fetchedImages = querySnapshot.docs.map((doc) => doc.data());
 
-          // Filter images to keep only those that contain all tags
-          const filteredImages = fetchedImages.filter((image) =>
-            tagsArray.every((tag) => image.tags.includes(tag))
-          );
-
-          allResults = [...allResults, ...filteredImages];
+          // No need to filter further, as `array-contains-any` already ensures any tag matches
+          allResults = [...allResults, ...fetchedImages];
         } else {
           // If no tags provided, just fetch all documents
           const querySnapshot = await getDocs(collection(db, collectionName));
@@ -55,6 +50,12 @@ export const ImagesProvider = ({ children }) => {
         }
       }
 
+      // Optionally, remove duplicates if needed based on a unique identifier
+      // const uniqueResults = Array.from(
+      //   new Map(allResults.map((image) => [image.id, image])).values()
+      // );
+
+      // setImages(uniqueResults);
       setImages(allResults);
     };
 

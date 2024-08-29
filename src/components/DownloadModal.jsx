@@ -20,22 +20,21 @@ const modalStyle = {
   p: 4,
 };
 
-const DownloadModal = ({ open, onClose, image, tags }) => {
+const DownloadModal = ({ url, onClose }) => {
   const navigate = useNavigate();
   const [fitMode, setFitMode] = useState("object-contain");
   const [selectedTags, setSelectedTags] = useState([]);
 
   useEffect(() => {
-    if (tags && tags.length > 0) {
-      // Shuffle the tags array and select the first 5
-      const shuffledTags = [...tags].sort(() => 0.5 - Math.random());
-      setSelectedTags(shuffledTags.slice(0, 5));
-    }
-  }, [tags]);
+    // Assuming the tags could come from the image metadata or similar
+    const tags = ["nature", "art", "technology", "abstract", "creative"];
+    const shuffledTags = [...tags].sort(() => 0.5 - Math.random());
+    setSelectedTags(shuffledTags.slice(0, 5));
+  }, []);
 
   const handleShare = () => {
     navigator.clipboard
-      .writeText(image)
+      .writeText(url)
       .then(() => {
         alert("Image URL copied to clipboard!");
       })
@@ -45,31 +44,24 @@ const DownloadModal = ({ open, onClose, image, tags }) => {
   };
 
   const downloadImage = (url, filename = "downloaded_image.png") => {
-    // Create a temporary anchor element
     const link = document.createElement("a");
     link.href = url;
-    link.download = filename; // Set default filename or use a dynamic filename
-    link.style.display = "none"; // Hide the element
-
-    // Append the link to the document body
+    link.download = filename;
+    link.style.display = "none";
     document.body.appendChild(link);
-
-    // Trigger a click event to start the download
     link.click();
-
-    // Remove the link from the document body
     document.body.removeChild(link);
   };
 
   const handleDownload = () => {
-    if (image) {
-      downloadImage(image, "generated_image.png");
+    if (url) {
+      downloadImage(url, "generated_image.png");
     }
   };
 
   return (
     <Modal
-      open={open}
+      open={!!url}
       onClose={onClose}
       aria-labelledby="modal-title"
       aria-describedby="modal-description"
@@ -79,7 +71,6 @@ const DownloadModal = ({ open, onClose, image, tags }) => {
     >
       <Box sx={modalStyle}>
         <div className="relative flex text-white w-full h-full space-x-8">
-          {/* Close Button */}
           <IconButton
             onClick={onClose}
             edge="end"
@@ -95,12 +86,12 @@ const DownloadModal = ({ open, onClose, image, tags }) => {
             <CloseIcon />
           </IconButton>
 
-          <div className="w-[60%] flex flex-col h-full space-y-4 ">
+          <div className="w-[60%] flex flex-col h-full space-y-4">
             <div className="w-full h-[80%] flex bg-[#1D1D1D] items-center justify-center relative rounded-md">
               <img
                 className={`rounded-md w-full h-full ${fitMode}`}
-                src={image}
-                alt=""
+                src={url}
+                alt="Preview"
               />
               <div className="absolute text-xs flex items-center space-x-3 -bottom-5 right-1 opacity-40">
                 <p>250 downloads</p>
@@ -113,8 +104,8 @@ const DownloadModal = ({ open, onClose, image, tags }) => {
             >
               <img
                 className="rounded-full object-cover w-10 h-10"
-                src={image}
-                alt=""
+                src={url}
+                alt="Creator"
               />
               <p>Sumit Sharma</p>
             </div>
@@ -126,10 +117,6 @@ const DownloadModal = ({ open, onClose, image, tags }) => {
               Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi
               odio ducimus blanditiis quisquam est dolor, consequuntur quaerat
               eveniet iure dolores aliquam ab suscipit illum id perspiciatis!
-              Atque quod sed, recusandae repellendus quasi quae aperiam!
-              Consequuntur fugit asperiores, illo distinctio nam labore
-              dignissimos est quidem quaerat illum, odio veniam perspiciatis
-              enim, eos sunt quasi eius nobis non iste. Iusto, sit vero!
             </p>
             <div>
               <h2 className="text-lg mb-2">Tags</h2>
@@ -145,6 +132,7 @@ const DownloadModal = ({ open, onClose, image, tags }) => {
               </div>
             </div>
           </div>
+
           <div
             onClick={handleShare}
             className="cursor-pointer flex items-center absolute -bottom-2 right-0 text-sm bg-white rounded-md text-black px-12 sm:px-6 py-1 space-x-2"
@@ -152,6 +140,7 @@ const DownloadModal = ({ open, onClose, image, tags }) => {
             <button>Share</button>
             <ShareSharpIcon />
           </div>
+
           <div
             onClick={handleDownload}
             className="cursor-pointer flex items-center absolute -bottom-2 right-32 text-sm bg-[#1D1D1D] rounded-md border border-white border-opacity-20 text-white px-12 sm:px-6 py-1 space-x-2"

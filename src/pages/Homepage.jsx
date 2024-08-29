@@ -6,7 +6,8 @@ import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import ShareSharpIcon from "@mui/icons-material/ShareSharp";
 import DownloadModal from "../components/DownloadModal";
 import Marquee from "react-fast-marquee";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { Skeleton } from "@mui/material";
+import { ImagesContext } from "../components/ImagesContext";
 import carouselMaker from "../assets/carouselmaker.png";
 import blogToCarousel from "../assets/blogtocarousel.png";
 import aiArtGenerator from "../assets/aiartgenerator.png";
@@ -16,9 +17,6 @@ import aiColorGrader from "../assets/aicolorgrader.png";
 import aiHashtagGenerator from "../assets/aihashtaggenerator.png";
 import aiCaptionWriter from "../assets/aicaptionwriter.png";
 import bulkEditor from "../assets/bulkeditor.png";
-import { Skeleton } from "@mui/material";
-import spaceImage from "../assets/spaceimage.jpg";
-import { ImagesContext } from "../components/ImagesContext";
 
 const Homepage = () => {
   const [category, setCategory] = useState("All");
@@ -28,62 +26,13 @@ const Homepage = () => {
   const [openModal, setOpenModal] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const { images } = useContext(ImagesContext);
-  const { setSearchQuery } = useContext(ImagesContext);
-  const db = getFirestore();
-
-  // Function to handle clicks outside the modal
 
   useEffect(() => {
-    const fetchImages = async () => {
-      setIsLoading(true); // Set loading to true when fetching starts
+    console.log(images);
+    setIsLoading(true);
 
-      let homepageImages = [];
-      if (category === "All") {
-        const categories = [
-          "AI and ML",
-          "Climate Tech",
-          "Commerce & Retail",
-          "FinTech",
-          "Gaming",
-          "Healthcare",
-          "HR & Team",
-          "Product Shoot",
-          "Remote Work",
-        ];
-        for (let cat of categories) {
-          const catCollection = collection(db, cat);
-          const catSnapshot = await getDocs(catCollection);
-          catSnapshot.forEach((doc) => {
-            homepageImages.push(doc.data());
-          });
-        }
-      } else {
-        const catCollection = collection(db, category);
-        const catSnapshot = await getDocs(catCollection);
-        catSnapshot.forEach((doc) => {
-          homepageImages.push(doc.data());
-        });
-      }
-
-      // Sort the images randomly
-      const sortedImages = homepageImages.sort();
-      setDisplayedImages(sortedImages);
-      setIsLoading(false);
-    };
-    // Introduce a delay to showcase the shimmer effect
-
-    // Set loading to false when fetching ends
-    // 1000ms delay (0.5 second)
-
-    fetchImages();
-  }, [category, db]);
-
-  useEffect(() => {
-    if (images.length > 0) {
-      setDisplayedImages(images);
-    } else {
-      console.log("no images");
-    }
+    setDisplayedImages(images);
+    setIsLoading(false);
   }, [images]);
 
   const handleCategoryChange = (cat) => {
@@ -99,7 +48,7 @@ const Homepage = () => {
     "AI and ML",
     "Climate Tech",
     "Commerce & Retail",
-    "FinTech",
+    "Fintech",
     "Gaming",
     "Healthcare",
     "HR & Team",
@@ -189,15 +138,6 @@ const Homepage = () => {
             Best AI Art for your posts, blogs, brand
           </p>
 
-          {/* <div className="-space-y-2">
-            <p className="text-[40px] sm:text-[44px] leading-tight sm:leading-tight max-w-lg text-center">
-              Blank Canvas
-            </p>
-            <p className="text-[40px] font-bold sm:text-[44px] leading-tight sm:leading-tight max-w-lg text-center">
-              AI Apps Collection
-            </p>
-          </div> */}
-
           <p className="text-center">
             Free forever. Stop Reading, Start Creating.
           </p>
@@ -227,7 +167,6 @@ const Homepage = () => {
               />
             </div>
 
-            {/* Dropdown Menu */}
             {isOpen && (
               <div className="absolute top-6 right-0 mt-2 w-40 bg-black bg-opacity-75 border border-white border-opacity-50 rounded-md shadow-lg z-10">
                 <ul className="text-white">
@@ -249,7 +188,6 @@ const Homepage = () => {
           </div>
         </div>
 
-        {/* Image Gallery */}
         {isLoading ? (
           <div className="w-full opacity-50 columns-1 sm:columns-2 md:columns-3 gap-5 mt-8 mb-24">
             <Skeleton
@@ -317,46 +255,39 @@ const Homepage = () => {
             />
           </div>
         ) : (
-          <div className="columns-1 sm:columns-2 md:columns-3 gap-5 mt-8 mb-24">
-            {displayedImages.map((item, index) => (
-              <div
-                key={index}
-                className="cursor-pointer relative group hover:opacity-85 transition-opacity duration-300"
-                onClick={() => setOpenModal(index)} // Open the modal for the clicked image
-              >
-                <img
-                  src={item.downloadURL}
-                  alt=""
-                  className="mb-5 border border-[#B276AA] border-opacity-25 rounded-sm"
-                  loading="lazy" // Apply lazy loading
-                />
-                {openModal === index && (
-                  <div className="modal-content">
-                    <DownloadModal
-                      open={openModal === index}
-                      onClose={() => setOpenModal(null)}
-                      image={item.downloadURL}
-                      tags={item.tags}
+          <div className="w-full columns-1 sm:columns-2 md:columns-3 gap-5 mt-8 mb-24">
+            {displayedImages.length > 0 ? (
+              displayedImages.map((image, index) => (
+                <div
+                  key={index}
+                  className="cursor-pointer mb-5 relative hover:shadow-lg hover:scale-[102%] transition duration-300 ease-in-out"
+                >
+                  <img
+                    src={image.downloadURL}
+                    alt={`Image ${index + 1}`}
+                    className="w-full h-auto rounded-sm"
+                  />
+                  <div className="absolute top-2 right-2 flex space-x-2">
+                    <SaveAltIcon
+                      className="cursor-pointer"
+                      onClick={() => setOpenModal(image.downloadURL)}
                     />
-                  </div>
-                )}
-
-                {/* Share Icon */}
-                <div>
-                  <div className="cursor-pointer absolute bottom-3 right-3 bg-black py-1 px-1.5 rounded-md hidden opacity-60 group-hover:flex hover:opacity-100">
-                    <ShareSharpIcon />
-                  </div>
-
-                  {/* Save Icon */}
-                  <div className="cursor-pointer absolute bottom-3 left-3 bg-black py-1 px-1.5 rounded-md hidden opacity-60 group-hover:flex hover:opacity-100">
-                    <SaveAltIcon />
+                    <ShareSharpIcon className="cursor-pointer" />
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="text-center w-full text-white opacity-50">
+                No images available in this category.
+              </p>
+            )}
           </div>
         )}
       </div>
+
+      {openModal && (
+        <DownloadModal url={openModal} onClose={() => setOpenModal(null)} />
+      )}
     </div>
   );
 };

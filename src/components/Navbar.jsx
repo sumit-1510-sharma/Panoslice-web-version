@@ -8,6 +8,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { setSearchQuery } = useContext(ImagesContext);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [currentValue, setCurrentValue] = useState(""); // State to manage input value
 
   return (
     <div className="bg-[#1D1D1D] h-[44px] sm:h-[60px] text-white fixed top-0 w-full z-50">
@@ -15,8 +16,9 @@ const Navbar = () => {
         <img
           src={logo}
           onClick={() => navigate("/")}
-          className="cursor-pointer w-[66px] ml-8 "
-        ></img>
+          className="cursor-pointer w-[66px] ml-8"
+          alt="Logo"
+        />
 
         <div className="relative sm:flex items-center justify-left w-[30%] border border-[#707070] rounded-md px-1 md:ml-[4%] lg:ml-[20%]">
           <SearchIcon />
@@ -24,12 +26,74 @@ const Navbar = () => {
             className="bg-[#1D1D1D] text-white text-sm opacity-70 focus:outline-none p-1"
             type="text"
             placeholder="Search by tag"
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={currentValue} // Set input value to currentValue
+            onChange={(e) => {
+              // Update currentValue on change
+              setCurrentValue(e.target.value);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                // Update searchQuery with currentValue when Enter is pressed
+                setSearchQuery(currentValue);
+                setShowDropdown(false); // Optional: Hide dropdown on search
+              }
+            }}
             onClick={() => setShowDropdown(!showDropdown)}
-            onBlur={() => setShowDropdown(false)} // Optional: Hide on blur
+            onBlur={() => setShowDropdown(false)} // Optional: Hide dropdown on blur
           />
 
           {/* Dropdown code remains unchanged */}
+
+          {showDropdown && (
+            <div className="absolute flex flex-col items-start justify-between space-y-4 bg-[#161616] w-[50vw] top-10 -left-20 rounded-md border border-[#707070] p-4">
+              <div className="flex flex-col items-start space-y-4">
+                <h4 className="text-sm">Popular Searches</h4>
+                <div className="flex items-center flex-wrap gap-x-4 gap-y-2">
+                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
+                    Nature
+                  </button>
+                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
+                    Cyberpunk
+                  </button>
+                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
+                    CyberSecurity
+                  </button>
+                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
+                    AI
+                  </button>
+                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
+                    HR
+                  </button>
+                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
+                    Sports
+                  </button>
+                </div>
+              </div>
+              <div className="flex flex-col items-start space-y-4">
+                <h4 className="text-sm">Categories</h4>
+                <div className="flex items-center flex-wrap gap-x-4 gap-y-2">
+                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
+                    AI & ML
+                  </button>
+                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
+                    Remote Work
+                  </button>
+                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
+                    HR
+                  </button>
+                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
+                    Gaming
+                  </button>
+                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
+                    Cybersecurity
+                  </button>
+                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
+                    Sports
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="flex items-center space-x-6 mx-8">
