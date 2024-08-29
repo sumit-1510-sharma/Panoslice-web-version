@@ -1,6 +1,8 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
+import ArrowRightIcon from "@mui/icons-material/ArrowRight";
+import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
 import { ImagesContext } from "./ImagesContext"; // Import Context
 import logo from "../assets/logo.png";
 
@@ -9,6 +11,24 @@ const Navbar = () => {
   const { setSearchQuery } = useContext(ImagesContext);
   const [showDropdown, setShowDropdown] = useState(false);
   const [currentValue, setCurrentValue] = useState(""); // State to manage input value
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    // Function to handle clicks outside the dropdown
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+
+    // Add event listener for clicks outside the dropdown
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Cleanup event listener on component unmount
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="bg-[#1D1D1D] h-[44px] sm:h-[60px] text-white fixed top-0 w-full z-50">
@@ -39,57 +59,104 @@ const Navbar = () => {
               }
             }}
             onClick={() => setShowDropdown(!showDropdown)}
-            onBlur={() => setShowDropdown(false)} // Optional: Hide dropdown on blur
+            // Optional: Hide dropdown on blur
           />
 
           {/* Dropdown code remains unchanged */}
 
           {showDropdown && (
-            <div className="absolute flex flex-col items-start justify-between space-y-4 bg-[#161616] w-[50vw] top-10 -left-20 rounded-md border border-[#707070] p-4">
+            <div
+              ref={dropdownRef}
+              className="absolute flex flex-col items-start justify-between space-y-4 bg-[#161616] w-[50vw] top-10 -left-20 rounded-md border border-[#707070] p-4"
+            >
               <div className="flex flex-col items-start space-y-4">
                 <h4 className="text-sm">Popular Searches</h4>
-                <div className="flex items-center flex-wrap gap-x-4 gap-y-2">
-                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
-                    Nature
+                <div className="relative">
+                  <button className="absolute -left-3">
+                    <ArrowLeftIcon />
                   </button>
-                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
-                    Cyberpunk
+                  <button className="absolute -right-6">
+                    <ArrowRightIcon />
                   </button>
-                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
-                    CyberSecurity
-                  </button>
-                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
-                    AI
-                  </button>
-                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
-                    HR
-                  </button>
-                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
-                    Sports
-                  </button>
+                  <div
+                    id="popular-searches"
+                    className="flex items-center w-[45vw] scrollbar-hide overflow-x-scroll ml-2.5"
+                  >
+                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                      Nature
+                    </button>
+                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                      Cyberpunk
+                    </button>
+                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                      CyberSecurity
+                    </button>
+                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                      AI
+                    </button>
+                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                      HR
+                    </button>
+                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                      Sports
+                    </button>
+                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                      Sports
+                    </button>
+                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                      Sports
+                    </button>
+                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                      Sports
+                    </button>
+
+                    {/* Add more tags as needed */}
+                  </div>
                 </div>
               </div>
               <div className="flex flex-col items-start space-y-4">
-                <h4 className="text-sm">Categories</h4>
-                <div className="flex items-center flex-wrap gap-x-4 gap-y-2">
-                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
-                    AI & ML
+                <h4 className="text-sm">Popular Searches</h4>
+                <div className="relative">
+                  <button className="absolute -left-3">
+                    <ArrowLeftIcon />
                   </button>
-                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
-                    Remote Work
+                  <button className="absolute -right-6">
+                    <ArrowRightIcon />
                   </button>
-                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
-                    HR
-                  </button>
-                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
-                    Gaming
-                  </button>
-                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
-                    Cybersecurity
-                  </button>
-                  <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30">
-                    Sports
-                  </button>
+                  <div
+                    id="popular-searches"
+                    className="flex items-center w-[45vw] scrollbar-hide overflow-x-scroll ml-2.5"
+                  >
+                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                      Nature
+                    </button>
+                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                      Cyberpunk
+                    </button>
+                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                      CyberSecurity
+                    </button>
+                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                      AI
+                    </button>
+                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                      HR
+                    </button>
+                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                      Sports
+                    </button>
+                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                      Sports
+                    </button>
+                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                      Sports
+                    </button>
+                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                      Sports
+                    </button>
+
+                    {/* Add more tags as needed */}
+                  </div>
                 </div>
               </div>
             </div>

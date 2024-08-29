@@ -20,7 +20,7 @@ const modalStyle = {
   p: 4,
 };
 
-const DownloadModal = ({ url, onClose }) => {
+const DownloadModal = ({ url, onClose, tags }) => {
   const navigate = useNavigate();
   const [fitMode, setFitMode] = useState("object-contain");
   const [selectedTags, setSelectedTags] = useState([]);

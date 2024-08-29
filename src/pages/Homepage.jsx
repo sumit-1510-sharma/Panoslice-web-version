@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import Tool from "../components/Tool";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
+import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
 import { useNavigate } from "react-router-dom";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import ShareSharpIcon from "@mui/icons-material/ShareSharp";
@@ -17,6 +18,7 @@ import aiColorGrader from "../assets/aicolorgrader.png";
 import aiHashtagGenerator from "../assets/aihashtaggenerator.png";
 import aiCaptionWriter from "../assets/aicaptionwriter.png";
 import bulkEditor from "../assets/bulkeditor.png";
+import "./Homepage.css";
 
 const Homepage = () => {
   const [category, setCategory] = useState("All");
@@ -26,6 +28,8 @@ const Homepage = () => {
   const [openModal, setOpenModal] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const { images } = useContext(ImagesContext);
+  const [showLeftButton, setShowLeftButton] = useState(false);
+  const scrollRef = useRef(null);
 
   useEffect(() => {
     console.log(images);
@@ -41,6 +45,23 @@ const Homepage = () => {
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
+  };
+  const handleScroll = (direction) => {
+    if (scrollRef.current) {
+      if (direction === "left") {
+        scrollRef.current.scrollBy({ left: -150, behavior: "smooth" });
+      } else {
+        scrollRef.current.scrollBy({ left: 150, behavior: "smooth" });
+      }
+    }
+  };
+
+  const handleScrollCheck = () => {
+    if (scrollRef.current.scrollLeft > 0) {
+      setShowLeftButton(true);
+    } else {
+      setShowLeftButton(false);
+    }
   };
 
   const categories = [
@@ -149,42 +170,45 @@ const Homepage = () => {
           </button>
         </div>
 
-        <div className="flex items-center justify-between w-full mt-2 sticky top-[44px] sm:top-[60px] py-4 border-b border-[#B276AA] border-opacity-25 bg-[#161616] z-10">
-          <p>Browse Images</p>
-          <div className="relative">
-            <div
-              onClick={toggleMenu}
-              className="flex items-center cursor-pointer bg-black rounded-full pl-5 space-x-3 pr-2 border group border-white"
-            >
-              <button>
-                {category.charAt(0).toUpperCase() + category.slice(1)}
-              </button>
-              <ArrowRightIcon
-                className={`transition-transform ease-in-out ${
-                  isOpen ? "rotate-90" : ""
-                }`}
-                fontSize=""
-              />
-            </div>
+        <div className="flex items-center justify-between w-full mt-8 sticky top-[44px] sm:top-[60px] py-4 border-b border-[#B276AA] border-opacity-25 bg-[#161616] z-10">
+          <div className="w-[15%]">
+            <p>Browse Images</p>
+          </div>
 
-            {isOpen && (
-              <div className="absolute top-6 right-0 mt-2 w-40 bg-black bg-opacity-75 border border-white border-opacity-50 rounded-md shadow-lg z-10">
-                <ul className="text-white">
-                  {categories.map((cat, index) => (
-                    <li
-                      key={index}
-                      className="px-4 py-2 hover:bg-gray-800 rounded-md cursor-pointer"
-                      onClick={() => {
-                        handleCategoryChange(cat);
-                        toggleMenu();
-                      }}
-                    >
-                      {cat.charAt(0).toUpperCase() + cat.slice(1)}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+          <div className="relative flex items-center justify-center w-[80%] mr-12">
+            {showLeftButton && (
+              <button
+                className="absolute -left-10 z-10 p-1 bg-opacity-50 rounded-full"
+                onClick={() => handleScroll("left")}
+              >
+                <ArrowLeftIcon />
+              </button>
             )}
+            <div
+              className="flex overflow-x-auto space-x-4 scrollbar-hide rounded-2xl"
+              ref={scrollRef}
+              onScroll={handleScrollCheck}
+            >
+              {categories.map((cat, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleCategoryChange(cat)}
+                  className={`px-4 py-0.5 bg-black border whitespace-nowrap ${
+                    category === cat
+                      ? "bg-white text-black opacity-85"
+                      : "bg-black text-white opacity-75"
+                  } rounded-full`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+            <button
+              className="absolute -right-11 z-10 p-1 bg-opacity-50 rounded-full"
+              onClick={() => handleScroll("right")}
+            >
+              <ArrowRightIcon />
+            </button>
           </div>
         </div>
 
