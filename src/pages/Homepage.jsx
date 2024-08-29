@@ -68,11 +68,12 @@ const Homepage = () => {
       // Sort the images randomly
       const sortedImages = homepageImages.sort();
       setDisplayedImages(sortedImages);
+      setIsLoading(false);
     };
     // Introduce a delay to showcase the shimmer effect
-    setTimeout(() => {
-      setIsLoading(false); // Set loading to false when fetching ends
-    }, 500); // 1000ms delay (0.5 second)
+
+    // Set loading to false when fetching ends
+    // 1000ms delay (0.5 second)
 
     fetchImages();
   }, [category, db]);
@@ -84,51 +85,6 @@ const Homepage = () => {
       console.log("no images");
     }
   }, [images]);
-
-  // useEffect(() => {
-  //   const fetchImages = async () => {
-  //     setIsLoading(true); // Set loading to true when fetching starts
-
-  //     let homepageImages = [];
-  //     if (category === "All") {
-  //       const categories = [
-  //         "AI and ML",
-  //         "Climate Tech",
-  //         "Commerce & Retail",
-  //         "FinTech",
-  //         "Gaming",                                                 (This is the new version)
-  //         "Healthcare",
-  //         "HR & Team",
-  //         "Product Shoot",
-  //         "Remote Work",
-  //       ];
-
-  //       for (const cat of categories) {
-  //         const catCollection = collection(db, cat);
-  //         const catSnapshot = await getDocs(catCollection);
-  //         homepageImages = [...homepageImages, ...catSnapshot.docs.map(doc => doc.data())];
-  //       }
-  //     } else {
-  //       const catCollection = collection(db, category);
-  //       const catSnapshot = await getDocs(catCollection);
-  //       homepageImages = catSnapshot.docs.map(doc => doc.data());
-  //     }
-
-  //     // Sort images if needed
-  //     // homepageImages = homepageImages.sort(() => Math.random() - 0.5);
-
-  //     setImages(homepageImages);
-  //     setIsLoading(false); // Set loading to false when fetching ends
-  //   };
-
-  //   fetchImages();
-  // }, [category]);
-
-  // useEffect(() => {
-  //   if (images.length > 0) {
-  //     setDisplayedImages(images);
-  //   }
-  // }, [images]);
 
   const handleCategoryChange = (cat) => {
     setCategory(cat);
@@ -372,6 +328,7 @@ const Homepage = () => {
                   src={item.downloadURL}
                   alt=""
                   className="mb-5 border border-[#B276AA] border-opacity-25 rounded-sm"
+                  loading="lazy" // Apply lazy loading
                 />
                 {openModal === index && (
                   <div className="modal-content">

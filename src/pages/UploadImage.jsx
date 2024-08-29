@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import imageCompression from 'browser-image-compression';
 import { storage, db } from "../firebase"; // Import Firebase storage and Firestore
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { collection, addDoc } from "firebase/firestore";
@@ -15,24 +16,38 @@ const UploadImage = () => {
   const handleUpload = async () => {
     if (!image || !category) return;
 
-    // Set the storage path based on the category
-    const storageRef = ref(storage, `${category}/${image.name}`);
-    await uploadBytes(storageRef, image);
-    const downloadURL = await getDownloadURL(storageRef);
+    try {
+      // Convert and compress the image to WebP format
+      const options = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1920,
+        useWebWorker: true,
+        fileType: 'image/webp', // Specify WebP format
+      };
+      const compressedFile = await imageCompression(image, options);
 
-    // Save metadata to the appropriate Firestore collection based on category
-    await addDoc(collection(db, category), {
-      tags: tags.split(",").map((tag) => tag.trim()), // Split tags by comma and trim whitespace
-      category,
-      storagePath: storageRef.fullPath,
-      downloadURL,
-      uploadDate: new Date(),
-    });
+      // Set the storage path based on the category
+      const storageRef = ref(storage, `${category}/${compressedFile.name}`);
+      await uploadBytes(storageRef, compressedFile);
+      const downloadURL = await getDownloadURL(storageRef);
 
-    setImage(null);
-    setTags("");
-    setCategory("");
-    alert("Image uploaded successfully!");
+      // Save metadata to the appropriate Firestore collection based on category
+      await addDoc(collection(db, category), {
+        tags: tags.split(",").map((tag) => tag.trim()), // Split tags by comma and trim whitespace
+        category,
+        storagePath: storageRef.fullPath,
+        downloadURL,
+        uploadDate: new Date(),
+      });
+
+      setImage(null);
+      setTags("");
+      setCategory("");
+      alert("Image uploaded successfully!");
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      alert("Failed to upload image.");
+    }
   };
 
   return (

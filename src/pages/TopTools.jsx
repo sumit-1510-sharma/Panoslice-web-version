@@ -1,6 +1,15 @@
 import React, { useRef } from "react";
 import ToolCard from "../components/ToolCard";
 import { useNavigate } from "react-router-dom";
+import aiCarouselMaker from "../assets/aicarouselmaker.webp";
+import blogToCarousel from "../assets/blogtocarousel.webp";
+import aiCollageMaker from "../assets/aicollagemaker.mp4";
+import bgRemover from "../assets/bgremover.webp";
+import aiReelMaker from "../assets/aireelmaker.webp";
+import aiColorGrader from "../assets/aicolorgrading.webp";
+import aiHashtagGenerator from "../assets/hashtaggenerator.webp";
+import captionWriter from "../assets/captionwriter.webp";
+import batchEditor from "../assets/batcheditor.mp4";
 
 const TopTools = () => {
   const navigate = useNavigate();
@@ -63,31 +72,39 @@ const TopTools = () => {
         className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 mt-8 mb-24"
       >
         <div onClick={handleRedirectPanoslice}>
-          <ToolCard title={"AI Carausel Maker"} />
+          <ToolCard title={"AI Carausel Maker"} media={aiCarouselMaker} />
         </div>
         <div onClick={handleRedirectPanoslice}>
-          <ToolCard title={"Blog To Carousel"} />
+          <ToolCard title={"Blog To Carousel"} media={blogToCarousel} />
         </div>
         <div onClick={handleRedirectPanoslice}>
-          <ToolCard title={"AI Art Generator"} />
+          <ToolCard
+            title={"AI Art Generator"}
+            media={aiCollageMaker}
+            mediaType={"video"}
+          />
         </div>
         <div onClick={handleRedirectPanoslice}>
-          <ToolCard title={"BG Remover"} />
+          <ToolCard title={"BG Remover"} media={bgRemover} />
         </div>
         <div onClick={handleRedirectLono}>
-          <ToolCard title={"AI Reel Maker"} />
+          <ToolCard title={"AI Reel Maker"} media={aiReelMaker} />
         </div>
         <div onClick={handleRedirectLono}>
-          <ToolCard title={"AI Color Grading"} />
+          <ToolCard title={"AI Color Grading"} media={aiColorGrader} />
         </div>
         <div onClick={handleRedirectPanoslice}>
-          <ToolCard title={"AI Hashtag Generator"} />
+          <ToolCard title={"AI Hashtag Generator"} media={aiHashtagGenerator} />
         </div>
         <div onClick={handleRedirectPanoslice}>
-          <ToolCard title={"AI Caption Writer"} />
+          <ToolCard title={"AI Caption Writer"} media={captionWriter} />
         </div>
         <div onClick={handleRedirectLono}>
-          <ToolCard title={"Bulk Editor"} />
+          <ToolCard
+            title={"Bulk Editor"}
+            media={batchEditor}
+            mediaType={"video"}
+          />
         </div>
       </div>
     </div>
