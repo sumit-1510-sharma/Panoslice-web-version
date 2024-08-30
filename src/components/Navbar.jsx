@@ -39,7 +39,7 @@ const Navbar = () => {
     } else {
       navigate("/");
     }
-  }, [searchQuery, navigate]);
+  }, [searchQuery]);
 
   const handleSearch = () => {
     setSearchQuery(currentValue); // Update searchQuery in context
@@ -50,15 +50,18 @@ const Navbar = () => {
       <div className="w-full py-[14px] flex items-center justify-between -mt-1 sm:mt-0.5 md:-mt-0.5">
         <img
           src={logo}
-          onClick={() => navigate("/")}
-          className="cursor-pointer w-[66px] ml-8"
+          onClick={() => {
+            navigate("/");
+            window.location.reload();
+          }}
+          className="cursor-pointer w-[48px] sm:w-[66px] ml-4 sm:ml-8"
           alt="Logo"
         />
 
-        <div className="relative sm:flex items-center justify-left w-[30%] border border-[#707070] rounded-md px-1 md:ml-[4%] lg:ml-[20%]">
+        <div className="relative flex items-center justify-left w-[36%] sm:w-[30%] border border-[#707070] rounded-md px-1 ml-4 md:ml-[4%] lg:ml-[20%]">
           <SearchIcon />
           <input
-            className="bg-[#1D1D1D] text-white text-sm opacity-70 focus:outline-none p-1"
+            className="bg-[#1D1D1D] text-white text-sm opacity-70 focus:outline-none p-1 max-w-[75%]"
             type="text"
             placeholder="Search by tag"
             value={currentValue} // Set input value to currentValue
@@ -80,7 +83,7 @@ const Navbar = () => {
           {showDropdown && (
             <div
               ref={dropdownRef}
-              className="absolute flex flex-col items-start justify-between space-y-4 bg-[#161616] w-[50vw] top-10 -left-20 rounded-md border border-[#707070] p-4"
+              className="absolute flex flex-col items-start justify-between space-y-4 bg-[#161616] mx-2 w-[260px] sm:w-[400px] md:w-[500px] lg:w-[600px] top-10 -left-20 rounded-md border border-[#707070] p-4"
             >
               <div className="flex flex-col items-start space-y-4">
                 <h4 className="text-sm">Popular Searches</h4>
@@ -93,7 +96,7 @@ const Navbar = () => {
                   </button>
                   <div
                     id="popular-searches"
-                    className="flex items-center w-[45vw] scrollbar-hide overflow-x-scroll ml-2.5"
+                    className="flex items-center w-[200px] sm:w-[330px] md:w-[430px] lg:w-[530px] scrollbar-hide overflow-x-scroll ml-2.5"
                   >
                     <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
                       Nature
@@ -138,7 +141,7 @@ const Navbar = () => {
                   </button>
                   <div
                     id="popular-searches"
-                    className="flex items-center w-[45vw] scrollbar-hide overflow-x-scroll ml-2.5"
+                    className="flex items-center w-[200px] sm:w-[330px] md:w-[430px] lg:w-[530px] scrollbar-hide overflow-x-scroll ml-2.5"
                   >
                     <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
                       Nature
@@ -176,13 +179,13 @@ const Navbar = () => {
           )}
         </div>
 
-        <div className="flex items-center space-x-6 mx-8">
+        <div className="flex items-center space-x-6 mr-4">
           <button
             onClick={() => navigate("/toptools")}
             className="flex items-center space-x-2"
           >
             <span className="hidden sm:flex">Explore</span>
-            <span>More AI Tools</span>
+            <span className="text-sm sm:text-base">More AI Tools</span>
           </button>
           <button
             onClick={() => navigate("/generate")}

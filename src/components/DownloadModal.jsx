@@ -17,20 +17,13 @@ const modalStyle = {
   border: "1px solid #707070",
   borderRadius: "12px",
   outline: "none",
-  p: 4,
+  py: 4,
+  pr: 2,
 };
 
-const DownloadModal = ({ url, onClose, tags }) => {
+const DownloadModal = ({ url, onClose, tags = [] }) => {
   const navigate = useNavigate();
   const [fitMode, setFitMode] = useState("object-contain");
-  const [selectedTags, setSelectedTags] = useState([]);
-
-  useEffect(() => {
-    // Assuming the tags could come from the image metadata or similar
-    const tags = ["nature", "art", "technology", "abstract", "creative"];
-    const shuffledTags = [...tags].sort(() => 0.5 - Math.random());
-    setSelectedTags(shuffledTags.slice(0, 5));
-  }, []);
 
   const handleShare = () => {
     navigator.clipboard
@@ -70,7 +63,7 @@ const DownloadModal = ({ url, onClose, tags }) => {
       }}
     >
       <Box sx={modalStyle}>
-        <div className="relative flex text-white w-full h-full space-x-8">
+        <div className="relative flex flex-col sm:flex-row text-white w-full h-full space-x-8 space-y-6">
           <IconButton
             onClick={onClose}
             edge="end"
@@ -78,16 +71,16 @@ const DownloadModal = ({ url, onClose, tags }) => {
             aria-label="close"
             sx={{
               position: "absolute",
-              top: 8,
-              right: 8,
+              top: -24,
+              right: 4,
               color: "#ffffff",
             }}
           >
             <CloseIcon />
           </IconButton>
 
-          <div className="w-[60%] flex flex-col h-full space-y-4">
-            <div className="w-full h-[80%] flex bg-[#1D1D1D] items-center justify-center relative rounded-md">
+          <div className="w-[85%] mx-auto sm:w-[55%] flex flex-col h-full space-y-4">
+            <div className="w-full sm:h-[60%] md:h-[70%] flex bg-[#1D1D1D] items-center justify-center relative rounded-md">
               <img
                 className={`rounded-md w-full h-full ${fitMode}`}
                 src={url}
@@ -111,17 +104,11 @@ const DownloadModal = ({ url, onClose, tags }) => {
             </div>
           </div>
 
-          <div className="w-[40%] flex flex-col items-start space-y-4">
-            <h2 className="text-lg">Category Name</h2>
-            <p className="text-xs opacity-70">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi
-              odio ducimus blanditiis quisquam est dolor, consequuntur quaerat
-              eveniet iure dolores aliquam ab suscipit illum id perspiciatis!
-            </p>
+          <div className="w-[85%] sm:w-[42%] flex flex-col items-start space-y-4">
             <div>
               <h2 className="text-lg mb-2">Tags</h2>
-              <div className="flex items-center flex-wrap gap-x-2 gap-y-2">
-                {selectedTags.map((tag, index) => (
+              <div className="flex items-center flex-wrap gap-x-2 gap-y-2 overflow-y-scroll max-h-[40%] sm:max-h-[55%] md:max-h-[80%] lg:max-h-[90%]">
+                {tags.map((tag, index) => (
                   <button
                     key={index}
                     className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30"
@@ -135,7 +122,7 @@ const DownloadModal = ({ url, onClose, tags }) => {
 
           <div
             onClick={handleShare}
-            className="cursor-pointer flex items-center absolute -bottom-2 right-0 text-sm bg-white rounded-md text-black px-12 sm:px-6 py-1 space-x-2"
+            className="cursor-pointer flex items-center absolute -bottom-4 right-0 text-xs sm:text-sm bg-white rounded-md text-black px-4 py-1 space-x-2"
           >
             <button>Share</button>
             <ShareSharpIcon />
@@ -143,7 +130,7 @@ const DownloadModal = ({ url, onClose, tags }) => {
 
           <div
             onClick={handleDownload}
-            className="cursor-pointer flex items-center absolute -bottom-2 right-32 text-sm bg-[#1D1D1D] rounded-md border border-white border-opacity-20 text-white px-12 sm:px-6 py-1 space-x-2"
+            className="cursor-pointer flex items-center absolute -bottom-4 -left-4 text-xs sm:text-sm bg-[#1D1D1D] rounded-md border border-white border-opacity-20 text-white px-4 py-1 space-x-2"
           >
             <button>Download</button>
             <SaveAltIcon />

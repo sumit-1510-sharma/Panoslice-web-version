@@ -79,7 +79,7 @@ const TopTools = () => {
         </div>
         <div onClick={handleRedirectPanoslice}>
           <ToolCard
-            title={"AI Art Generator"}
+            title={"AI Collage"}
             media={aiCollageMaker}
             mediaType={"video"}
           />
@@ -101,7 +101,7 @@ const TopTools = () => {
         </div>
         <div onClick={handleRedirectLono}>
           <ToolCard
-            title={"Bulk Editor"}
+            title={"Batch Editor for Video"}
             media={batchEditor}
             mediaType={"video"}
           />

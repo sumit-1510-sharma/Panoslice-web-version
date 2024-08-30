@@ -19,29 +19,59 @@ import aiHashtagGenerator from "../assets/aihashtaggenerator.png";
 import aiCaptionWriter from "../assets/aicaptionwriter.png";
 import bulkEditor from "../assets/bulkeditor.png";
 import "./Homepage.css";
+import { db } from "../firebase"; // Adjust this import path to your firebase config file
+import { collection, getDocs } from "firebase/firestore";
 
 const Homepage = () => {
   const [category, setCategory] = useState("All");
   const [displayedImages, setDisplayedImages] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
-  const [openModal, setOpenModal] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const { images } = useContext(ImagesContext);
   const [showLeftButton, setShowLeftButton] = useState(false);
   const scrollRef = useRef(null);
+  const [modalData, setModalData] = useState(null);
+
+  const setOpenModal = (url, tags) => {
+    setModalData({ url, tags });
+  };
+
+  const collectionNames = [
+    "AI and ML",
+    "Climate Tech",
+    "Commerce & Retail",
+    "Fintech",
+    "Gaming",
+    "Healthcare",
+    "HR & Team",
+    "Product Shoot",
+    "Remote Work",
+  ];
 
   useEffect(() => {
-    console.log(images);
-    setIsLoading(true);
+    const fetchAllCollections = async () => {
+      try {
+        const allDocs = [];
+        for (const collectionName of collectionNames) {
+          const querySnapshot = await getDocs(collection(db, collectionName));
+          const docs = querySnapshot.docs.map((doc) => ({
+            collectionName, // Store the collection name
+            id: doc.id, // Document ID
+            ...doc.data(), // Document Data
+          }));
+          allDocs.push(...docs); // Add documents to the array
+        }
+        setDisplayedImages(allDocs);
+        console.log(allDocs);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching documents: ", error);
+      }
+    };
 
-    setDisplayedImages(images);
-    setIsLoading(false);
-  }, [images]);
-
-  const handleCategoryChange = (cat) => {
-    setCategory(cat);
-  };
+    fetchAllCollections();
+  }, []);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -62,6 +92,28 @@ const Homepage = () => {
     } else {
       setShowLeftButton(false);
     }
+  };
+
+  const handleDownload = (url) => {
+    // Create an anchor element to initiate a download
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "image.jpg"; // You can set the default filename here
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleShare = (url) => {
+    // Copy the URL to the clipboard
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
+        alert("Link copied to clipboard!");
+      })
+      .catch((err) => {
+        console.error("Failed to copy: ", err);
+      });
   };
 
   const categories = [
@@ -89,15 +141,15 @@ const Homepage = () => {
   return (
     <div>
       <div className="flex flex-col items-center text-white mx-12 sm:mx-16">
-        <div className="bg-[#1D1D1D] rounded-full py-1 px-4 mt-32 shadow-[0_0_24px_10px_rgba(178,118,170,0.5)] z-10">
-          <div className="flex items-center w-[35vw]">
+        <div className="bg-[#1D1D1D] rounded-full py-1 px-4 mt-24 sm:mt-32 shadow-[0_0_24px_10px_rgba(178,118,170,0.5)] z-10">
+          <div className="flex items-center w-[250px] sm:w-[350px] md:w-[450px] lg:w-[600px]">
             <p
               onClick={() => navigate("/toptools")}
               className="cursor-pointer pr-3 rounded-full"
             >
               Top AI Tools:
             </p>
-            <div className="flex items-center w-[77%]">
+            <div className="flex items-center w-[147px] sm:w-[247px] md:w-[347px] lg:w-[495px]">
               <Marquee pauseOnHover={true} speed={27}>
                 <div className="flex items-center space-x-4 mx-2">
                   <div
@@ -156,12 +208,10 @@ const Homepage = () => {
 
         <div className="flex flex-col items-center space-y-5 mt-12">
           <p className="text-[40px] sm:text-[44px] leading-tight sm:leading-tight max-w-lg text-center">
-            Best AI Art for your posts, blogs, brand
+            Create anything you imagine, in seconds
           </p>
 
-          <p className="text-center">
-            Free forever. Stop Reading, Start Creating.
-          </p>
+          <p className="text-center">No sign-in required. 100% free to use.</p>
           <button
             onClick={() => navigate("/generate")}
             className="bg-white rounded-full text-black px-16 sm:px-24 py-1.5"
@@ -170,12 +220,12 @@ const Homepage = () => {
           </button>
         </div>
 
-        <div className="flex items-center justify-between w-full mt-8 sticky top-[44px] sm:top-[60px] py-4 border-b border-[#B276AA] border-opacity-25 bg-[#161616] z-10">
-          <div className="w-[15%]">
+        <div className="flex items-center justify-between w-[100.2%] mt-14 sticky top-[42px] sm:top-[58px] py-4 border-b border-[#B276AA] border-opacity-25 bg-[#161616] z-10">
+          <div className="hidden md:flex">
             <p>Browse Images</p>
           </div>
 
-          <div className="relative flex items-center justify-center w-[80%] mr-12">
+          <div className="relative flex items-center justify-center w-[92%] ml-2 sm:w-[96%] md:w-[70%] lg:w-[77%] xl:w-[80%] mr-4 sm:mr-8">
             {showLeftButton && (
               <button
                 className="absolute -left-10 z-10 p-1 bg-opacity-50 rounded-full"
@@ -277,40 +327,93 @@ const Homepage = () => {
               height={350}
               className="mb-5 rounded-sm"
             />
+            <Skeleton
+              variant="rectangular"
+              animation="wave"
+              sx={{ bgcolor: "grey.700" }}
+              height={200}
+              className="mb-5 rounded-sm"
+            />
+            <Skeleton
+              variant="rectangular"
+              animation="wave"
+              sx={{ bgcolor: "grey.800" }}
+              height={300}
+              className="mb-5 rounded-sm"
+            />
+            <Skeleton
+              variant="rectangular"
+              animation="wave"
+              sx={{ bgcolor: "grey.900" }}
+              height={400}
+              className="mb-5 rounded-sm"
+            />
+            <Skeleton
+              variant="rectangular"
+              animation="wave"
+              sx={{ bgcolor: "grey.800" }}
+              height={300}
+              className="mb-5 rounded-sm"
+            />
+            <Skeleton
+              variant="rectangular"
+              animation="wave"
+              sx={{ bgcolor: "grey.900" }}
+              height={400}
+              className="mb-5 rounded-sm"
+            />
+            <Skeleton
+              variant="rectangular"
+              animation="wave"
+              sx={{ bgcolor: "grey.800" }}
+              height={200}
+              className="mb-5 rounded-sm"
+            />
           </div>
         ) : (
           <div className="w-full columns-1 sm:columns-2 md:columns-3 gap-5 mt-8 mb-24">
-            {displayedImages.length > 0 ? (
-              displayedImages.map((image, index) => (
+            {displayedImages.map((image, index) => (
+              <div
+                key={index}
+                className="cursor-pointer mb-5 relative group hover:shadow-lg transition duration-200 ease-in-out"
+              >
+                <img
+                  loading="eager"
+                  src={image.downloadURL}
+                  alt={`Image ${index + 1}`}
+                  className="w-full h-auto rounded-sm"
+                  onClick={() => setOpenModal(image.downloadURL, image.tags)} // Open modal on image click
+                />
+
+                {/* Download button, only visible on hover */}
                 <div
-                  key={index}
-                  className="cursor-pointer mb-5 relative hover:shadow-lg hover:scale-[102%] transition duration-300 ease-in-out"
+                  className="absolute bottom-2 left-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent image click from triggering
+                    handleDownload(image.downloadURL); // Handle download action
+                  }}
                 >
-                  <img
-                    src={image.downloadURL}
-                    alt={`Image ${index + 1}`}
-                    className="w-full h-auto rounded-sm"
-                  />
-                  <div className="absolute top-2 right-2 flex space-x-2">
-                    <SaveAltIcon
-                      className="cursor-pointer"
-                      onClick={() => setOpenModal(image.downloadURL)}
-                    />
-                    <ShareSharpIcon className="cursor-pointer" />
-                  </div>
+                  <SaveAltIcon className="cursor-pointer text-white" />
                 </div>
-              ))
-            ) : (
-              <p className="text-center w-full text-white opacity-50">
-                No images available in this category.
-              </p>
-            )}
+
+                {/* Share button, only visible on hover */}
+                <div
+                  className="absolute bottom-2 right-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent image click from triggering
+                    handleShare(image.downloadURL); // Handle share action
+                  }}
+                >
+                  <ShareSharpIcon className="cursor-pointer text-white" />
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>
 
-      {openModal && (
-        <DownloadModal url={openModal} onClose={() => setOpenModal(null)} />
+      {modalData && (
+        <DownloadModal url={modalData.url} tags={modalData.tags} onClose={() => setOpenModal(null)} />
       )}
     </div>
   );
