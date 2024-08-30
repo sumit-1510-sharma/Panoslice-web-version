@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ImagesContext } from "../components/ImagesContext";
-import guitarImage from "../assets/guitarimage.jpg";
 
 const SearchResultsPage = () => {
   const { images } = useContext(ImagesContext);
