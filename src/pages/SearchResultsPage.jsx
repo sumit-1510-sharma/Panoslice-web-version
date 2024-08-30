@@ -29,9 +29,7 @@ const SearchResultsPage = () => {
 
       {/* Show shimmer effect when loading */}
       {loading ? (
-        <div className="">
-          <img src={guitarImage} alt="" />
-        </div>
+        <div className="">Loading...</div>
       ) : (
         <div className="">
           {displayedImages.map((image, index) => (
