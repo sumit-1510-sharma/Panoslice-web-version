@@ -63,7 +63,7 @@ export const ImagesProvider = ({ children }) => {
   }, [searchQuery]);
 
   return (
-    <ImagesContext.Provider value={{ images, setSearchQuery }}>
+    <ImagesContext.Provider value={{ images, searchQuery, setSearchQuery }}>
       {children}
     </ImagesContext.Provider>
   );

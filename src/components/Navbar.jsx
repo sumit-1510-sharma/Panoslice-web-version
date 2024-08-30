@@ -9,6 +9,8 @@ import logo from "../assets/logo.png";
 const Navbar = () => {
   const navigate = useNavigate();
   const { setSearchQuery } = useContext(ImagesContext);
+  const { images } = useContext(ImagesContext);
+  const { searchQuery } = useContext(ImagesContext);
   const [showDropdown, setShowDropdown] = useState(false);
   const [currentValue, setCurrentValue] = useState(""); // State to manage input value
   const dropdownRef = useRef(null);
@@ -29,6 +31,19 @@ const Navbar = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    if (searchQuery) {
+      navigate(`/search/${searchQuery}`);
+      setShowDropdown(false); // Hide dropdown on search
+    } else {
+      navigate("/");
+    }
+  }, [searchQuery, navigate]);
+
+  const handleSearch = () => {
+    setSearchQuery(currentValue); // Update searchQuery in context
+  };
 
   return (
     <div className="bg-[#1D1D1D] h-[44px] sm:h-[60px] text-white fixed top-0 w-full z-50">
@@ -53,9 +68,7 @@ const Navbar = () => {
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                // Update searchQuery with currentValue when Enter is pressed
-                setSearchQuery(currentValue);
-                setShowDropdown(false); // Optional: Hide dropdown on search
+                handleSearch(); // Optional: Hide dropdown on search
               }
             }}
             onClick={() => setShowDropdown(!showDropdown)}

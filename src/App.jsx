@@ -8,6 +8,7 @@ import TopTools from "./pages/TopTools";
 import Creator from "./pages/Creator";
 import UploadImage from "./pages/UploadImage";
 import { ImagesProvider } from "./components/ImagesContext"; // Import the provider
+import SearchResultsPage from "./pages/SearchResultsPage";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
               <Route path="/toptools" element={<TopTools />} />
               <Route path="/creator" element={<Creator />} />
               <Route path="/upload" element={<UploadImage />} />
+              <Route path="/search/:query" element={<SearchResultsPage />} />
             </Routes>
           </div>
           <Footer />
