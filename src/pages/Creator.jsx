@@ -4,12 +4,18 @@ import creatorImage from "../assets/creatorimage.jpg";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import XIcon from "@mui/icons-material/X";
+import { useNavigate } from "react-router-dom";
 
 const Creator = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="flex flex-col items-center mx-12 sm:mx-16 mt-32 text-white">
       <div className="w-full flex justify-between">
-        <div className="w-[35%] flex flex-col items-start space-y-4">
+        <div
+          onClick={() => navigate("/upload")}
+          className="w-[35%] flex flex-col items-start space-y-4"
+        >
           <img
             className="object-cover rounded-full w-14 h-14"
             src={creatorImage}
@@ -20,7 +26,7 @@ const Creator = () => {
             Caffeine powered marketing generalist and creative enabler
           </p>
           <div className="flex items-center opacity-90 space-x-2.5">
-            <InstagramIcon fontSize="small"/>
+            <InstagramIcon fontSize="small" />
             <LinkedInIcon fontSize="small" />
             <XIcon fontSize="small" />
           </div>

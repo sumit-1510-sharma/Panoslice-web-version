@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import imageCompression from 'browser-image-compression';
+import imageCompression from "browser-image-compression";
 import { storage, db } from "../firebase"; // Import Firebase storage and Firestore
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { collection, addDoc } from "firebase/firestore";
@@ -22,7 +22,7 @@ const UploadImage = () => {
         maxSizeMB: 1,
         maxWidthOrHeight: 1920,
         useWebWorker: true,
-        fileType: 'image/webp', // Specify WebP format
+        fileType: "image/webp", // Specify WebP format
       };
       const compressedFile = await imageCompression(image, options);
 
@@ -63,6 +63,7 @@ const UploadImage = () => {
         type="text"
         placeholder="Enter category (e.g., AI, Nature, Sports)"
         value={category}
+        defaultChecked="AI and ML"
         onChange={(e) => setCategory(e.target.value)}
       />
       <button onClick={handleUpload}>Upload Image</button>

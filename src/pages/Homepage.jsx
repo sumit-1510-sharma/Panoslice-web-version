@@ -37,40 +37,27 @@ const Homepage = () => {
     setModalData({ url, tags });
   };
 
-  const collectionNames = [
-    "AI and ML",
-    "Climate Tech",
-    "Commerce & Retail",
-    "Fintech",
-    "Gaming",
-    "Healthcare",
-    "HR & Team",
-    "Product Shoot",
-    "Remote Work",
-  ];
+  const collectionName = "AI and ML";
 
   useEffect(() => {
-    const fetchAllCollections = async () => {
+    const fetchAIAndMLCollection = async () => {
       try {
-        const allDocs = [];
-        for (const collectionName of collectionNames) {
-          const querySnapshot = await getDocs(collection(db, collectionName));
-          const docs = querySnapshot.docs.map((doc) => ({
-            collectionName, // Store the collection name
-            id: doc.id, // Document ID
-            ...doc.data(), // Document Data
-          }));
-          allDocs.push(...docs); // Add documents to the array
-        }
-        setDisplayedImages(allDocs);
-        console.log(allDocs);
+        const querySnapshot = await getDocs(collection(db, collectionName));
+        const docs = querySnapshot.docs.map((doc) => ({
+          collectionName, // Store the collection name
+          id: doc.id, // Document ID
+          ...doc.data(), // Document Data
+        }));
+
+        setDisplayedImages(docs);
+        console.log(docs);
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching documents: ", error);
       }
     };
 
-    fetchAllCollections();
+    fetchAIAndMLCollection();
   }, []);
 
   const toggleMenu = () => {
@@ -413,7 +400,11 @@ const Homepage = () => {
       </div>
 
       {modalData && (
-        <DownloadModal url={modalData.url} tags={modalData.tags} onClose={() => setOpenModal(null)} />
+        <DownloadModal
+          url={modalData.url}
+          tags={modalData.tags}
+          onClose={() => setOpenModal(null)}
+        />
       )}
     </div>
   );

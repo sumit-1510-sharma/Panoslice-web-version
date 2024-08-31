@@ -36,8 +36,6 @@ const Navbar = () => {
     if (searchQuery) {
       navigate(`/search/${searchQuery}`);
       setShowDropdown(false); // Hide dropdown on search
-    } else {
-      navigate("/");
     }
   }, [searchQuery]);
 
