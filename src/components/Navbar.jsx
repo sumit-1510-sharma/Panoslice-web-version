@@ -9,7 +9,6 @@ import logo from "../assets/logo.png";
 const Navbar = () => {
   const navigate = useNavigate();
   const { setSearchQuery } = useContext(ImagesContext);
-  const { images } = useContext(ImagesContext);
   const { searchQuery } = useContext(ImagesContext);
   const [showDropdown, setShowDropdown] = useState(false);
   const [currentValue, setCurrentValue] = useState(""); // State to manage input value
@@ -37,10 +36,11 @@ const Navbar = () => {
       navigate(`/search/${searchQuery}`);
       setShowDropdown(false); // Hide dropdown on search
     }
-  }, [searchQuery]);
+  }, [searchQuery, navigate]);
 
-  const handleSearch = () => {
-    setSearchQuery(currentValue); // Update searchQuery in context
+  const handleSearch = (value) => {
+    setCurrentValue(value);
+    setSearchQuery(value); // Update searchQuery in context
   };
 
   return (
@@ -69,7 +69,7 @@ const Navbar = () => {
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                handleSearch(); // Optional: Hide dropdown on search
+                handleSearch(currentValue); // Optional: Hide dropdown on search
               }
             }}
             onClick={() => setShowDropdown(!showDropdown)}
@@ -96,31 +96,58 @@ const Navbar = () => {
                     id="popular-searches"
                     className="flex items-center w-[200px] sm:w-[330px] md:w-[430px] lg:w-[530px] scrollbar-hide overflow-x-scroll ml-2.5"
                   >
-                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                    <button
+                      onClick={() => handleSearch("Nature")}
+                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                    >
                       Nature
                     </button>
-                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                    <button
+                      onClick={() => handleSearch("Cyberpunk")}
+                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                    >
                       Cyberpunk
                     </button>
-                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                    <button
+                      onClick={() => handleSearch("CyberSecurity")}
+                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                    >
                       CyberSecurity
                     </button>
-                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                    <button
+                      onClick={() => handleSearch("AI")}
+                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                    >
                       AI
                     </button>
-                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                    <button
+                      onClick={() => handleSearch("HR")}
+                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                    >
                       HR
                     </button>
-                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                    <button
+                      onClick={() => handleSearch("Sports")}
+                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                    >
                       Sports
                     </button>
-                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                    <button
+                      onClick={() => handleSearch("Sports")}
+                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                    >
                       Sports
                     </button>
-                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                    <button
+                      onClick={() => handleSearch("Sports")}
+                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                    >
                       Sports
                     </button>
-                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                    <button
+                      onClick={() => handleSearch("Sports")}
+                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                    >
                       Sports
                     </button>
 
@@ -129,7 +156,7 @@ const Navbar = () => {
                 </div>
               </div>
               <div className="flex flex-col items-start space-y-4">
-                <h4 className="text-sm">Popular Searches</h4>
+                <h4 className="text-sm">Popular Categories</h4>
                 <div className="relative">
                   <button className="absolute -left-3">
                     <ArrowLeftIcon />
@@ -141,34 +168,60 @@ const Navbar = () => {
                     id="popular-searches"
                     className="flex items-center w-[200px] sm:w-[330px] md:w-[430px] lg:w-[530px] scrollbar-hide overflow-x-scroll ml-2.5"
                   >
-                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                    <button
+                      onClick={() => handleSearch("Nature")}
+                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                    >
                       Nature
                     </button>
-                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                    <button
+                      onClick={() => handleSearch("Cyberpunk")}
+                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                    >
                       Cyberpunk
                     </button>
-                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                    <button
+                      onClick={() => handleSearch("CyberSecurity")}
+                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                    >
                       CyberSecurity
                     </button>
-                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                    <button
+                      onClick={() => handleSearch("AI")}
+                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                    >
                       AI
                     </button>
-                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                    <button
+                      onClick={() => handleSearch("HR")}
+                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                    >
                       HR
                     </button>
-                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                    <button
+                      onClick={() => handleSearch("Sports")}
+                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                    >
                       Sports
                     </button>
-                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                    <button
+                      onClick={() => handleSearch("Sports")}
+                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                    >
                       Sports
                     </button>
-                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                    <button
+                      onClick={() => handleSearch("Sports")}
+                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                    >
                       Sports
                     </button>
-                    <button className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2">
+                    <button
+                      onClick={() => handleSearch("Sports")}
+                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                    >
                       Sports
                     </button>
-
                     {/* Add more tags as needed */}
                   </div>
                 </div>

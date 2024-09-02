@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Modal, Box, IconButton } from "@mui/material";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import ShareSharpIcon from "@mui/icons-material/ShareSharp";
 import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate } from "react-router-dom";
+import { ImagesContext } from "./ImagesContext";
 
 const modalStyle = {
   position: "absolute",
@@ -24,6 +25,7 @@ const modalStyle = {
 const DownloadModal = ({ url, onClose, tags = [] }) => {
   const navigate = useNavigate();
   const [fitMode, setFitMode] = useState("object-contain");
+  const { setSearchQuery } = useContext(ImagesContext);
 
   const handleShare = () => {
     navigator.clipboard
@@ -50,6 +52,10 @@ const DownloadModal = ({ url, onClose, tags = [] }) => {
     if (url) {
       downloadImage(url, "generated_image.png");
     }
+  };
+
+  const handleSearch = (value) => {
+    setSearchQuery(value); // Update searchQuery in context
   };
 
   return (
@@ -110,6 +116,7 @@ const DownloadModal = ({ url, onClose, tags = [] }) => {
               <div className="flex items-center flex-wrap gap-x-2 gap-y-2 overflow-y-scroll max-h-[40%] sm:max-h-[55%] md:max-h-[80%] lg:max-h-[90%]">
                 {tags.map((tag, index) => (
                   <button
+                    onClick={() => handleSearch(tag)}
                     key={index}
                     className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30"
                   >

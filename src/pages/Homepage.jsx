@@ -28,7 +28,7 @@ const Homepage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
-  const { images } = useContext(ImagesContext);
+  const { setSearchQuery } = useContext(ImagesContext);
   const [showLeftButton, setShowLeftButton] = useState(false);
   const scrollRef = useRef(null);
   const [modalData, setModalData] = useState(null);
@@ -105,6 +105,9 @@ const Homepage = () => {
 
   const categories = [
     "All",
+    "AI",
+    "sports",
+    "fintech",
     "AI and ML",
     "Climate Tech",
     "Commerce & Retail",
@@ -123,6 +126,10 @@ const Homepage = () => {
   const handleRedirectLono = () => {
     window.location.href =
       "https://apps.apple.com/in/app/lono-ai-reel-video-editor/id1632742723";
+  };
+
+  const handleButtonClick = (cat) => {
+    setSearchQuery(cat); // Update the search query with the current category
   };
 
   return (
@@ -185,7 +192,7 @@ const Homepage = () => {
                     <Tool title="AI Caption Writer" image={aiCaptionWriter} />
                   </div>
                   <div className="cursor-pointer" onClick={handleRedirectLono}>
-                    <Tool title="Bulk Editor" image={bulkEditor} />
+                    <Tool title="Batch Editor" image={bulkEditor} />
                   </div>
                 </div>
               </Marquee>
@@ -229,7 +236,7 @@ const Homepage = () => {
               {categories.map((cat, index) => (
                 <button
                   key={index}
-                  onClick={() => handleCategoryChange(cat)}
+                  onClick={() => handleButtonClick(cat)}
                   className={`px-4 py-0.5 bg-black border whitespace-nowrap ${
                     category === cat
                       ? "bg-white text-black opacity-85"
@@ -411,3 +418,64 @@ const Homepage = () => {
 };
 
 export default Homepage;
+
+// {isLoading ? (
+//   <Masonry
+//     columns={{ xs: 1, sm: 2, md: 3 }}
+//     spacing={2}
+//     className="w-full opacity-50 mt-8 mb-24"
+//   >
+//     {displayedImages.map((_, index) => (
+//       <Skeleton
+//         key={index}
+//         variant="rectangular"
+//         animation="wave"
+//         sx={{
+//           bgcolor: ["grey.700", "grey.800", "grey.900"][index % 3],
+//           height: `${200 + (index % 4) * 50}px`, // Dynamic heights
+//           borderRadius: "0.25rem",
+//           mb: 2,
+//         }}
+//       />
+//     ))}
+//   </Masonry>
+// ) : (
+//   <div className="mt-8">
+//     <Masonry columns={{ xs: 1, sm: 2, md: 3 }} spacing={2}>
+//       {displayedImages.map((image, index) => (
+//         <div
+//           key={index}
+//           className="relative group hover:shadow-lg transition duration-200 ease-in-out"
+//           onClick={() => setOpenModal(image.downloadURL, image.tags)} // Open modal on image click
+//           style={{ cursor: "pointer" }}
+//         >
+//           <img
+//             loading="eager"
+//             src={image.downloadURL}
+//             alt={`Image ${index + 1}`}
+//             className="w-full h-auto rounded-sm"
+//             style={{ display: "block", borderRadius: "0.25rem" }}
+//           />
+//           <div
+//             className="absolute bottom-2 left-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
+//             onClick={(e) => {
+//               e.stopPropagation(); // Prevent image click from triggering
+//               handleDownload(image.downloadURL); // Handle download action
+//             }}
+//           >
+//             <SaveAltIcon className="cursor-pointer text-white" />
+//           </div>
+//           <div
+//             className="absolute bottom-2 right-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
+//             onClick={(e) => {
+//               e.stopPropagation(); // Prevent image click from triggering
+//               handleShare(image.downloadURL); // Handle share action
+//             }}
+//           >
+//             <ShareSharpIcon className="cursor-pointer text-white" />
+//           </div>
+//         </div>
+//       ))}
+//     </Masonry>
+//   </div>
+// )}

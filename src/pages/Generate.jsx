@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import BrowserUpdatedIcon from "@mui/icons-material/BrowserUpdated";
 import ImageIcon from "@mui/icons-material/Image";
 import downloadIcon from "../assets/downloadIcon.png";
@@ -10,6 +10,8 @@ const Generate = () => {
   const [prompt, setPrompt] = useState("");
   const [selectedFormat, setSelectedFormat] = useState("option1");
   const [selectedStyle, setSelectedStyle] = useState("illustration");
+  const [loading, setLoading] = useState(false); // New state for loading
+  const [generatedImages, setGeneratedImages] = useState([]);
 
   const stylePredefinedStrings = {
     illustration:
@@ -50,10 +52,11 @@ const Generate = () => {
   };
 
   const generateImage = async () => {
+    setLoading(true); // Set loading to true
     const url = "https://api.getimg.ai/v1/flux-schnell/text-to-image";
     const apiKey =
       "key-3kGXa8tdB06z9j7dJ9LypacAAM4598Tsa8rlZzKCNplyIaKPoMBy1GzYAJwRjUqg7xyjujFiBhrCaRftM16xTjmRKEggGB0O"; // Replace with your actual API key
-
+    // const apiKey = "hello-world";
     const seed = Math.floor(Math.random() * 100) + 1; // Random seed between 1 and 100
     const steps = Math.floor(Math.random() * 4) + 2; // Random steps between 2 and 5
 
@@ -85,18 +88,31 @@ const Generate = () => {
       }
 
       const data = await response.json();
-
-      console.log(data);
-
-      // Assuming the image URL is in `data.url`
       const generatedImageUrl = data.url;
 
       // Update the state with the generated image URL
       setImageUrl(generatedImageUrl);
+
+      // Add the new image to the list of generated images and store in localStorage
+      setGeneratedImages((prevImages) => {
+        const updatedImages = [...prevImages, generatedImageUrl];
+        localStorage.setItem("generatedImages", JSON.stringify(updatedImages));
+        return updatedImages;
+      });
     } catch (error) {
       console.error("Error generating image:", error);
+    } finally {
+      setLoading(false); // Set loading to false when done
     }
   };
+
+  useEffect(() => {
+    // Load images from localStorage when component mounts
+    const storedImages = localStorage.getItem("generatedImages");
+    if (storedImages) {
+      setGeneratedImages(JSON.parse(storedImages));
+    }
+  }, []);
 
   return (
     <div className="mt-24 mx-10">
@@ -144,10 +160,13 @@ const Generate = () => {
             </select>
           </div>
           <button
-            className="w-full mt-5 md:mb-24 px-6 py-2.5 bg-white rounded-md"
+            className={`w-full mt-5 md:mb-24 px-6 py-2.5 rounded-md ${
+              loading ? "bg-gray-400" : "bg-white"
+            }`}
             onClick={generateImage}
+            disabled={loading}
           >
-            Generate Image
+            {loading ? "Generating..." : "Generate Image"}
           </button>
         </div>
         <hr className="md:hidden border border-[#B276AA] border-opacity-30 w-full my-10 sm:my-16" />
@@ -156,25 +175,46 @@ const Generate = () => {
 
         {/* Right side: Blank canvas for generated image */}
         <div className="section-with-dots mb-24 relative w-[100%] md:w-[50%] flex items-center justify-center rounded-md">
-          <div className="w-full h-[350px] flex items-center justify-center">
-            {/* This is where the generated image would be displayed */}
+          <div className="w-full h-[350px] flex items-center justify-center relative">
+            {/* Display loading bar */}
+            {loading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-[#00000066] z-10">
+                <div className="relative w-full max-w-xs h-6 bg-gray-300 rounded-sm">
+                  <div className="absolute top-0 left-0 h-full bg-[#B276AA] rounded-sm animate-load-bar"></div>
+                </div>
+              </div>
+            )}
             {imageUrl ? (
               <img
                 src={imageUrl}
                 alt="Generated"
-                className="w-full h-full object-contain"
+                className="object-contain w-full h-full rounded-md"
               />
             ) : (
-              <p className="text-gray-500 mx-[5%] text-center pt-2.5 pb-1 w-full bg-[#161616]">
-                Generated image will appear here
-              </p>
+              !loading && (
+                <div className="flex flex-col items-center justify-center h-full">
+                  <p className="text-center text-white">
+                    Image will appear here...
+                  </p>
+                </div>
+              )
             )}
           </div>
-          {imageUrl && (
-            <div className="cursor-pointer absolute top-4 right-4 bg-[#1D1D1D] rounded-md py-3 px-3">
-              <img src={downloadIcon} alt="Download" className="w-4" />
+        </div>
+      </div>
+
+      <div className="mb-24">
+        <h2 className="text-white text-lg mb-4">Generated Images</h2>
+        <div className="flex flex-wrap gap-4">
+          {generatedImages.map((image, index) => (
+            <div key={index} className="w-1/2 sm:w-1/3 lg:w-1/4 p-2">
+              <img
+                src={image}
+                alt={`Generated ${index}`}
+                className="w-full h-auto rounded-md"
+              />
             </div>
-          )}
+          ))}
         </div>
       </div>
     </div>
