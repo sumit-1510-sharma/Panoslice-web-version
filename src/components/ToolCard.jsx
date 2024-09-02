@@ -21,8 +21,13 @@ const ToolCard = ({ title, media, mediaType }) => {
           />
         )}
       </div>
-      <div className="absolute bottom-0 h-[18%] pb-0.5 bg-black border border-b-[#B276AA] border-x-[#B276AA] border-t-transparent border-opacity-25 w-full text-center bg-opacity-75 flex items-center justify-center">
+      <div className="absolute bottom-0 h-[42px] pb-0.5 bg-black border border-b-[#B276AA] border-x-[#B276AA] border-t-transparent border-opacity-25 w-full text-center bg-opacity-75 flex items-center justify-center">
         <h2 className="font-semibold text-sm">{title}</h2>
+      </div>
+      <div className="absolute h-[42px] pb-0.5 w-full text-center flex items-center justify-center">
+        <div className="w-[98%] rounded-md py-1.5 bg-white">
+          <h2 className="text-black font-semibold text-sm">Try App</h2>
+        </div>
       </div>
     </div>
   );

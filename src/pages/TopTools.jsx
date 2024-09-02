@@ -69,7 +69,7 @@ const TopTools = () => {
       {/* Tools gallery */}
       <div
         ref={toolsGalleryRef}
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 mt-8 mb-24"
+        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-y-20 gap-x-5 mt-8 mb-32"
       >
         <div onClick={handleRedirectPanoslice}>
           <ToolCard title={"AI Carousel Maker"} media={aiCarouselMaker} />

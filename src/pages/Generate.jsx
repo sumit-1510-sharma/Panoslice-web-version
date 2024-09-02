@@ -124,7 +124,7 @@ const Generate = () => {
         {/* Left side: Text area for input */}
         <div className="w-[100%] md:w-[40%]">
           <textarea
-            className="w-full text-white h-60 p-4 bg-[#343434] rounded-md resize-y focus:outline-none"
+            className="w-full text-white h-32 sm:h-44 md:h-60 p-4 bg-[#343434] rounded-md resize-y focus:outline-none"
             placeholder="Enter your prompt here..."
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}

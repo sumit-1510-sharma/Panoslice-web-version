@@ -60,9 +60,6 @@ const Homepage = () => {
     fetchAIAndMLCollection();
   }, []);
 
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  };
   const handleScroll = (direction) => {
     if (scrollRef.current) {
       if (direction === "left") {
@@ -91,16 +88,23 @@ const Homepage = () => {
     document.body.removeChild(link);
   };
 
-  const handleShare = (url) => {
-    // Copy the URL to the clipboard
-    navigator.clipboard
-      .writeText(url)
-      .then(() => {
-        alert("Link copied to clipboard!");
-      })
-      .catch((err) => {
-        console.error("Failed to copy: ", err);
-      });
+  // const handleShare = (url) => {
+  //   // Copy the URL to the clipboard
+  //   navigator.clipboard
+  //     .writeText(url)
+  //     .then(() => {
+  //       alert("Link copied to clipboard!");
+  //     })
+  //     .catch((err) => {
+  //       console.error("Failed to copy: ", err);
+  //     });
+  // };
+
+  const handleShare = (imageId) => {
+    const url = `${window.location.origin}/gallery?imageId=${imageId}`;
+    navigator.clipboard.writeText(url).then(() => {
+      alert("Image link copied to clipboard!");
+    });
   };
 
   const categories = [
@@ -143,7 +147,7 @@ const Homepage = () => {
             >
               Top AI Tools:
             </p>
-            <div className="flex items-center w-[147px] sm:w-[247px] md:w-[347px] lg:w-[495px]">
+            <div className="flex items-center w-[145px] sm:w-[245px] md:w-[345px] lg:w-[492px]">
               <Marquee pauseOnHover={true} speed={27}>
                 <div className="flex items-center space-x-4 mx-2">
                   <div
@@ -237,10 +241,10 @@ const Homepage = () => {
                 <button
                   key={index}
                   onClick={() => handleButtonClick(cat)}
-                  className={`px-4 py-0.5 bg-black border whitespace-nowrap ${
+                  className={`px-4 py-0.5 border whitespace-nowrap ${
                     category === cat
                       ? "bg-white text-black opacity-85"
-                      : "bg-black text-white opacity-75"
+                      : "text-white opacity-75"
                   } rounded-full`}
                 >
                   {cat}
@@ -395,7 +399,7 @@ const Homepage = () => {
                   className="absolute bottom-2 right-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
                   onClick={(e) => {
                     e.stopPropagation(); // Prevent image click from triggering
-                    handleShare(image.downloadURL); // Handle share action
+                    handleShare(image.imageId); // Handle share action
                   }}
                 >
                   <ShareSharpIcon className="cursor-pointer text-white" />

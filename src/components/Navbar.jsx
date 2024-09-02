@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
@@ -13,6 +13,8 @@ const Navbar = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [currentValue, setCurrentValue] = useState(""); // State to manage input value
   const dropdownRef = useRef(null);
+  const location = useLocation();
+  const hideSearchBar = location.pathname === "/generate";
 
   useEffect(() => {
     // Function to handle clicks outside the dropdown
@@ -36,7 +38,7 @@ const Navbar = () => {
       navigate(`/search/${searchQuery}`);
       setShowDropdown(false); // Hide dropdown on search
     }
-  }, [searchQuery, navigate]);
+  }, [searchQuery]);
 
   const handleSearch = (value) => {
     setCurrentValue(value);
@@ -56,179 +58,181 @@ const Navbar = () => {
           alt="Logo"
         />
 
-        <div className="relative flex items-center justify-left w-[36%] sm:w-[30%] border border-[#707070] rounded-md px-1 ml-4 md:ml-[4%] lg:ml-[20%]">
-          <SearchIcon />
-          <input
-            className="bg-[#1D1D1D] text-white text-sm opacity-70 focus:outline-none p-1 max-w-[75%]"
-            type="text"
-            placeholder="Search by tag"
-            value={currentValue} // Set input value to currentValue
-            onChange={(e) => {
-              // Update currentValue on change
-              setCurrentValue(e.target.value);
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                handleSearch(currentValue); // Optional: Hide dropdown on search
-              }
-            }}
-            onClick={() => setShowDropdown(!showDropdown)}
-            // Optional: Hide dropdown on blur
-          />
+        {!hideSearchBar && (
+          <div className="relative flex items-center justify-left w-[36%] sm:w-[30%] border border-[#707070] rounded-md px-1 ml-4 md:ml-[4%] lg:ml-[20%]">
+            <SearchIcon />
+            <input
+              className="bg-[#1D1D1D] text-white text-sm opacity-70 focus:outline-none p-1 max-w-[75%]"
+              type="text"
+              placeholder="Search by tag"
+              value={currentValue} // Set input value to currentValue
+              onChange={(e) => {
+                // Update currentValue on change
+                setCurrentValue(e.target.value);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSearch(currentValue); // Optional: Hide dropdown on search
+                }
+              }}
+              onClick={() => setShowDropdown(!showDropdown)}
+              // Optional: Hide dropdown on blur
+            />
 
-          {/* Dropdown code remains unchanged */}
+            {/* Dropdown code remains unchanged */}
 
-          {showDropdown && (
-            <div
-              ref={dropdownRef}
-              className="absolute flex flex-col items-start justify-between space-y-4 bg-[#161616] mx-2 w-[260px] sm:w-[400px] md:w-[500px] lg:w-[600px] top-10 -left-20 rounded-md border border-[#707070] p-4"
-            >
-              <div className="flex flex-col items-start space-y-4">
-                <h4 className="text-sm">Popular Searches</h4>
-                <div className="relative">
-                  <button className="absolute -left-3">
-                    <ArrowLeftIcon />
-                  </button>
-                  <button className="absolute -right-6">
-                    <ArrowRightIcon />
-                  </button>
-                  <div
-                    id="popular-searches"
-                    className="flex items-center w-[200px] sm:w-[330px] md:w-[430px] lg:w-[530px] scrollbar-hide overflow-x-scroll ml-2.5"
-                  >
-                    <button
-                      onClick={() => handleSearch("Nature")}
-                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
-                    >
-                      Nature
+            {showDropdown && (
+              <div
+                ref={dropdownRef}
+                className="absolute flex flex-col items-start justify-between space-y-4 bg-[#161616] mx-2 w-[260px] sm:w-[400px] md:w-[500px] lg:w-[600px] top-10 -left-20 rounded-md border border-[#707070] p-4"
+              >
+                <div className="flex flex-col items-start space-y-4">
+                  <h4 className="text-sm">Popular Searches</h4>
+                  <div className="relative">
+                    <button className="absolute -left-3">
+                      <ArrowLeftIcon />
                     </button>
-                    <button
-                      onClick={() => handleSearch("Cyberpunk")}
-                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
-                    >
-                      Cyberpunk
+                    <button className="absolute -right-6">
+                      <ArrowRightIcon />
                     </button>
-                    <button
-                      onClick={() => handleSearch("CyberSecurity")}
-                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                    <div
+                      id="popular-searches"
+                      className="flex items-center w-[200px] sm:w-[330px] md:w-[430px] lg:w-[530px] scrollbar-hide overflow-x-scroll ml-2.5"
                     >
-                      CyberSecurity
-                    </button>
-                    <button
-                      onClick={() => handleSearch("AI")}
-                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
-                    >
-                      AI
-                    </button>
-                    <button
-                      onClick={() => handleSearch("HR")}
-                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
-                    >
-                      HR
-                    </button>
-                    <button
-                      onClick={() => handleSearch("Sports")}
-                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
-                    >
-                      Sports
-                    </button>
-                    <button
-                      onClick={() => handleSearch("Sports")}
-                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
-                    >
-                      Sports
-                    </button>
-                    <button
-                      onClick={() => handleSearch("Sports")}
-                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
-                    >
-                      Sports
-                    </button>
-                    <button
-                      onClick={() => handleSearch("Sports")}
-                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
-                    >
-                      Sports
-                    </button>
+                      <button
+                        onClick={() => handleSearch("Nature")}
+                        className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                      >
+                        Nature
+                      </button>
+                      <button
+                        onClick={() => handleSearch("Cyberpunk")}
+                        className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                      >
+                        Cyberpunk
+                      </button>
+                      <button
+                        onClick={() => handleSearch("CyberSecurity")}
+                        className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                      >
+                        CyberSecurity
+                      </button>
+                      <button
+                        onClick={() => handleSearch("AI")}
+                        className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                      >
+                        AI
+                      </button>
+                      <button
+                        onClick={() => handleSearch("HR")}
+                        className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                      >
+                        HR
+                      </button>
+                      <button
+                        onClick={() => handleSearch("Sports")}
+                        className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                      >
+                        Sports
+                      </button>
+                      <button
+                        onClick={() => handleSearch("Sports")}
+                        className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                      >
+                        Sports
+                      </button>
+                      <button
+                        onClick={() => handleSearch("Sports")}
+                        className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                      >
+                        Sports
+                      </button>
+                      <button
+                        onClick={() => handleSearch("Sports")}
+                        className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                      >
+                        Sports
+                      </button>
 
-                    {/* Add more tags as needed */}
+                      {/* Add more tags as needed */}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex flex-col items-start space-y-4">
+                  <h4 className="text-sm">Popular Categories</h4>
+                  <div className="relative">
+                    <button className="absolute -left-3">
+                      <ArrowLeftIcon />
+                    </button>
+                    <button className="absolute -right-6">
+                      <ArrowRightIcon />
+                    </button>
+                    <div
+                      id="popular-searches"
+                      className="flex items-center w-[200px] sm:w-[330px] md:w-[430px] lg:w-[530px] scrollbar-hide overflow-x-scroll ml-2.5"
+                    >
+                      <button
+                        onClick={() => handleSearch("Nature")}
+                        className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                      >
+                        Nature
+                      </button>
+                      <button
+                        onClick={() => handleSearch("Cyberpunk")}
+                        className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                      >
+                        Cyberpunk
+                      </button>
+                      <button
+                        onClick={() => handleSearch("CyberSecurity")}
+                        className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                      >
+                        CyberSecurity
+                      </button>
+                      <button
+                        onClick={() => handleSearch("AI")}
+                        className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                      >
+                        AI
+                      </button>
+                      <button
+                        onClick={() => handleSearch("HR")}
+                        className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                      >
+                        HR
+                      </button>
+                      <button
+                        onClick={() => handleSearch("Sports")}
+                        className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                      >
+                        Sports
+                      </button>
+                      <button
+                        onClick={() => handleSearch("Sports")}
+                        className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                      >
+                        Sports
+                      </button>
+                      <button
+                        onClick={() => handleSearch("Sports")}
+                        className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                      >
+                        Sports
+                      </button>
+                      <button
+                        onClick={() => handleSearch("Sports")}
+                        className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
+                      >
+                        Sports
+                      </button>
+                      {/* Add more tags as needed */}
+                    </div>
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col items-start space-y-4">
-                <h4 className="text-sm">Popular Categories</h4>
-                <div className="relative">
-                  <button className="absolute -left-3">
-                    <ArrowLeftIcon />
-                  </button>
-                  <button className="absolute -right-6">
-                    <ArrowRightIcon />
-                  </button>
-                  <div
-                    id="popular-searches"
-                    className="flex items-center w-[200px] sm:w-[330px] md:w-[430px] lg:w-[530px] scrollbar-hide overflow-x-scroll ml-2.5"
-                  >
-                    <button
-                      onClick={() => handleSearch("Nature")}
-                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
-                    >
-                      Nature
-                    </button>
-                    <button
-                      onClick={() => handleSearch("Cyberpunk")}
-                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
-                    >
-                      Cyberpunk
-                    </button>
-                    <button
-                      onClick={() => handleSearch("CyberSecurity")}
-                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
-                    >
-                      CyberSecurity
-                    </button>
-                    <button
-                      onClick={() => handleSearch("AI")}
-                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
-                    >
-                      AI
-                    </button>
-                    <button
-                      onClick={() => handleSearch("HR")}
-                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
-                    >
-                      HR
-                    </button>
-                    <button
-                      onClick={() => handleSearch("Sports")}
-                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
-                    >
-                      Sports
-                    </button>
-                    <button
-                      onClick={() => handleSearch("Sports")}
-                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
-                    >
-                      Sports
-                    </button>
-                    <button
-                      onClick={() => handleSearch("Sports")}
-                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
-                    >
-                      Sports
-                    </button>
-                    <button
-                      onClick={() => handleSearch("Sports")}
-                      className="bg-[#161616] rounded-full text-xs px-4 py-1 border border-white border-opacity-30 mx-2"
-                    >
-                      Sports
-                    </button>
-                    {/* Add more tags as needed */}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
 
         <div className="flex items-center space-x-6 mr-4">
           <button
