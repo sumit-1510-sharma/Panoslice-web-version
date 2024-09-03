@@ -22,6 +22,8 @@ import "./Homepage.css";
 import { db } from "../firebase"; // Adjust this import path to your firebase config file
 import { collection, getDocs } from "firebase/firestore";
 import MuiAlert from "@mui/material/Alert";
+import Masonry from "@mui/lab/Masonry";
+import { motion } from "framer-motion";
 
 const Homepage = () => {
   const [category, setCategory] = useState("All");
@@ -292,152 +294,58 @@ const Homepage = () => {
         </div>
 
         {isLoading ? (
-          <div className="w-full opacity-50 columns-1 sm:columns-2 md:columns-3 gap-5 mt-8 mb-24">
-            <Skeleton
-              variant="rectangular"
-              animation="wave"
-              sx={{ bgcolor: "grey.700" }}
-              height={200}
-              className="mb-5 rounded-sm"
-            />
-            <Skeleton
-              variant="rectangular"
-              animation="wave"
-              sx={{ bgcolor: "grey.800" }}
-              height={300}
-              className="mb-5 rounded-sm"
-            />
-            <Skeleton
-              variant="rectangular"
-              animation="wave"
-              sx={{ bgcolor: "grey.900" }}
-              height={400}
-              className="mb-5 rounded-sm"
-            />
-            <Skeleton
-              variant="rectangular"
-              animation="wave"
-              sx={{ bgcolor: "grey.800" }}
-              height={300}
-              className="mb-5 rounded-sm"
-            />
-            <Skeleton
-              variant="rectangular"
-              animation="wave"
-              sx={{ bgcolor: "grey.900" }}
-              height={400}
-              className="mb-5 rounded-sm"
-            />
-            <Skeleton
-              variant="rectangular"
-              animation="wave"
-              sx={{ bgcolor: "grey.800" }}
-              height={200}
-              className="mb-5 rounded-sm"
-            />
-            <Skeleton
-              variant="rectangular"
-              animation="wave"
-              sx={{ bgcolor: "grey.800" }}
-              height={250}
-              className="mb-5 rounded-sm"
-            />
-            <Skeleton
-              variant="rectangular"
-              animation="wave"
-              sx={{ bgcolor: "grey.900" }}
-              height={300}
-              className="mb-5 rounded-sm"
-            />
-            <Skeleton
-              variant="rectangular"
-              animation="wave"
-              sx={{ bgcolor: "grey.800" }}
-              height={350}
-              className="mb-5 rounded-sm"
-            />
-            <Skeleton
-              variant="rectangular"
-              animation="wave"
-              sx={{ bgcolor: "grey.700" }}
-              height={200}
-              className="mb-5 rounded-sm"
-            />
-            <Skeleton
-              variant="rectangular"
-              animation="wave"
-              sx={{ bgcolor: "grey.800" }}
-              height={300}
-              className="mb-5 rounded-sm"
-            />
-            <Skeleton
-              variant="rectangular"
-              animation="wave"
-              sx={{ bgcolor: "grey.900" }}
-              height={400}
-              className="mb-5 rounded-sm"
-            />
-            <Skeleton
-              variant="rectangular"
-              animation="wave"
-              sx={{ bgcolor: "grey.800" }}
-              height={300}
-              className="mb-5 rounded-sm"
-            />
-            <Skeleton
-              variant="rectangular"
-              animation="wave"
-              sx={{ bgcolor: "grey.900" }}
-              height={400}
-              className="mb-5 rounded-sm"
-            />
-            <Skeleton
-              variant="rectangular"
-              animation="wave"
-              sx={{ bgcolor: "grey.800" }}
-              height={200}
-              className="mb-5 rounded-sm"
-            />
-          </div>
-        ) : (
-          <div className="w-full columns-1 sm:columns-2 md:columns-3 gap-5 mt-8 mb-24">
-            {displayedImages.map((image, index) => (
-              <div
+          <Masonry columns={{ xs: 1, sm: 2, md: 3 }} spacing={2}>
+            {Array.from(new Array(15)).map((_, index) => (
+              <Skeleton
                 key={index}
-                className="cursor-pointer mb-5 relative group hover:shadow-lg transition duration-200 ease-in-out"
+                variant="rectangular"
+                animation="wave"
+                sx={{ bgcolor: "grey.700" }}
+                height={index % 2 === 0 ? 200 : 300} // Vary heights for visual interest
+                className="rounded-sm"
+              />
+            ))}
+          </Masonry>
+        ) : (
+          <Masonry columns={{ xs: 1, sm: 2, md: 3 }} spacing={2}>
+            {displayedImages.map((image, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="relative group"
               >
                 <img
                   loading="eager"
                   src={image.downloadURL}
                   alt={`Image ${index + 1}`}
-                  className="w-full h-auto rounded-sm"
-                  onClick={() => setOpenModal(image)} // Open modal on image click
+                  className="w-full h-auto rounded-sm cursor-pointer"
+                  onClick={() => setOpenModal(image)}
                 />
-
                 {/* Download button, only visible on hover */}
                 <div
                   className="absolute bottom-2 left-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
                   onClick={(e) => {
                     e.stopPropagation(); // Prevent image click from triggering
-                    handleDownload(image.downloadURL, `${image.imageId}.webp`); // Handle download action
+                    handleDownload(image.downloadURL, `${image.imageId}.webp`);
                   }}
                 >
                   <SaveAltIcon className="cursor-pointer text-white" />
                 </div>
-
                 {/* Share button, only visible on hover */}
                 <div
                   className="absolute bottom-2 right-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
                   onClick={(e) => {
                     e.stopPropagation(); // Prevent image click from triggering
-                    handleShare(image.imageId); // Handle share action
+                    handleShare(image.imageId);
                   }}
                 >
                   <ShareSharpIcon className="cursor-pointer text-white" />
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </Masonry>
         )}
       </div>
 

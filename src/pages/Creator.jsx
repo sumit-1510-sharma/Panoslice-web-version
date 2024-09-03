@@ -56,7 +56,7 @@ const Creator = () => {
         <p className="max-w-[85%] opacity-80 text-sm">
           Caffeine powered marketing generalist and creative enabler
         </p>
-        <div className="flex items-center opacity-90 space-x-2.5">
+        <div className="cursor-pointer flex items-center opacity-90 space-x-2.5">
           <InstagramIcon onClick={handleInstagramIconClick} fontSize="small" />
           <LinkedInIcon onClick={handleLinkedinIconClick} fontSize="small" />
           <XIcon onClick={handleXIconClick} fontSize="small" />

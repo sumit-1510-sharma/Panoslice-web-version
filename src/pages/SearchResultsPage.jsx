@@ -8,6 +8,8 @@ import ShareSharpIcon from "@mui/icons-material/ShareSharp";
 import DownloadModal from "../components/DownloadModal";
 import { Snackbar } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
+import Masonry from "@mui/lab/Masonry";
+import { motion } from "framer-motion";
 
 const SearchResultsPage = () => {
   const { images, searchQuery, setSearchQuery } = useContext(ImagesContext);
@@ -162,13 +164,16 @@ const SearchResultsPage = () => {
       </div>
 
       {loading ? (
-        <div className="">Loading...</div>
+        <div className="text-center text-white">Loading...</div>
       ) : (
-        <div className="w-full columns-1 sm:columns-2 md:columns-3 gap-5 mt-8 mb-24">
+        <Masonry columns={{ xs: 1, sm: 2, md: 3 }} spacing={2}>
           {images.map((image, index) => (
-            <div
+            <motion.div
               key={index}
-              className="cursor-pointer mb-5 relative group hover:shadow-lg transition duration-200 ease-in-out"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="relative group cursor-pointer mb-5"
             >
               <img
                 loading="lazy"
@@ -177,28 +182,29 @@ const SearchResultsPage = () => {
                 className="w-full h-auto rounded-sm"
                 onClick={() => setOpenModal(image.downloadURL, image.tags)}
               />
+              {/* Download button, only visible on hover */}
               <div
                 className="absolute bottom-2 left-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
                 onClick={(e) => {
-                  e.stopPropagation();
+                  e.stopPropagation(); // Prevent image click from triggering
                   handleDownload(image.downloadURL, `${image.imageId}.webp`);
                 }}
               >
                 <SaveAltIcon className="cursor-pointer text-white" />
               </div>
-
+              {/* Share button, only visible on hover */}
               <div
                 className="absolute bottom-2 right-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
                 onClick={(e) => {
-                  e.stopPropagation();
+                  e.stopPropagation(); // Prevent image click from triggering
                   handleShare(image.imageId);
                 }}
               >
                 <ShareSharpIcon className="cursor-pointer text-white" />
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </Masonry>
       )}
 
       <Snackbar
