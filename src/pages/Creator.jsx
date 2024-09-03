@@ -10,33 +10,42 @@ import XIcon from "@mui/icons-material/X";
 
 const Creator = () => {
   const [images, setImages] = useState([]);
-  const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   const fetchImages = async () => {
-  //     try {
-  //       const q = query(
-  //         collection(db, "AI and ML"), // Collection name in Firestore
-  //         where("creator", "==", "Dipin Chopra") // Replace with dynamic creator if needed
-  //       );
-  //       const querySnapshot = await getDocs(q);
-  //       const fetchedImages = querySnapshot.docs.map(
-  //         (doc) => doc.data().downloadURL
-  //       ); // Assumes each document has a `url` field
-  //       setImages(fetchedImages);
-  //     } catch (error) {
-  //       console.error("Error fetching images: ", error);
-  //     }
-  //   };
+  useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        const q = query(
+          collection(db, "AI and ML"), // Collection name in Firestore
+          where("creator", "==", "Dipin Chopra") // Replace with dynamic creator if needed
+        );
+        const querySnapshot = await getDocs(q);
+        const fetchedImages = querySnapshot.docs.map(
+          (doc) => doc.data().downloadURL
+        ); // Assumes each document has a `url` field
+        setImages(fetchedImages);
+      } catch (error) {
+        console.error("Error fetching images: ", error);
+      }
+    };
 
-  //   fetchImages();
-  // }, []);
+    fetchImages();
+  }, []);
+
+  const handleInstagramIconClick = () => {
+    window.location.href = "https://instagram.com/redeyereduction_";
+  };
+  const handleLinkedinIconClick = () => {
+    window.location.href = "https://www.linkedin.com/in/dipinkumarchopra/";
+  };
+  const handleXIconClick = () => {
+    window.location.href = "https://twitter.com/redeyereduction";
+  };
 
   return (
     <div className="flex flex-col items-center mx-12 sm:mx-16 mt-28 text-white">
       <div className="w-full flex">
         <div
-          onClick={() => navigate("/upload")}
+          // onClick={() => navigate("/upload")}
           className="w-full flex flex-col items-center space-y-4 mb-12"
         >
           <img
@@ -50,19 +59,14 @@ const Creator = () => {
           </p>
           <div className="flex items-center opacity-90 space-x-2.5">
             <InstagramIcon
-              onClick={() => navigate("https://instagram.com/redeyereduction_")}
+              onClick={handleInstagramIconClick}
               fontSize="small"
             />
             <LinkedInIcon
-              onClick={() =>
-                navigate("https://www.linkedin.com/in/dipinkumarchopra/")
-              }
+              onClick={() => (onClick = { handleLinkedinIconClick })}
               fontSize="small"
             />
-            <XIcon
-              onClick={() => navigate("https://twitter.com/redeyereduction")}
-              fontSize="small"
-            />
+            <XIcon onClick={handleXIconClick} fontSize="small" />
           </div>
         </div>
       </div>

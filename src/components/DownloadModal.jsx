@@ -106,7 +106,7 @@ const DownloadModal = ({ url, onClose, tags = [] }) => {
                 src={url}
                 alt="Creator"
               />
-              <p>Sumit Sharma</p>
+              <p>Dipin Chopra</p>
             </div>
           </div>
 
