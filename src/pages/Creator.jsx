@@ -46,25 +46,20 @@ const Creator = () => {
 
   return (
     <div className="flex flex-col items-center mx-12 sm:mx-16 mt-28 text-white">
-      <div className="w-full flex">
-        <div className="w-full flex flex-col items-center space-y-4 mb-12">
-          <img
-            className="object-cover rounded-full w-14 h-14"
-            src={creatorImage}
-            alt=""
-          />
-          <h2 className="text-4xl font-semibold">Dipin Chopra</h2>
-          <p className="max-w-[85%] opacity-80 text-sm">
-            Caffeine powered marketing generalist and creative enabler
-          </p>
-          <div className="flex items-center opacity-90 space-x-2.5">
-            <InstagramIcon
-              onClick={handleInstagramIconClick}
-              fontSize="small"
-            />
-            <LinkedInIcon onClick={handleLinkedinIconClick} fontSize="small" />
-            <XIcon onClick={handleXIconClick} fontSize="small" />
-          </div>
+      <div className="w-full flex flex-col items-center space-y-4 mb-12">
+        <img
+          className="object-cover rounded-full w-14 h-14"
+          src={creatorImage}
+          alt=""
+        />
+        <h2 className="text-4xl font-semibold">Dipin Chopra</h2>
+        <p className="max-w-[85%] opacity-80 text-sm">
+          Caffeine powered marketing generalist and creative enabler
+        </p>
+        <div className="flex items-center opacity-90 space-x-2.5">
+          <InstagramIcon onClick={handleInstagramIconClick} fontSize="small" />
+          <LinkedInIcon onClick={handleLinkedinIconClick} fontSize="small" />
+          <XIcon onClick={handleXIconClick} fontSize="small" />
         </div>
       </div>
 
@@ -72,37 +67,33 @@ const Creator = () => {
         <p>Browse Images</p>
       </div>
 
-      {loading ? (
-        <Masonry columns={{ xs: 1, sm: 2, md: 3 }} spacing={2}>
-          {Array.from(new Array(6)).map((_, index) => (
-            <Skeleton
-              key={index}
-              variant="rectangular"
-              width="100%"
-              height={250}
-              className="mb-5"
-            />
-          ))}
-        </Masonry>
-      ) : (
-        <Masonry columns={{ xs: 1, sm: 2, md: 3 }} spacing={2}>
-          {images.map((imageUrl, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="cursor-pointer relative group hover:opacity-85 transition-opacity duration-300"
-            >
-              <img
-                src={imageUrl}
-                alt=""
-                className="mb-5 border border-[#B276AA] border-opacity-25 rounded-sm"
+      <Masonry columns={{ xs: 1, sm: 2, md: 3 }} spacing={2}>
+        {loading
+          ? Array.from(new Array(6)).map((_, index) => (
+              <Skeleton
+                key={index}
+                variant="rectangular"
+                width="100%"
+                height={250}
+                className="mb-5"
               />
-            </motion.div>
-          ))}
-        </Masonry>
-      )}
+            ))
+          : images.map((imageUrl, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="masonry-item cursor-pointer relative group hover:opacity-85 transition-opacity duration-300"
+              >
+                <img
+                  src={imageUrl}
+                  alt=""
+                  className="border border-[#B276AA] border-opacity-25 rounded-sm"
+                />
+              </motion.div>
+            ))}
+      </Masonry>
     </div>
   );
 };
