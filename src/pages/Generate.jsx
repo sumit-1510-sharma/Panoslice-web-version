@@ -4,6 +4,7 @@ import ImageIcon from "@mui/icons-material/Image";
 import downloadIcon from "../assets/downloadIcon.png";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import "./Generate.css";
+import { Alert, Snackbar } from "@mui/material";
 
 const Generate = () => {
   const [imageUrl, setImageUrl] = useState("");
@@ -12,6 +13,8 @@ const Generate = () => {
   const [selectedStyle, setSelectedStyle] = useState("illustration");
   const [loading, setLoading] = useState(false); // New state for loading
   const [generatedImages, setGeneratedImages] = useState([]);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const stylePredefinedStrings = {
     illustration:
@@ -51,18 +54,26 @@ const Generate = () => {
     }
   };
 
+  const clearExpiredImages = () => {
+    const storedImages =
+      JSON.parse(localStorage.getItem("generatedImages")) || [];
+    const currentTime = Date.now();
+    const filteredImages = storedImages.filter((image) => {
+      return currentTime - image.timestamp < 2 * 60 * 60 * 1000; // 2 hours
+    });
+    localStorage.setItem("generatedImages", JSON.stringify(filteredImages));
+    setGeneratedImages(filteredImages.map((image) => image.url));
+  };
+
   const generateImage = async () => {
-    setLoading(true); // Set loading to true
+    setLoading(true);
     const url = "https://api.getimg.ai/v1/flux-schnell/text-to-image";
     const apiKey =
       "key-3kGXa8tdB06z9j7dJ9LypacAAM4598Tsa8rlZzKCNplyIaKPoMBy1GzYAJwRjUqg7xyjujFiBhrCaRftM16xTjmRKEggGB0O"; // Replace with your actual API key
-    // const apiKey = "hello-world";
-    const seed = Math.floor(Math.random() * 100) + 1; // Random seed between 1 and 100
-    const steps = Math.floor(Math.random() * 4) + 2; // Random steps between 2 and 5
 
+    const seed = Math.floor(Math.random() * 100) + 1;
+    const steps = Math.floor(Math.random() * 4) + 2;
     const { width, height } = getAspectRatioDimensions(selectedFormat);
-
-    // Append the predefined string to the prompt based on the selected style
     const appendedPrompt = `${prompt} ${stylePredefinedStrings[selectedStyle]}`;
 
     try {
@@ -84,38 +95,55 @@ const Generate = () => {
       });
 
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        throw new Error("Failed to generate image. Please try again.");
       }
 
       const data = await response.json();
       const generatedImageUrl = data.url;
 
-      // Update the state with the generated image URL
       setImageUrl(generatedImageUrl);
 
-      // Add the new image to the list of generated images and store in localStorage
+      const newImage = { url: generatedImageUrl, timestamp: Date.now() };
+
       setGeneratedImages((prevImages) => {
-        const updatedImages = [...prevImages, generatedImageUrl];
+        const updatedImages = [...prevImages, newImage];
         localStorage.setItem("generatedImages", JSON.stringify(updatedImages));
-        return updatedImages;
+        return updatedImages.map((image) => image.url);
       });
+
+      // Set a timeout to clear the image after 2 hours
+      setTimeout(clearExpiredImages, 2 * 60 * 60 * 1000); // 2 hours
     } catch (error) {
-      console.error("Error generating image:", error);
+      setSnackbarMessage(error.message);
+      setSnackbarOpen(true);
     } finally {
-      setLoading(false); // Set loading to false when done
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    // Load images from localStorage when component mounts
-    const storedImages = localStorage.getItem("generatedImages");
-    if (storedImages) {
-      setGeneratedImages(JSON.parse(storedImages));
-    }
+    clearExpiredImages(); // Clear expired images when component mounts
   }, []);
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
+  };
 
   return (
     <div className="mt-24 mx-10">
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
       <div className="flex items-center text-white mb-6 space-x-3">
         <p>Prompt</p>
         <InfoOutlinedIcon className="text-[#D398C3]" fontSize="" />
@@ -171,7 +199,7 @@ const Generate = () => {
         </div>
         <hr className="md:hidden border border-[#B276AA] border-opacity-30 w-full my-10 sm:my-16" />
 
-        <div className="hidden md:flex h-[67vh] -mt-10 border-l mx-[5%] border border-[#B276AA] border-opacity-30"></div>
+        <div className="hidden md:flex h-[470px] -mt-10 border-l mx-[5%] border border-[#B276AA] border-opacity-30"></div>
 
         {/* Right side: Blank canvas for generated image */}
         <div className="section-with-dots mb-24 relative w-[100%] md:w-[50%] flex items-center justify-center rounded-md">
@@ -207,12 +235,14 @@ const Generate = () => {
         <h2 className="text-white text-lg mb-4">Generated Images</h2>
         <div className="flex flex-wrap gap-4">
           {generatedImages.map((image, index) => (
-            <div key={index} className="w-1/2 sm:w-1/3 lg:w-1/4 p-2">
-              <img
-                src={image}
-                alt={`Generated ${index}`}
-                className="w-full h-auto rounded-md"
-              />
+            <div key={index} className="w-1/2 sm:w-1/4 md:w-1/6">
+              <a href={image} download={`generated-image-${index}.png`}>
+                <img
+                  src={image}
+                  alt={`Generated ${index}`}
+                  className="object-cover w-full h-full rounded-md"
+                />
+              </a>
             </div>
           ))}
         </div>

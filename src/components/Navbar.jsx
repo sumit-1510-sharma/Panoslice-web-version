@@ -42,7 +42,8 @@ const Navbar = () => {
 
   const handleSearch = (value) => {
     setCurrentValue(value);
-    setSearchQuery(value); // Update searchQuery in context
+    setSearchQuery(value);
+    // Update searchQuery in context
   };
 
   return (
@@ -51,6 +52,7 @@ const Navbar = () => {
         <img
           src={logo}
           onClick={() => {
+            
             navigate("/");
             window.location.reload();
           }}
@@ -67,7 +69,6 @@ const Navbar = () => {
               placeholder="Search by tag"
               value={currentValue} // Set input value to currentValue
               onChange={(e) => {
-                // Update currentValue on change
                 setCurrentValue(e.target.value);
               }}
               onKeyDown={(e) => {
@@ -234,7 +235,7 @@ const Navbar = () => {
           </div>
         )}
 
-        <div className="flex items-center space-x-6 mr-4">
+        <div className="flex items-center space-x-6 mr-4 sm:mr-8">
           <button
             onClick={() => navigate("/toptools")}
             className="flex items-center space-x-2"

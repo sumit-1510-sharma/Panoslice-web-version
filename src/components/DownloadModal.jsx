@@ -22,40 +22,46 @@ const modalStyle = {
   pr: 2,
 };
 
-const DownloadModal = ({ url, onClose, tags = [] }) => {
+const DownloadModal = ({ url, imageId, onClose, tags = [] }) => {
   const navigate = useNavigate();
   const [fitMode, setFitMode] = useState("object-contain");
   const { setSearchQuery } = useContext(ImagesContext);
 
-  const handleShare = () => {
-    navigator.clipboard
-      .writeText(url)
-      .then(() => {
-        alert("Image URL copied to clipboard!");
-      })
-      .catch((err) => {
-        console.error("Failed to copy: ", err);
-      });
+  const handleShare = (id) => {
+    console.log(id);
+    const url = `${window.location.origin}/gallery?imageId=${id}`;
+    navigator.clipboard.writeText(url).then(() => {
+      alert("Image link copied to clipboard!");
+    });
   };
 
-  const downloadImage = (url, filename = "downloaded_image.png") => {
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = filename;
-    link.style.display = "none";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+  const handleDownload = async (url, filename) => {
+    try {
+      // Fetch the image as a blob
+      const response = await fetch(url);
+      const blob = await response.blob();
 
-  const handleDownload = () => {
-    if (url) {
-      downloadImage(url, "generated_image.png");
+      // Create a temporary URL for the blob
+      const blobURL = window.URL.createObjectURL(blob);
+
+      // Create an anchor element and trigger a download
+      const link = document.createElement("a");
+      link.href = blobURL;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+
+      // Clean up
+      link.remove();
+      window.URL.revokeObjectURL(blobURL);
+    } catch (error) {
+      console.error("Error downloading the image:", error);
     }
   };
 
   const handleSearch = (value) => {
-    setSearchQuery(value); // Update searchQuery in context
+    setSearchQuery(value);
+    navigate(`/gallery/${value}`); // Update searchQuery in context
   };
 
   return (
@@ -127,21 +133,21 @@ const DownloadModal = ({ url, onClose, tags = [] }) => {
             </div>
           </div>
 
-          <div
-            onClick={handleShare}
+          {/* <div
+            onClick={handleShare(imageId)}
             className="cursor-pointer flex items-center absolute -bottom-4 right-0 text-xs sm:text-sm bg-white rounded-md text-black px-4 py-1 space-x-2"
           >
             <button>Share</button>
             <ShareSharpIcon />
-          </div>
+          </div> */}
 
-          <div
-            onClick={handleDownload}
+          {/* <div
+            onClick={handleDownload(url, "downloaded_image")}
             className="cursor-pointer flex items-center absolute -bottom-4 -left-4 text-xs sm:text-sm bg-[#1D1D1D] rounded-md border border-white border-opacity-20 text-white px-4 py-1 space-x-2"
           >
             <button>Download</button>
             <SaveAltIcon />
-          </div>
+          </div> */}
         </div>
       </Box>
     </Modal>

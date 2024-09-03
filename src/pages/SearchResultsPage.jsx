@@ -1,29 +1,34 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { ImagesContext } from "../components/ImagesContext";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import ShareSharpIcon from "@mui/icons-material/ShareSharp";
 import DownloadModal from "../components/DownloadModal";
+import { Snackbar } from "@mui/material";
+import MuiAlert from "@mui/material/Alert";
 
 const SearchResultsPage = () => {
-  const { images } = useContext(ImagesContext);
+  const { images, searchQuery, setSearchQuery } = useContext(ImagesContext);
   const { query } = useParams(); // Get the query from the URL
-  const [displayedImages, setDisplayedImages] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
+  const navigate = useNavigate(); // Use useNavigate instead of useHistory
   const [loading, setLoading] = useState(true); // Loading state to control shimmer effect
-  const imagesPerPage = 15;
   const [showLeftButton, setShowLeftButton] = useState(false);
   const scrollRef = useRef(null);
-  const [category, setCategory] = useState("All");
-  const { searchQuery, setSearchQuery } = useContext(ImagesContext);
-  const navigate = useNavigate();
-
+  const [category, setCategory] = useState(query || "All"); // Use query as initial category
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [modalData, setModalData] = useState(null);
 
   const setOpenModal = (url, tags) => {
     setModalData({ url, tags });
+  };
+
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSnackbarOpen(false);
   };
 
   const handleScroll = (direction) => {
@@ -46,20 +51,27 @@ const SearchResultsPage = () => {
 
   const handleButtonClick = (cat) => {
     setSearchQuery(cat); // Update the search query with the current category
+    navigate(`/search/${cat}`); // Update the URL with the new category
   };
 
   useEffect(() => {
     if (images.length > 0) {
-      const startIndex = (currentPage - 1) * imagesPerPage;
-      const endIndex = startIndex + imagesPerPage;
-      setDisplayedImages(images.slice(0, endIndex));
       setLoading(false); // Images are loaded, stop showing shimmer
     }
-  }, [images, currentPage]);
+  }, [images]);
 
-  const loadMoreImages = () => {
-    setCurrentPage((prevPage) => prevPage + 1);
-  };
+  useEffect(() => {
+    // Redirect to homepage on back button press
+    const handlePopState = () => {
+      navigate("/");
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [navigate]);
 
   const categories = [
     "All",
@@ -77,9 +89,35 @@ const SearchResultsPage = () => {
     "Remote Work",
   ];
 
+  const handleDownload = async (url, filename) => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobURL = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobURL;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(blobURL);
+    } catch (error) {
+      console.error("Error downloading the image:", error);
+    }
+  };
+
+  const handleShare = (imageId) => {
+    const url = `${window.location.origin}/gallery?imageId=${imageId}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setSnackbarOpen(true);
+    });
+  };
+
   return (
-    <div className="my-40 text-white mx-20">
-      <h1 className="text-5xl 2xl:text-6xl">Search Results for "{query}"</h1>
+    <div className="mt-24 md:my-28 lg:my-40 text-white mx-8 md:mx-12 lg:mx-20">
+      <h1 className="-mb-4 md:mb-12 text-2xl md:text-4xl 2xl:text-6xl">
+        Search Results for "{query}"
+      </h1>
 
       <div className="flex items-center justify-between w-[100.2%] mt-14 sticky top-[42px] sm:top-[58px] py-4 border-b border-[#B276AA] border-opacity-25 bg-[#161616] z-10">
         <div className="hidden md:flex">
@@ -123,12 +161,11 @@ const SearchResultsPage = () => {
         </div>
       </div>
 
-      {/* Show shimmer effect when loading */}
       {loading ? (
         <div className="">Loading...</div>
       ) : (
         <div className="w-full columns-1 sm:columns-2 md:columns-3 gap-5 mt-8 mb-24">
-          {displayedImages.map((image, index) => (
+          {images.map((image, index) => (
             <div
               key={index}
               className="cursor-pointer mb-5 relative group hover:shadow-lg transition duration-200 ease-in-out"
@@ -138,25 +175,23 @@ const SearchResultsPage = () => {
                 src={image.downloadURL}
                 alt={`Image ${index + 1}`}
                 className="w-full h-auto rounded-sm"
-                onClick={() => setOpenModal(image.downloadURL, image.tags)} // Open modal on image click
+                onClick={() => setOpenModal(image.downloadURL, image.tags)}
               />
-              {/* Download button, only visible on hover */}
               <div
                 className="absolute bottom-2 left-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
                 onClick={(e) => {
-                  e.stopPropagation(); // Prevent image click from triggering
-                  handleDownload(image.downloadURL); // Handle download action
+                  e.stopPropagation();
+                  handleDownload(image.downloadURL, `${image.imageId}.webp`);
                 }}
               >
                 <SaveAltIcon className="cursor-pointer text-white" />
               </div>
 
-              {/* Share button, only visible on hover */}
               <div
                 className="absolute bottom-2 right-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
                 onClick={(e) => {
-                  e.stopPropagation(); // Prevent image click from triggering
-                  handleShare(image.downloadURL); // Handle share action
+                  e.stopPropagation();
+                  handleShare(image.imageId);
                 }}
               >
                 <ShareSharpIcon className="cursor-pointer text-white" />
@@ -166,17 +201,28 @@ const SearchResultsPage = () => {
         </div>
       )}
 
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <MuiAlert
+          onClose={handleCloseSnackbar}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          Image link copied to clipboard!
+        </MuiAlert>
+      </Snackbar>
+
       {modalData && (
         <DownloadModal
           url={modalData.url}
           tags={modalData.tags}
+          imageId={modalData.imageId}
           onClose={() => setOpenModal(null)}
         />
-      )}
-
-      {/* Load More Button */}
-      {displayedImages.length < images.length && !loading && (
-        <button onClick={loadMoreImages}>Load More</button>
       )}
     </div>
   );

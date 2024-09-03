@@ -1,28 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { useNavigate } from "react-router-dom";
-import { db } from "../firebase"; // Adjust the import path as needed
-import sportImage from "../assets/sportimage.jpg";
-import creatorImage from "../assets/creatorimage.jpg";
+import { Skeleton } from "@mui/material";
+import Masonry from "@mui/lab/Masonry";
+import { motion } from "framer-motion";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import XIcon from "@mui/icons-material/X";
+import { db } from "../firebase";
+import creatorImage from "../assets/creatorimage.jpg";
 
 const Creator = () => {
   const [images, setImages] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchImages = async () => {
       try {
         const q = query(
-          collection(db, "AI and ML"), // Collection name in Firestore
-          where("creator", "==", "Dipin Chopra") // Replace with dynamic creator if needed
+          collection(db, "AI and ML"),
+          where("creator", "==", "Dipin Chopra")
         );
         const querySnapshot = await getDocs(q);
         const fetchedImages = querySnapshot.docs.map(
           (doc) => doc.data().downloadURL
-        ); // Assumes each document has a `url` field
+        );
         setImages(fetchedImages);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching images: ", error);
       }
@@ -44,10 +47,7 @@ const Creator = () => {
   return (
     <div className="flex flex-col items-center mx-12 sm:mx-16 mt-28 text-white">
       <div className="w-full flex">
-        <div
-          // onClick={() => navigate("/upload")}
-          className="w-full flex flex-col items-center space-y-4 mb-12"
-        >
+        <div className="w-full flex flex-col items-center space-y-4 mb-12">
           <img
             className="object-cover rounded-full w-14 h-14"
             src={creatorImage}
@@ -62,10 +62,7 @@ const Creator = () => {
               onClick={handleInstagramIconClick}
               fontSize="small"
             />
-            <LinkedInIcon
-              onClick={() => (onClick = { handleLinkedinIconClick })}
-              fontSize="small"
-            />
+            <LinkedInIcon onClick={handleLinkedinIconClick} fontSize="small" />
             <XIcon onClick={handleXIconClick} fontSize="small" />
           </div>
         </div>
@@ -75,20 +72,37 @@ const Creator = () => {
         <p>Browse Images</p>
       </div>
 
-      <div className="columns-1 sm:columns-2 md:columns-3 gap-5 mt-8 mb-24">
-        {images.map((imageUrl, index) => (
-          <div
-            key={index}
-            className="cursor-pointer relative group hover:opacity-85 transition-opacity duration-300"
-          >
-            <img
-              src={imageUrl}
-              alt=""
-              className="mb-5 border border-[#B276AA] border-opacity-25 rounded-sm"
+      {loading ? (
+        <Masonry columns={{ xs: 1, sm: 2, md: 3 }} spacing={2}>
+          {Array.from(new Array(6)).map((_, index) => (
+            <Skeleton
+              key={index}
+              variant="rectangular"
+              width="100%"
+              height={250}
+              className="mb-5"
             />
-          </div>
-        ))}
-      </div>
+          ))}
+        </Masonry>
+      ) : (
+        <Masonry columns={{ xs: 1, sm: 2, md: 3 }} spacing={2}>
+          {images.map((imageUrl, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="cursor-pointer relative group hover:opacity-85 transition-opacity duration-300"
+            >
+              <img
+                src={imageUrl}
+                alt=""
+                className="mb-5 border border-[#B276AA] border-opacity-25 rounded-sm"
+              />
+            </motion.div>
+          ))}
+        </Masonry>
+      )}
     </div>
   );
 };

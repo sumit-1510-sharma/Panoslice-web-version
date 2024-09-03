@@ -7,7 +7,7 @@ import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import ShareSharpIcon from "@mui/icons-material/ShareSharp";
 import DownloadModal from "../components/DownloadModal";
 import Marquee from "react-fast-marquee";
-import { Skeleton } from "@mui/material";
+import { Skeleton, Snackbar } from "@mui/material";
 import { ImagesContext } from "../components/ImagesContext";
 import carouselMaker from "../assets/carouselmaker.png";
 import blogToCarousel from "../assets/blogtocarousel.png";
@@ -21,6 +21,7 @@ import bulkEditor from "../assets/bulkeditor.png";
 import "./Homepage.css";
 import { db } from "../firebase"; // Adjust this import path to your firebase config file
 import { collection, getDocs } from "firebase/firestore";
+import MuiAlert from "@mui/material/Alert";
 
 const Homepage = () => {
   const [category, setCategory] = useState("All");
@@ -32,9 +33,25 @@ const Homepage = () => {
   const [showLeftButton, setShowLeftButton] = useState(false);
   const scrollRef = useRef(null);
   const [modalData, setModalData] = useState(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
 
-  const setOpenModal = (url, tags) => {
-    setModalData({ url, tags });
+  const handleShare = (imageId) => {
+    const url = `${window.location.origin}/gallery?imageId=${imageId}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setSnackbarOpen(true); // Show the snackbar
+    });
+  };
+
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSnackbarOpen(false);
+  };
+
+  const setOpenModal = (image) => {
+    setModalData(image);
+    console.log(modalData);
   };
 
   const collectionName = "AI and ML";
@@ -78,14 +95,28 @@ const Homepage = () => {
     }
   };
 
-  const handleDownload = (url) => {
-    // Create an anchor element to initiate a download
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "image.jpg"; // You can set the default filename here
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleDownload = async (url, filename) => {
+    try {
+      // Fetch the image as a blob
+      const response = await fetch(url);
+      const blob = await response.blob();
+
+      // Create a temporary URL for the blob
+      const blobURL = window.URL.createObjectURL(blob);
+
+      // Create an anchor element and trigger a download
+      const link = document.createElement("a");
+      link.href = blobURL;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+
+      // Clean up
+      link.remove();
+      window.URL.revokeObjectURL(blobURL);
+    } catch (error) {
+      console.error("Error downloading the image:", error);
+    }
   };
 
   // const handleShare = (url) => {
@@ -100,12 +131,12 @@ const Homepage = () => {
   //     });
   // };
 
-  const handleShare = (imageId) => {
-    const url = `${window.location.origin}/gallery?imageId=${imageId}`;
-    navigator.clipboard.writeText(url).then(() => {
-      alert("Image link copied to clipboard!");
-    });
-  };
+  // const handleShare = (imageId) => {
+  //   const url = `${window.location.origin}/gallery?imageId=${imageId}`;
+  //   navigator.clipboard.writeText(url).then(() => {
+  //     alert("Image link copied to clipboard!");
+  //   });
+  // };
 
   const categories = [
     "All",
@@ -380,7 +411,7 @@ const Homepage = () => {
                   src={image.downloadURL}
                   alt={`Image ${index + 1}`}
                   className="w-full h-auto rounded-sm"
-                  onClick={() => setOpenModal(image.downloadURL, image.tags)} // Open modal on image click
+                  onClick={() => setOpenModal(image)} // Open modal on image click
                 />
 
                 {/* Download button, only visible on hover */}
@@ -388,7 +419,7 @@ const Homepage = () => {
                   className="absolute bottom-2 left-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
                   onClick={(e) => {
                     e.stopPropagation(); // Prevent image click from triggering
-                    handleDownload(image.downloadURL); // Handle download action
+                    handleDownload(image.downloadURL, `${image.imageId}.webp`); // Handle download action
                   }}
                 >
                   <SaveAltIcon className="cursor-pointer text-white" />
@@ -410,10 +441,26 @@ const Homepage = () => {
         )}
       </div>
 
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <MuiAlert
+          onClose={handleCloseSnackbar}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          Image link copied to clipboard!
+        </MuiAlert>
+      </Snackbar>
+
       {modalData && (
         <DownloadModal
-          url={modalData.url}
+          url={modalData.downloadURL}
           tags={modalData.tags}
+          imageId={modalData.imageId}
           onClose={() => setOpenModal(null)}
         />
       )}
