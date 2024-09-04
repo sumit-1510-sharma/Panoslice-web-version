@@ -1,4 +1,11 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, {
+  Suspense,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ImagesContext } from "../components/ImagesContext";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
@@ -115,13 +122,15 @@ const SearchResultsPage = () => {
     });
   };
 
+  const memoizedImages = useMemo(() => images, [images]);
+
   return (
     <div className="mt-24 md:my-28 lg:my-40 text-white mx-8 md:mx-12 lg:mx-20">
       <h1 className="-mb-4 md:mb-12 text-2xl md:text-4xl 2xl:text-6xl">
         Search Results for "{query}"
       </h1>
 
-      <div className="flex items-center justify-between w-[100.2%] mt-14 sticky top-[42px] sm:top-[58px] py-4 border-b border-[#B276AA] border-opacity-25 bg-[#161616] z-10">
+      <div className="flex items-center justify-between w-[100.2%] mt-14 mb-8 sticky top-[42px] sm:top-[58px] py-4 border-b border-[#B276AA] border-opacity-25 bg-[#161616] z-10">
         <div className="hidden md:flex">
           <p>Browse Images</p>
         </div>
@@ -163,11 +172,9 @@ const SearchResultsPage = () => {
         </div>
       </div>
 
-      {loading ? (
-        <div className="text-center text-white">Loading...</div>
-      ) : (
+      <Suspense fallback={<div>Loading...</div>}>
         <Masonry columns={{ xs: 1, sm: 2, md: 3 }} spacing={2}>
-          {images.map((image, index) => (
+          {memoizedImages.map((image, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 30 }}
@@ -205,7 +212,7 @@ const SearchResultsPage = () => {
             </motion.div>
           ))}
         </Masonry>
-      )}
+      </Suspense>
 
       <Snackbar
         open={snackbarOpen}

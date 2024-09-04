@@ -1,4 +1,11 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+  Suspense,
+  useMemo,
+} from "react";
 import Tool from "../components/Tool";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
@@ -61,16 +68,17 @@ const Homepage = () => {
   useEffect(() => {
     const fetchAIAndMLCollection = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, collectionName));
+        const querySnapshot = await getDocs(collection(db, "AI and ML"));
         const docs = querySnapshot.docs.map((doc) => ({
           collectionName, // Store the collection name
           id: doc.id, // Document ID
           ...doc.data(), // Document Data
         }));
-
         setDisplayedImages(docs);
-        console.log(docs);
-        setIsLoading(false);
+        // Add a delay before setting the state
+     
+          setIsLoading(false);
+  
       } catch (error) {
         console.error("Error fetching documents: ", error);
       }
@@ -121,25 +129,6 @@ const Homepage = () => {
     }
   };
 
-  // const handleShare = (url) => {
-  //   // Copy the URL to the clipboard
-  //   navigator.clipboard
-  //     .writeText(url)
-  //     .then(() => {
-  //       alert("Link copied to clipboard!");
-  //     })
-  //     .catch((err) => {
-  //       console.error("Failed to copy: ", err);
-  //     });
-  // };
-
-  // const handleShare = (imageId) => {
-  //   const url = `${window.location.origin}/gallery?imageId=${imageId}`;
-  //   navigator.clipboard.writeText(url).then(() => {
-  //     alert("Image link copied to clipboard!");
-  //   });
-  // };
-
   const categories = [
     "All",
     "AI",
@@ -168,6 +157,8 @@ const Homepage = () => {
   const handleButtonClick = (cat) => {
     setSearchQuery(cat); // Update the search query with the current category
   };
+
+  const memoizedImages = useMemo(() => displayedImages, [displayedImages]);
 
   return (
     <div>
@@ -251,7 +242,7 @@ const Homepage = () => {
           </button>
         </div>
 
-        <div className="flex items-center justify-between w-[100.2%] mt-14 sticky top-[42px] sm:top-[58px] py-4 border-b border-[#B276AA] border-opacity-25 bg-[#161616] z-10">
+        <div className="flex items-center justify-between w-[100.2%] mt-14 mb-8 sticky top-[42px] sm:top-[58px] py-4 border-b border-[#B276AA] border-opacity-25 bg-[#161616] z-10">
           <div className="hidden md:flex">
             <p>Browse Images</p>
           </div>
@@ -293,22 +284,9 @@ const Homepage = () => {
           </div>
         </div>
 
-        {isLoading ? (
+        <Suspense fallback={<div>Loading...</div>}>
           <Masonry columns={{ xs: 1, sm: 2, md: 3 }} spacing={2}>
-            {Array.from(new Array(15)).map((_, index) => (
-              <Skeleton
-                key={index}
-                variant="rectangular"
-                animation="wave"
-                sx={{ bgcolor: "grey.700" }}
-                height={index % 2 === 0 ? 200 : 300} // Vary heights for visual interest
-                className="rounded-sm"
-              />
-            ))}
-          </Masonry>
-        ) : (
-          <Masonry columns={{ xs: 1, sm: 2, md: 3 }} spacing={2}>
-            {displayedImages.map((image, index) => (
+            {memoizedImages.map((image, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 30 }}
@@ -317,10 +295,11 @@ const Homepage = () => {
                 className="relative group"
               >
                 <img
-                  loading="eager"
+                  loading="lazy"
+                  decoding="async"
                   src={image.downloadURL}
                   alt={`Image ${index + 1}`}
-                  className="w-full h-auto rounded-sm cursor-pointer"
+                  className="w-full h-auto rounded-sm cursor-pointer object-cover"
                   onClick={() => setOpenModal(image)}
                 />
                 {/* Download button, only visible on hover */}
@@ -346,7 +325,7 @@ const Homepage = () => {
               </motion.div>
             ))}
           </Masonry>
-        )}
+        </Suspense>
       </div>
 
       <Snackbar
