@@ -1,5 +1,5 @@
 import React, { useEffect, useState, Suspense, useMemo } from "react";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, getDocs, limit, query, where } from "firebase/firestore";
 import Masonry from "@mui/lab/Masonry";
 import { motion } from "framer-motion";
 import InstagramIcon from "@mui/icons-material/Instagram";
@@ -17,7 +17,8 @@ const Creator = () => {
       try {
         const q = query(
           collection(db, "AI and ML"),
-          where("creator", "==", "Dipin Chopra")
+          where("creator", "==", "Dipin Chopra"),
+          limit(18)
         );
         const querySnapshot = await getDocs(q);
         const fetchedImages = querySnapshot.docs.map(

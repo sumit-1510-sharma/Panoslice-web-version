@@ -6,16 +6,7 @@ export const ImagesContext = createContext();
 
 export const ImagesProvider = ({ children }) => {
   const [images, setImages] = useState([]);
-  const getInitialSearchQuery = () => {
-    return localStorage.getItem("searchQuery") || "";
-  };
-
-  const [searchQuery, setSearchQuery] = useState(getInitialSearchQuery);
-
-  useEffect(() => {
-    // Save search query to local storage whenever it changes
-    localStorage.setItem("searchQuery", searchQuery);
-  }, [searchQuery]);
+  const [searchQuery, setSearchQuery] = useState(""); // Initialize searchQuery without localStorage
 
   useEffect(() => {
     const fetchImages = async () => {

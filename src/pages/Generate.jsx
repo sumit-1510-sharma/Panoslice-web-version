@@ -231,22 +231,24 @@ const Generate = () => {
         </div>
       </div>
 
-      <div className="mb-24">
-        <h2 className="text-white text-lg mb-4">Generated Images</h2>
-        <div className="flex flex-wrap gap-4">
-          {generatedImages.map((image, index) => (
-            <div key={index} className="w-1/2 sm:w-1/4 md:w-1/6">
-              <a href={image} download={`generated-image-${index}.png`}>
-                <img
-                  src={image}
-                  alt={`Generated ${index}`}
-                  className="object-cover w-full h-full rounded-md"
-                />
-              </a>
-            </div>
-          ))}
+      {generatedImages.length > 0 && (
+        <div>
+          <h2 className="text-white text-lg mb-4">Generated Images</h2>
+          <div className="flex flex-wrap gap-4">
+            {generatedImages.map((image, index) => (
+              <div key={index} className="w-1/2 sm:w-1/4 md:w-1/6">
+                <a href={image} download={`generated-image-${index}.png`}>
+                  <img
+                    src={image}
+                    alt={`Generated ${index}`}
+                    className="object-cover w-full h-full rounded-md"
+                  />
+                </a>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

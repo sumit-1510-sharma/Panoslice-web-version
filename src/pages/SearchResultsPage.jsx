@@ -22,10 +22,10 @@ const SearchResultsPage = () => {
   const { images, searchQuery, setSearchQuery } = useContext(ImagesContext);
   const { query } = useParams(); // Get the query from the URL
   const navigate = useNavigate(); // Use useNavigate instead of useHistory
-  const [loading, setLoading] = useState(true); // Loading state to control shimmer effect
+  const [loading, setLoading] = useState(true);
   const [showLeftButton, setShowLeftButton] = useState(false);
   const scrollRef = useRef(null);
-  const [category, setCategory] = useState(query || "All"); // Use query as initial category
+  const [category, setCategory] = useState(query || "All");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [modalData, setModalData] = useState(null);
 
@@ -42,37 +42,44 @@ const SearchResultsPage = () => {
 
   const handleScroll = (direction) => {
     if (scrollRef.current) {
-      if (direction === "left") {
-        scrollRef.current.scrollBy({ left: -150, behavior: "smooth" });
-      } else {
-        scrollRef.current.scrollBy({ left: 150, behavior: "smooth" });
-      }
+      scrollRef.current.scrollBy({
+        left: direction === "left" ? -150 : 150,
+        behavior: "smooth",
+      });
     }
   };
 
   const handleScrollCheck = () => {
-    if (scrollRef.current.scrollLeft > 0) {
-      setShowLeftButton(true);
-    } else {
-      setShowLeftButton(false);
-    }
+    setShowLeftButton(scrollRef.current.scrollLeft > 0);
   };
 
   const handleButtonClick = (cat) => {
-    setSearchQuery(cat); // Update the search query with the current category
-    navigate(`/search/${cat}`); // Update the URL with the new category
+    if (searchQuery !== cat) {
+      // Prevent unnecessary updates
+      setSearchQuery(cat);
+      navigate(`/search/${cat}`);
+    }
   };
 
   useEffect(() => {
+    if (query) {
+      setSearchQuery(query);
+      setCategory(query);
+    } else {
+      setSearchQuery("All");
+    }
+  }, [query, setSearchQuery]);
+
+  useEffect(() => {
     if (images.length > 0) {
-      setLoading(false); // Images are loaded, stop showing shimmer
+      setLoading(false);
     }
   }, [images]);
 
+  // Optionally handle popstate events if needed
   useEffect(() => {
-    // Redirect to homepage on back button press
     const handlePopState = () => {
-      navigate("/");
+      // Handle popstate if necessary
     };
 
     window.addEventListener("popstate", handlePopState);
@@ -80,7 +87,7 @@ const SearchResultsPage = () => {
     return () => {
       window.removeEventListener("popstate", handlePopState);
     };
-  }, [navigate]);
+  }, []);
 
   const categories = [
     "All",
@@ -126,11 +133,21 @@ const SearchResultsPage = () => {
 
   return (
     <div className="mt-24 md:my-28 lg:my-40 text-white mx-8 md:mx-12 lg:mx-20">
-      <h1 className="-mb-4 md:mb-12 text-2xl md:text-4xl 2xl:text-6xl">
-        Search Results for "{query}"
-      </h1>
+      <div className="w-full flex items-center justify-between">
+        <h1 className="-mb-4 md:mb-12 text-2xl md:text-4xl 2xl:text-6xl">
+          "{query}"
+        </h1>
+        <button
+          onClick={() => navigate("/")}
+          className="bg-[#ba409c] py-2 px-4 rounded-full -mb-4 md:mb-12 text-lg"
+        >
+          Go to Home
+        </button>
+      </div>
 
-      <div className="flex items-center justify-between w-[100.2%] mt-14 mb-8 sticky top-[42px] sm:top-[58px] py-4 border-b border-[#B276AA] border-opacity-25 bg-[#161616] z-10">
+      <button></button>
+
+      <div className="flex items-center justify-between w-[100.2%] mt-8 mb-8 sticky top-[42px] sm:top-[58px] py-4 border-b border-[#B276AA] border-opacity-25 bg-[#161616] z-10">
         <div className="hidden md:flex">
           <p>Browse Images</p>
         </div>
@@ -189,21 +206,19 @@ const SearchResultsPage = () => {
                 className="w-full h-auto rounded-sm"
                 onClick={() => setOpenModal(image.downloadURL, image.tags)}
               />
-              {/* Download button, only visible on hover */}
               <div
                 className="absolute bottom-2 left-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
                 onClick={(e) => {
-                  e.stopPropagation(); // Prevent image click from triggering
+                  e.stopPropagation();
                   handleDownload(image.downloadURL, `${image.imageId}.webp`);
                 }}
               >
                 <SaveAltIcon className="cursor-pointer text-white" />
               </div>
-              {/* Share button, only visible on hover */}
               <div
                 className="absolute bottom-2 right-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
                 onClick={(e) => {
-                  e.stopPropagation(); // Prevent image click from triggering
+                  e.stopPropagation();
                   handleShare(image.imageId);
                 }}
               >
@@ -221,9 +236,10 @@ const SearchResultsPage = () => {
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
         <MuiAlert
+          elevation={6}
+          variant="filled"
           onClose={handleCloseSnackbar}
           severity="success"
-          sx={{ width: "100%" }}
         >
           Image link copied to clipboard!
         </MuiAlert>
@@ -231,10 +247,10 @@ const SearchResultsPage = () => {
 
       {modalData && (
         <DownloadModal
-          url={modalData.url}
+          open={!!modalData}
+          imageUrl={modalData.url}
           tags={modalData.tags}
-          imageId={modalData.imageId}
-          onClose={() => setOpenModal(null)}
+          onClose={() => setModalData(null)}
         />
       )}
     </div>

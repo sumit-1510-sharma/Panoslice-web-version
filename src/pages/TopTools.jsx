@@ -18,12 +18,14 @@ const TopTools = () => {
   const toolsGalleryRef = useRef(null);
 
   const handleRedirectPanoslice = () => {
-    window.location.href = "https://panoslicepro.page.link/XH3T";
+    window.open("https://panoslicepro.page.link/XH3T", "_blank");
   };
 
   const handleRedirectLono = () => {
-    window.location.href =
-      "https://apps.apple.com/in/app/lono-ai-reel-video-editor/id1632742723";
+    window.open(
+      "https://apps.apple.com/in/app/lono-ai-reel-video-editor/id1632742723",
+      "_blank"
+    );
   };
 
   // Function to scroll to the tools gallery with a top margin

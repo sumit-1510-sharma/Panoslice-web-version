@@ -5,6 +5,8 @@ import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
 import { ImagesContext } from "./ImagesContext"; // Import Context
 import logo from "../assets/logo.png";
+import searchIcon from "../assets/searchIcon.png";
+// import "./Navbar.css";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -41,7 +43,7 @@ const Navbar = () => {
   }, [searchQuery]);
 
   const handleSearch = (value) => {
-    setCurrentValue(value);
+    setCurrentValue("");
     setSearchQuery(value);
     // Update searchQuery in context
   };
@@ -51,22 +53,18 @@ const Navbar = () => {
       <div className="w-full py-[14px] flex items-center justify-between -mt-1 sm:mt-0.5 md:-mt-0.5">
         <img
           src={logo}
-          onClick={() => {
-            
-            navigate("/");
-            window.location.reload();
-          }}
+          onClick={() => navigate("/")}
           className="cursor-pointer w-[48px] sm:w-[66px] ml-4 sm:ml-8"
           alt="Logo"
         />
 
         {!hideSearchBar && (
-          <div className="relative flex items-center justify-left w-[36%] sm:w-[30%] border border-[#707070] rounded-md px-1 ml-4 md:ml-[4%] lg:ml-[20%]">
-            <SearchIcon />
+          <div className="relative flex items-center justify-left w-[36%] sm:w-[30%] border space-x-2 border-[#707070] rounded-md px-1 ml-4 md:ml-[4%] lg:ml-[20%]">
+            <img className="w-6" src={searchIcon} alt="" />
             <input
-              className="bg-[#1D1D1D] text-white text-sm opacity-70 focus:outline-none p-1 max-w-[75%]"
+              className="bg-[#1D1D1D] text-white text-sm opacity-100 focus:outline-none p-1 max-w-[75%]"
               type="text"
-              placeholder="Search by tag"
+              placeholder="What’s the vibe?"
               value={currentValue} // Set input value to currentValue
               onChange={(e) => {
                 setCurrentValue(e.target.value);

@@ -27,10 +27,11 @@ import aiCaptionWriter from "../assets/aicaptionwriter.png";
 import bulkEditor from "../assets/bulkeditor.png";
 import "./Homepage.css";
 import { db } from "../firebase"; // Adjust this import path to your firebase config file
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, limit, query } from "firebase/firestore";
 import MuiAlert from "@mui/material/Alert";
 import Masonry from "@mui/lab/Masonry";
 import { motion } from "framer-motion";
+import heroSectionStar from "../assets/herosectionstar.png";
 
 const Homepage = () => {
   const [category, setCategory] = useState("All");
@@ -68,17 +69,20 @@ const Homepage = () => {
   useEffect(() => {
     const fetchAIAndMLCollection = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, "AI and ML"));
+        const q = query(
+          collection(db, "AI and ML"),
+          limit(18) // Limit to 10 documents
+        );
+
+        const querySnapshot = await getDocs(q);
         const docs = querySnapshot.docs.map((doc) => ({
-          collectionName, // Store the collection name
+          collectionName: "AI and ML", // Store the collection name
           id: doc.id, // Document ID
           ...doc.data(), // Document Data
         }));
+
         setDisplayedImages(docs);
-        // Add a delay before setting the state
-     
-          setIsLoading(false);
-  
+        setIsLoading(false);
       } catch (error) {
         console.error("Error fetching documents: ", error);
       }
@@ -228,7 +232,7 @@ const Homepage = () => {
           </div>
         </div>
 
-        <div className="flex flex-col items-center space-y-5 mt-12">
+        <div className="relative flex flex-col items-center space-y-5 mt-12">
           <p className="text-[40px] sm:text-[44px] leading-tight sm:leading-tight max-w-lg text-center">
             Create anything you imagine, in seconds
           </p>
@@ -240,6 +244,11 @@ const Homepage = () => {
           >
             Generate
           </button>
+          <img
+            className="absolute hidden sm:flex left-[400px] md:left-[440px] sm:top-[30px] w-40"
+            src={heroSectionStar}
+            alt=""
+          />
         </div>
 
         <div className="flex items-center justify-between w-[100.2%] mt-14 mb-8 sticky top-[42px] sm:top-[58px] py-4 border-b border-[#B276AA] border-opacity-25 bg-[#161616] z-10">
@@ -284,48 +293,46 @@ const Homepage = () => {
           </div>
         </div>
 
-        <Suspense fallback={<div>Loading...</div>}>
-          <Masonry columns={{ xs: 1, sm: 2, md: 3 }} spacing={2}>
-            {memoizedImages.map((image, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="relative group"
+        <Masonry columns={{ xs: 1, sm: 2, md: 3 }} spacing={2}>
+          {memoizedImages.map((image, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="relative group"
+            >
+              <img
+                loading="lazy"
+                decoding="async"
+                src={image.downloadURL}
+                alt={`Image ${index + 1}`}
+                className="w-full h-auto rounded-sm cursor-pointer object-cover"
+                onClick={() => setOpenModal(image)}
+              />
+              {/* Download button, only visible on hover */}
+              <div
+                className="absolute bottom-2 left-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent image click from triggering
+                  handleDownload(image.downloadURL, `${image.imageId}.webp`);
+                }}
               >
-                <img
-                  loading="lazy"
-                  decoding="async"
-                  src={image.downloadURL}
-                  alt={`Image ${index + 1}`}
-                  className="w-full h-auto rounded-sm cursor-pointer object-cover"
-                  onClick={() => setOpenModal(image)}
-                />
-                {/* Download button, only visible on hover */}
-                <div
-                  className="absolute bottom-2 left-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
-                  onClick={(e) => {
-                    e.stopPropagation(); // Prevent image click from triggering
-                    handleDownload(image.downloadURL, `${image.imageId}.webp`);
-                  }}
-                >
-                  <SaveAltIcon className="cursor-pointer text-white" />
-                </div>
-                {/* Share button, only visible on hover */}
-                <div
-                  className="absolute bottom-2 right-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
-                  onClick={(e) => {
-                    e.stopPropagation(); // Prevent image click from triggering
-                    handleShare(image.imageId);
-                  }}
-                >
-                  <ShareSharpIcon className="cursor-pointer text-white" />
-                </div>
-              </motion.div>
-            ))}
-          </Masonry>
-        </Suspense>
+                <SaveAltIcon className="cursor-pointer text-white" />
+              </div>
+              {/* Share button, only visible on hover */}
+              <div
+                className="absolute bottom-2 right-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent image click from triggering
+                  handleShare(image.imageId);
+                }}
+              >
+                <ShareSharpIcon className="cursor-pointer text-white" />
+              </div>
+            </motion.div>
+          ))}
+        </Masonry>
       </div>
 
       <Snackbar
