@@ -7,7 +7,6 @@ const ToolCard = ({ title, media, mediaType }) => {
         {mediaType === "video" ? (
           <video
             src={media}
-            loading="eager"
             className="border border-[#B276AA] border-opacity-25 rounded-sm"
             loop
             autoPlay

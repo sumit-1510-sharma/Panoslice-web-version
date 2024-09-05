@@ -5,12 +5,26 @@ import { motion } from "framer-motion";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import XIcon from "@mui/icons-material/X";
+import SaveAltIcon from "@mui/icons-material/SaveAlt";
+import ShareSharpIcon from "@mui/icons-material/ShareSharp";
 import { db } from "../firebase";
 import creatorImage from "../assets/creatorimage.jpg";
+import { Snackbar } from "@mui/material";
+import MuiAlert from "@mui/material/Alert";
+import DownloadModal from "../components/DownloadModal";
 
 const Creator = () => {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [modalData, setModalData] = useState(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSnackbarOpen(false);
+  };
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -18,12 +32,17 @@ const Creator = () => {
         const q = query(
           collection(db, "AI and ML"),
           where("creator", "==", "Dipin Chopra"),
-          limit(18)
+          limit(9)
         );
         const querySnapshot = await getDocs(q);
-        const fetchedImages = querySnapshot.docs.map(
-          (doc) => doc.data().downloadURL
-        );
+
+        // Map through the querySnapshot to get both downloadURL and the document ID (imageId)
+        const fetchedImages = querySnapshot.docs.map((doc) => ({
+          imageUrl: doc.data().downloadURL, // Fetch the downloadURL field
+          imageId: doc.data().imageId, // Fetch the document ID
+        }));
+
+        // Set the combined data in the state
         setImages(fetchedImages);
         setLoading(false);
       } catch (error) {
@@ -33,6 +52,42 @@ const Creator = () => {
 
     fetchImages();
   }, []);
+
+  const setOpenModal = (image) => {
+    setModalData(image);
+    console.log(modalData);
+  };
+
+  const handleDownload = async (url, filename) => {
+    try {
+      // Fetch the image as a blob
+      const response = await fetch(url);
+      const blob = await response.blob();
+
+      // Create a temporary URL for the blob
+      const blobURL = window.URL.createObjectURL(blob);
+
+      // Create an anchor element and trigger a download
+      const link = document.createElement("a");
+      link.href = blobURL;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+
+      // Clean up
+      link.remove();
+      window.URL.revokeObjectURL(blobURL);
+    } catch (error) {
+      console.error("Error downloading the image:", error);
+    }
+  };
+
+  const handleShare = (imageId) => {
+    const url = `${window.location.origin}/gallery?imageId=${imageId}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setSnackbarOpen(true); // Show the snackbar
+    });
+  };
 
   const handleInstagramIconClick = () => {
     window.location.href = "https://instagram.com/redeyereduction_";
@@ -71,25 +126,69 @@ const Creator = () => {
 
       <Suspense fallback={<div>Loading...</div>}>
         <Masonry columns={{ xs: 1, sm: 2, md: 3 }} spacing={2}>
-          {memoizedImages.map((imageUrl, index) => (
+          {memoizedImages.map((image, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               className="masonry-item cursor-pointer relative group hover:opacity-85 transition-opacity duration-300 mb-5 p-1"
+              onClick={() => setOpenModal(image)}
             >
               <img
-                src={imageUrl}
+                src={image.imageUrl}
                 alt=""
                 loading="lazy"
                 decoding="async"
                 className="border border-[#B276AA] border-opacity-25 rounded-sm w-full h-auto object-cover"
               />
+              {/* Download button, only visible on hover */}
+              <div
+                className="absolute bottom-2 left-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent image click from triggering
+                  handleDownload(image.imageUrl, `${image.imageId}.webp`);
+                }}
+              >
+                <SaveAltIcon className="cursor-pointer text-white" />
+              </div>
+              {/* Share button, only visible on hover */}
+              <div
+                className="absolute bottom-2 right-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent image click from triggering
+                  handleShare(image.imageId);
+                }}
+              >
+                <ShareSharpIcon className="cursor-pointer text-white" />
+              </div>
             </motion.div>
           ))}
         </Masonry>
       </Suspense>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <MuiAlert
+          onClose={handleCloseSnackbar}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          Image link copied to clipboard!
+        </MuiAlert>
+      </Snackbar>
+
+      {modalData && (
+        <DownloadModal
+          imageUrl={modalData.imageUrl}
+          imageId={modalData.imageId}
+          onClose={() => setOpenModal(null)}
+        />
+      )}
     </div>
   );
 };

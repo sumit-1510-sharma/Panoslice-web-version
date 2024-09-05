@@ -45,13 +45,6 @@ const Homepage = () => {
   const [modalData, setModalData] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
 
-  const handleShare = (imageId) => {
-    const url = `${window.location.origin}/gallery?imageId=${imageId}`;
-    navigator.clipboard.writeText(url).then(() => {
-      setSnackbarOpen(true); // Show the snackbar
-    });
-  };
-
   const handleCloseSnackbar = (event, reason) => {
     if (reason === "clickaway") {
       return;
@@ -64,21 +57,19 @@ const Homepage = () => {
     console.log(modalData);
   };
 
-  const collectionName = "AI and ML";
-
   useEffect(() => {
     const fetchAIAndMLCollection = async () => {
       try {
         const q = query(
           collection(db, "AI and ML"),
-          limit(18) // Limit to 10 documents
+          limit(9) // Limit to 9 documents
         );
 
         const querySnapshot = await getDocs(q);
+        // Map through the documents and extract only the imageUrl field
         const docs = querySnapshot.docs.map((doc) => ({
-          collectionName: "AI and ML", // Store the collection name
-          id: doc.id, // Document ID
-          ...doc.data(), // Document Data
+          imageId: doc.data().imageId, // Document ID for reference (if needed)
+          imageUrl: doc.data().downloadURL, // Assuming 'imageUrl' is the field in Firestore containing the image URL
         }));
 
         setDisplayedImages(docs);
@@ -131,6 +122,13 @@ const Homepage = () => {
     } catch (error) {
       console.error("Error downloading the image:", error);
     }
+  };
+
+  const handleShare = (imageId) => {
+    const url = `${window.location.origin}/gallery?imageId=${imageId}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setSnackbarOpen(true); // Show the snackbar
+    });
   };
 
   const categories = [
@@ -305,7 +303,7 @@ const Homepage = () => {
               <img
                 loading="lazy"
                 decoding="async"
-                src={image.downloadURL}
+                src={image.imageUrl}
                 alt={`Image ${index + 1}`}
                 className="w-full h-auto rounded-sm cursor-pointer object-cover"
                 onClick={() => setOpenModal(image)}
@@ -352,8 +350,7 @@ const Homepage = () => {
 
       {modalData && (
         <DownloadModal
-          url={modalData.downloadURL}
-          tags={modalData.tags}
+          imageUrl={modalData.imageUrl}
           imageId={modalData.imageId}
           onClose={() => setOpenModal(null)}
         />
