@@ -17,6 +17,7 @@ import { Snackbar } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import Masonry from "@mui/lab/Masonry";
 import { motion } from "framer-motion";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const SearchResultsPage = () => {
   const { images, searchQuery, setSearchQuery } = useContext(ImagesContext);
@@ -29,8 +30,9 @@ const SearchResultsPage = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [modalData, setModalData] = useState(null);
 
-  const setOpenModal = (url, tags) => {
-    setModalData({ url, tags });
+  const setOpenModal = (image) => {
+    setModalData(image);
+    console.log(modalData);
   };
 
   const handleCloseSnackbar = (event, reason) => {
@@ -65,18 +67,9 @@ const SearchResultsPage = () => {
     if (query) {
       setSearchQuery(query);
       setCategory(query);
-    } else {
-      setSearchQuery("All");
     }
   }, [query, setSearchQuery]);
 
-  useEffect(() => {
-    if (images.length > 0) {
-      setLoading(false);
-    }
-  }, [images]);
-
-  // Optionally handle popstate events if needed
   useEffect(() => {
     const handlePopState = () => {
       // Handle popstate if necessary
@@ -90,11 +83,8 @@ const SearchResultsPage = () => {
   }, []);
 
   const categories = [
-    "All",
     "AI",
-    "sports",
-    "fintech",
-    "AI and ML",
+    "Sports",
     "Climate Tech",
     "Commerce & Retail",
     "Fintech",
@@ -125,37 +115,37 @@ const SearchResultsPage = () => {
   const handleShare = (imageId) => {
     const url = `${window.location.origin}/gallery?imageId=${imageId}`;
     navigator.clipboard.writeText(url).then(() => {
-      setSnackbarOpen(true);
+      setSnackbarOpen(true); // Show the snackbar
     });
   };
 
-  const memoizedImages = useMemo(() => images, [images]);
+  const memoizedImages = useMemo(
+    () =>
+      images.map(({ downloadURL, imageId }) => ({
+        imageUrl: downloadURL,
+        imageId,
+      })),
+    [images]
+  );
 
   return (
-    <div className="mt-24 md:my-28 lg:my-40 text-white mx-8 md:mx-12 lg:mx-20">
-      <div className="w-full flex items-center justify-between">
-        <h1 className="-mb-4 md:mb-12 text-2xl md:text-4xl 2xl:text-6xl">
-          "{query}"
-        </h1>
-        <button
-          onClick={() => navigate("/")}
-          className="bg-[#ba409c] py-2 px-4 rounded-full -mb-4 md:mb-12 text-lg"
-        >
-          Go to Home
+    <div className="mt-24 md:my-28 lg:my-40 text-white ml-4 sm:ml-4">
+      <div className="w-full flex justify-start space-x-6">
+        <button onClick={() => navigate("/")} className="">
+          <ArrowBackIcon />
         </button>
+        <h1 className="mb-2 text-2xl md:text-4xl 2xl:text-6xl max-w-[50%]">"{query}"</h1>
       </div>
 
-      <button></button>
-
-      <div className="flex items-center justify-between w-[100.2%] mt-8 mb-8 sticky top-[42px] sm:top-[58px] py-4 border-b border-[#B276AA] border-opacity-25 bg-[#161616] z-10">
+      <div className="flex items-center justify-between w-[97%] sm:w-[96%] md:w-[97%] lg:w-[99%] ml-2 mt-14 mb-8 sticky top-[42px] sm:top-[58px] py-4 border-b border-[#B276AA] border-opacity-25 bg-[#161616] z-30">
         <div className="hidden md:flex">
           <p>Browse Images</p>
         </div>
 
-        <div className="relative flex items-center justify-center w-[92%] ml-2 sm:w-[96%] md:w-[70%] lg:w-[77%] xl:w-[80%] mr-4 sm:mr-8">
+        <div className="relative flex items-center justify-center w-[91.5%] sm:w-[97%] md:w-[73%] lg:w-[77%] xl:w-[80%] sm:mr-8">
           {showLeftButton && (
             <button
-              className="absolute -left-10 z-10 p-1 bg-opacity-50 rounded-full"
+              className="absolute -left-7 md:-left-10 z-10 p-1 bg-opacity-50 rounded-full"
               onClick={() => handleScroll("left")}
             >
               <ArrowLeftIcon />
@@ -170,18 +160,14 @@ const SearchResultsPage = () => {
               <button
                 key={index}
                 onClick={() => handleButtonClick(cat)}
-                className={`px-4 py-0.5 border whitespace-nowrap ${
-                  category === cat
-                    ? "bg-white text-black opacity-85"
-                    : "text-white opacity-75"
-                } rounded-full`}
+                className="px-4 py-0.5 border whitespace-nowrap text-white opacity-75 rounded-full"
               >
                 {cat}
               </button>
             ))}
           </div>
           <button
-            className="absolute -right-11 z-10 p-1 bg-opacity-50 rounded-full"
+            className="absolute -right-8 md:-right-11 z-10 p-1 bg-opacity-50 rounded-full"
             onClick={() => handleScroll("right")}
           >
             <ArrowRightIcon />
@@ -201,16 +187,16 @@ const SearchResultsPage = () => {
             >
               <img
                 loading="lazy"
-                src={image.downloadURL}
+                src={image.imageUrl}
                 alt={`Image ${index + 1}`}
                 className="w-full h-auto rounded-sm"
-                onClick={() => setOpenModal(image.downloadURL, image.tags)}
+                onClick={() => setOpenModal(image)}
               />
               <div
                 className="absolute bottom-2 left-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleDownload(image.downloadURL, `${image.imageId}.webp`);
+                  handleDownload(image.imageUrl, `${image.imageId}.webp`);
                 }}
               >
                 <SaveAltIcon className="cursor-pointer text-white" />
@@ -247,9 +233,8 @@ const SearchResultsPage = () => {
 
       {modalData && (
         <DownloadModal
-          open={!!modalData}
-          imageUrl={modalData.url}
-          tags={modalData.tags}
+          imageUrl={modalData.imageUrl}
+          imageId={modalData.imageId}
           onClose={() => setModalData(null)}
         />
       )}

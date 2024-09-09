@@ -38,7 +38,7 @@ const TopTools = () => {
   };
 
   return (
-    <div className="flex flex-col items-center text-white mx-12 sm:mx-16">
+    <div className="flex flex-col items-center text-white mx-4 sm:mx-8">
       <div className="flex flex-col items-center space-y-5 mt-32 mb-8">
         <div className="-space-y-2">
           <p className="text-[40px] sm:text-[44px] leading-tight sm:leading-tight max-w-lg text-center">

@@ -44,6 +44,7 @@ const Homepage = () => {
   const scrollRef = useRef(null);
   const [modalData, setModalData] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [filteredImages, setFilteredImages] = useState([]);
 
   const handleCloseSnackbar = (event, reason) => {
     if (reason === "clickaway") {
@@ -60,19 +61,16 @@ const Homepage = () => {
   useEffect(() => {
     const fetchAIAndMLCollection = async () => {
       try {
-        const q = query(
-          collection(db, "AI and ML"),
-          limit(9) // Limit to 9 documents
-        );
-
+        const q = query(collection(db, "AI and ML"));
         const querySnapshot = await getDocs(q);
-        // Map through the documents and extract only the imageUrl field
         const docs = querySnapshot.docs.map((doc) => ({
-          imageId: doc.data().imageId, // Document ID for reference (if needed)
-          imageUrl: doc.data().downloadURL, // Assuming 'imageUrl' is the field in Firestore containing the image URL
+          imageId: doc.data().imageId,
+          imageUrl: doc.data().downloadURL,
+          category: doc.data().category || "All", // Assuming 'category' is a field in Firestore
         }));
 
         setDisplayedImages(docs);
+        setFilteredImages(docs); // Initially, show all images
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching documents: ", error);
@@ -133,9 +131,6 @@ const Homepage = () => {
 
   const categories = [
     "All",
-    "AI",
-    "sports",
-    "fintech",
     "AI and ML",
     "Climate Tech",
     "Commerce & Retail",
@@ -157,14 +152,21 @@ const Homepage = () => {
   };
 
   const handleButtonClick = (cat) => {
-    setSearchQuery(cat); // Update the search query with the current category
+    setCategory(cat);
+    if (cat === "All") {
+      setFilteredImages(displayedImages);
+    } else {
+      setFilteredImages(
+        displayedImages.filter((image) => image.category === cat)
+      );
+    }
   };
 
-  const memoizedImages = useMemo(() => displayedImages, [displayedImages]);
+  const memoizedImages = useMemo(() => filteredImages, [filteredImages]);
 
   return (
     <div>
-      <div className="flex flex-col items-center text-white mx-12 sm:mx-16">
+      <div className="flex flex-col items-center text-white mx-2 sm:mx-6">
         <div className="bg-[#1D1D1D] rounded-full py-1 px-4 mt-24 sm:mt-32 shadow-[0_0_24px_10px_rgba(178,118,170,0.5)] z-10">
           <div className="flex items-center w-[250px] sm:w-[350px] md:w-[450px] lg:w-[600px]">
             <p
@@ -249,15 +251,15 @@ const Homepage = () => {
           />
         </div>
 
-        <div className="flex items-center justify-between w-[100.2%] mt-14 mb-8 sticky top-[42px] sm:top-[58px] py-4 border-b border-[#B276AA] border-opacity-25 bg-[#161616] z-10">
+        <div className="flex items-center justify-between w-[100%] sm:w-[100.2%] ml-2 mt-14 mb-8 sticky top-[42px] sm:top-[58px] py-4 border-b border-[#B276AA] border-opacity-25 bg-[#161616] z-30">
           <div className="hidden md:flex">
             <p>Browse Images</p>
           </div>
 
-          <div className="relative flex items-center justify-center w-[92%] ml-2 sm:w-[96%] md:w-[70%] lg:w-[77%] xl:w-[80%] mr-4 sm:mr-8">
+          <div className="relative flex items-center justify-center w-[92%] ml-2 sm:w-[96%] md:w-[72%] lg:w-[80%] xl:w-[80%] mr-4 sm:mr-8">
             {showLeftButton && (
               <button
-                className="absolute -left-10 z-10 p-1 bg-opacity-50 rounded-full"
+                className="absolute -left-7 sm:-left-10 z-10 p-1 bg-opacity-50 rounded-full"
                 onClick={() => handleScroll("left")}
               >
                 <ArrowLeftIcon />
@@ -272,18 +274,14 @@ const Homepage = () => {
                 <button
                   key={index}
                   onClick={() => handleButtonClick(cat)}
-                  className={`px-4 py-0.5 border whitespace-nowrap ${
-                    category === cat
-                      ? "bg-white text-black opacity-85"
-                      : "text-white opacity-75"
-                  } rounded-full`}
+                  className="px-4 py-0.5 border whitespace-nowrap text-white opacity-75 rounded-full"
                 >
                   {cat}
                 </button>
               ))}
             </div>
             <button
-              className="absolute -right-11 z-10 p-1 bg-opacity-50 rounded-full"
+              className="absolute -right-7 sm:-right-11 z-10 p-1 bg-opacity-50 rounded-full"
               onClick={() => handleScroll("right")}
             >
               <ArrowRightIcon />
@@ -313,7 +311,7 @@ const Homepage = () => {
                 className="absolute bottom-2 left-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
                 onClick={(e) => {
                   e.stopPropagation(); // Prevent image click from triggering
-                  handleDownload(image.downloadURL, `${image.imageId}.webp`);
+                  handleDownload(image.imageUrl, `${image.imageId}.webp`);
                 }}
               >
                 <SaveAltIcon className="cursor-pointer text-white" />

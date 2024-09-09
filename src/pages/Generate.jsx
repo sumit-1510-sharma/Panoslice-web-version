@@ -130,7 +130,7 @@ const Generate = () => {
   };
 
   return (
-    <div className="mt-24 mx-10">
+    <div className="mt-24 mx-4 sm:mx-8">
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}

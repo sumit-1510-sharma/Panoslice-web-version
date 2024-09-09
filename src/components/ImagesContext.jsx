@@ -12,7 +12,9 @@ export const ImagesProvider = ({ children }) => {
     const fetchImages = async () => {
       let allResults = [];
 
+      // Convert the search query to lowercase
       const tagsArray = searchQuery
+        .toLowerCase() // Convert the search query to lowercase
         .split(" ")
         .filter((tag) => tag.trim() !== "");
 

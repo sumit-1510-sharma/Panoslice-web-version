@@ -8,6 +8,7 @@ import { ImagesContext } from "./ImagesContext";
 import { db } from "../firebase"; // Assuming you have a firebaseConfig file
 import { collection, query, where, getDocs } from "firebase/firestore";
 import MuiAlert from "@mui/material/Alert";
+import creatorImage from "../assets/dipin_creatorimage.jpeg";
 
 const modalStyle = {
   position: "absolute",
@@ -131,7 +132,7 @@ const DownloadModal = ({ imageUrl, imageId, onClose }) => {
             </IconButton>
 
             <div className="w-[85%] mx-auto sm:w-[55%] flex flex-col h-full space-y-4">
-              <div className="w-full sm:h-[60%] md:h-[70%] flex bg-[#1D1D1D] items-center justify-center relative rounded-md">
+              <div className="w-full max-h-[220px] sm:max-h-none sm:h-[60%] md:h-[70%] flex bg-[#1D1D1D] items-center justify-center relative rounded-md">
                 <img
                   className={`rounded-md w-full h-full ${fitMode}`}
                   src={imageUrl}
@@ -147,11 +148,11 @@ const DownloadModal = ({ imageUrl, imageId, onClose }) => {
                 className="cursor-pointer flex items-center space-x-4"
               >
                 <img
-                  className="rounded-full object-cover w-10 h-10"
-                  src={imageUrl}
+                  className="rounded-full object-cover w-6 h-6 sm:w-10 sm:h-10"
+                  src={creatorImage}
                   alt="Creator"
                 />
-                <p>Dipin Chopra</p>
+                <p className="text-sm sm:text-base">Dipin Chopra</p>
               </div>
             </div>
 
@@ -182,7 +183,7 @@ const DownloadModal = ({ imageUrl, imageId, onClose }) => {
 
             <div
               onClick={() => handleDownload(imageUrl, `${imageId}.webp`)}
-              className="cursor-pointer flex items-center absolute -bottom-4 -left-4 text-xs sm:text-sm bg-[#1D1D1D] rounded-md border border-white border-opacity-20 text-white px-4 py-1 space-x-2"
+              className="cursor-pointer flex items-center absolute -bottom-4 right-28 text-xs sm:text-sm bg-[#1D1D1D] rounded-md border border-white border-opacity-20 text-white px-4 py-1 space-x-2"
             >
               <button>Download</button>
               <SaveAltIcon />
