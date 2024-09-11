@@ -95,18 +95,43 @@ const SearchResultsPage = () => {
     "Remote Work",
   ];
 
-  const handleDownload = async (url, filename) => {
+  const handleDownload = async (url, filename, format = "png") => {
     try {
+      // Fetch the image as a blob
       const response = await fetch(url);
       const blob = await response.blob();
-      const blobURL = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = blobURL;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(blobURL);
+
+      // Create a temporary image element to load the blob
+      const image = new Image();
+      const blobURL = URL.createObjectURL(blob);
+      image.src = blobURL;
+
+      image.onload = () => {
+        // Create a canvas to convert the image format
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+
+        // Set canvas size to the image size
+        canvas.width = image.width;
+        canvas.height = image.height;
+
+        // Draw the image onto the canvas
+        ctx.drawImage(image, 0, 0);
+
+        // Convert the canvas to the desired format (JPG or PNG)
+        const convertedImage = canvas.toDataURL(`image/${format}`);
+
+        // Create an anchor element and trigger a download
+        const link = document.createElement("a");
+        link.href = convertedImage;
+        link.download = `${filename}.${format}`;
+        document.body.appendChild(link);
+        link.click();
+
+        // Clean up
+        link.remove();
+        URL.revokeObjectURL(blobURL);
+      };
     } catch (error) {
       console.error("Error downloading the image:", error);
     }
@@ -134,7 +159,9 @@ const SearchResultsPage = () => {
         <button onClick={() => navigate("/")} className="">
           <ArrowBackIcon />
         </button>
-        <h1 className="mb-2 text-2xl md:text-4xl 2xl:text-6xl max-w-[50%]">"{query}"</h1>
+        <h1 className="mb-2 text-2xl md:text-4xl 2xl:text-6xl max-w-[50%]">
+          "{query}"
+        </h1>
       </div>
 
       <div className="flex items-center justify-between w-[97%] sm:w-[96%] md:w-[97%] lg:w-[99%] ml-2 mt-14 mb-8 sticky top-[42px] sm:top-[58px] py-4 border-b border-[#B276AA] border-opacity-25 bg-[#161616] z-30">
@@ -160,7 +187,11 @@ const SearchResultsPage = () => {
               <button
                 key={index}
                 onClick={() => handleButtonClick(cat)}
-                className="px-4 py-0.5 border whitespace-nowrap text-white opacity-75 rounded-full"
+                className={`px-4 py-0.5 border whitespace-nowrap rounded-full ${
+                  category === cat
+                    ? "bg-white text-black"
+                    : "text-white opacity-75"
+                }`}
               >
                 {cat}
               </button>

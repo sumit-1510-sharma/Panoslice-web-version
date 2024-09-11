@@ -10,6 +10,7 @@ import UploadImage from "./pages/UploadImage";
 import { ImagesProvider } from "./components/ImagesContext"; // Import the provider
 import SearchResultsPage from "./pages/SearchResultsPage";
 import Gallery from "./pages/Gallery";
+import Blog from "./pages/Blog";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
               <Route path="/generate" element={<Generate />} />
               <Route path="/toptools" element={<TopTools />} />
               <Route path="/creator" element={<Creator />} />
+              <Route path="/blog" element={<Blog />} />
               <Route path="/upload" element={<UploadImage />} />
               <Route path="/search/:query" element={<SearchResultsPage />} />
               <Route path="/gallery" element={<Gallery />} />

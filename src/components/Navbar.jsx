@@ -16,7 +16,8 @@ const Navbar = () => {
   const [currentValue, setCurrentValue] = useState(""); // State to manage input value
   const dropdownRef = useRef(null);
   const location = useLocation();
-  const hideSearchBar = location.pathname === "/generate";
+  const hideSearchBar =
+    location.pathname === "/generate" || location.pathname === "/blog";
 
   useEffect(() => {
     // Function to handle clicks outside the dropdown
@@ -46,6 +47,20 @@ const Navbar = () => {
     setCurrentValue("");
     setSearchQuery(value);
     // Update searchQuery in context
+  };
+
+  const popularSearchesRef = useRef(null);
+  const popularCategoriesRef = useRef(null);
+
+  const handleScroll = (direction, ref) => {
+    if (ref.current) {
+      const scrollAmount = 100; // Adjust this value for how far to scroll
+      if (direction === "left") {
+        ref.current.scrollBy({ left: -scrollAmount, behavior: "smooth" });
+      } else {
+        ref.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+      }
+    }
   };
 
   return (
@@ -88,14 +103,21 @@ const Navbar = () => {
                 <div className="flex flex-col items-start space-y-4">
                   <h4 className="text-sm">Popular Searches</h4>
                   <div className="relative">
-                    <button className="absolute -left-3">
+                    <button
+                      onClick={() => handleScroll("left", popularSearchesRef)}
+                      className="absolute -left-3"
+                    >
                       <ArrowLeftIcon />
                     </button>
-                    <button className="absolute -right-6">
+                    <button
+                      onClick={() => handleScroll("right", popularSearchesRef)}
+                      className="absolute -right-6"
+                    >
                       <ArrowRightIcon />
                     </button>
                     <div
                       id="popular-searches"
+                      ref={popularSearchesRef}
                       className="flex items-center w-[200px] sm:w-[330px] md:w-[430px] lg:w-[530px] scrollbar-hide overflow-x-scroll ml-2.5"
                     >
                       <button
@@ -148,14 +170,23 @@ const Navbar = () => {
                 <div className="flex flex-col items-start space-y-4">
                   <h4 className="text-sm">Popular Categories</h4>
                   <div className="relative">
-                    <button className="absolute -left-3">
+                    <button
+                      onClick={() => handleScroll("left", popularCategoriesRef)}
+                      className="absolute -left-3"
+                    >
                       <ArrowLeftIcon />
                     </button>
-                    <button className="absolute -right-6">
+                    <button
+                      onClick={() =>
+                        handleScroll("right", popularCategoriesRef)
+                      }
+                      className="absolute -right-6"
+                    >
                       <ArrowRightIcon />
                     </button>
                     <div
                       id="popular-searches"
+                      ref={popularCategoriesRef}
                       className="flex items-center w-[200px] sm:w-[330px] md:w-[430px] lg:w-[530px] scrollbar-hide overflow-x-scroll ml-2.5"
                     >
                       <button

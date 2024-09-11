@@ -6,7 +6,15 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate } from "react-router-dom";
 import { ImagesContext } from "./ImagesContext";
 import { db } from "../firebase"; // Assuming you have a firebaseConfig file
-import { collection, query, where, getDocs } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  doc,
+  updateDoc,
+  increment,
+} from "firebase/firestore";
 import MuiAlert from "@mui/material/Alert";
 import creatorImage from "../assets/dipin_creatorimage.jpeg";
 
@@ -41,12 +49,47 @@ const DownloadModal = ({ imageUrl, imageId, onClose }) => {
     setSnackbarOpen(false);
   };
 
+  const incrementViewCount = async (docId) => {
+    try {
+      const imageRef = doc(db, "AI and ML", docId);
+      await updateDoc(imageRef, { views: increment(1) });
+    } catch (error) {
+      console.error("Error incrementing view count:", error);
+    }
+  };
+
+  // Function to increment download count
+  const incrementDownloadCount = async (imageId) => {
+    try {
+      // Query Firestore to find the document with the matching imageId
+      const q = query(
+        collection(db, "AI and ML"),
+        where("imageId", "==", imageId)
+      );
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        const docRef = querySnapshot.docs[0].ref; // Get the reference of the first matching document
+        console.log(
+          "Incrementing download count for document with imageId:",
+          imageId
+        );
+
+        // Increment the download count by 1
+        await updateDoc(docRef, { downloads: increment(1) });
+      } else {
+        console.error("No document found with imageId:", imageId);
+      }
+    } catch (error) {
+      console.error("Error incrementing download count:", error);
+    }
+  };
+
   useEffect(() => {
     const fetchImageDoc = async () => {
       if (!imageUrl) return;
 
       try {
-        // Query Firestore for the document where the imageUrl matches
         const q = query(
           collection(db, "AI and ML"),
           where("downloadURL", "==", imageUrl)
@@ -55,9 +98,11 @@ const DownloadModal = ({ imageUrl, imageId, onClose }) => {
 
         if (!querySnapshot.empty) {
           const doc = querySnapshot.docs[0];
-          // Assuming there is only one document with this imageUrl
           setImageData(doc.data());
-          setTags(doc.data().tags || []); // Assuming tags are part of the document data
+          setTags(doc.data().tags || []);
+
+          // Increment view count when the modal opens
+          incrementViewCount(doc.id);
         }
       } catch (error) {
         console.error("Error fetching image document:", error);
@@ -70,29 +115,42 @@ const DownloadModal = ({ imageUrl, imageId, onClose }) => {
   const handleShare = (imageId) => {
     const url = `${window.location.origin}/gallery?imageId=${imageId}`;
     navigator.clipboard.writeText(url).then(() => {
-      setSnackbarOpen(true); // Show the snackbar
+      setSnackbarOpen(true);
     });
   };
 
-  const handleDownload = async (url, filename) => {
+  const handleDownload = async (url, filename, format = "png") => {
     try {
-      // Fetch the image as a blob
       const response = await fetch(url);
       const blob = await response.blob();
 
-      // Create a temporary URL for the blob
-      const blobURL = window.URL.createObjectURL(blob);
+      const image = new Image();
+      const blobURL = URL.createObjectURL(blob);
+      image.src = blobURL;
 
-      // Create an anchor element and trigger a download
-      const link = document.createElement("a");
-      link.href = blobURL;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
+      image.onload = () => {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
 
-      // Clean up
-      link.remove();
-      window.URL.revokeObjectURL(blobURL);
+        canvas.width = image.width;
+        canvas.height = image.height;
+
+        ctx.drawImage(image, 0, 0);
+
+        const convertedImage = canvas.toDataURL(`image/${format}`);
+
+        const link = document.createElement("a");
+        link.href = convertedImage;
+        link.download = `${filename}.${format}`;
+        document.body.appendChild(link);
+        link.click();
+
+        link.remove();
+        URL.revokeObjectURL(blobURL);
+
+        // Increment download count after successful download
+        incrementDownloadCount(imageId);
+      };
     } catch (error) {
       console.error("Error downloading the image:", error);
     }

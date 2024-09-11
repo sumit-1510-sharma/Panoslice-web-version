@@ -31,25 +31,43 @@ const Gallery = () => {
     console.log(modalData);
   };
 
-  const handleDownload = async (url, filename) => {
+  const handleDownload = async (url, filename, format = "png") => {
     try {
       // Fetch the image as a blob
       const response = await fetch(url);
       const blob = await response.blob();
 
-      // Create a temporary URL for the blob
-      const blobURL = window.URL.createObjectURL(blob);
+      // Create a temporary image element to load the blob
+      const image = new Image();
+      const blobURL = URL.createObjectURL(blob);
+      image.src = blobURL;
 
-      // Create an anchor element and trigger a download
-      const link = document.createElement("a");
-      link.href = blobURL;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
+      image.onload = () => {
+        // Create a canvas to convert the image format
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
 
-      // Clean up
-      link.remove();
-      window.URL.revokeObjectURL(blobURL);
+        // Set canvas size to the image size
+        canvas.width = image.width;
+        canvas.height = image.height;
+
+        // Draw the image onto the canvas
+        ctx.drawImage(image, 0, 0);
+
+        // Convert the canvas to the desired format (JPG or PNG)
+        const convertedImage = canvas.toDataURL(`image/${format}`);
+
+        // Create an anchor element and trigger a download
+        const link = document.createElement("a");
+        link.href = convertedImage;
+        link.download = `${filename}.${format}`;
+        document.body.appendChild(link);
+        link.click();
+
+        // Clean up
+        link.remove();
+        URL.revokeObjectURL(blobURL);
+      };
     } catch (error) {
       console.error("Error downloading the image:", error);
     }
