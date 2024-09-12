@@ -36,17 +36,13 @@ const Navbar = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (searchQuery) {
-      navigate(`/search/${searchQuery}`);
-      setShowDropdown(false); // Hide dropdown on search
-    }
-  }, [searchQuery]);
-
   const handleSearch = (value) => {
-    setCurrentValue("");
-    setSearchQuery(value);
-    // Update searchQuery in context
+    if (value) {
+      setCurrentValue("");
+      setSearchQuery(value);
+      navigate(`/search/${value}`);
+      setShowDropdown(false);
+    }
   };
 
   const popularSearchesRef = useRef(null);

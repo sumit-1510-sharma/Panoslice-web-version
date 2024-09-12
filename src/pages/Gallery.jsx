@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
+import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { db } from "../firebase";
 import { collection, where, query, getDocs } from "firebase/firestore";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
@@ -9,6 +9,7 @@ import ShareSharpIcon from "@mui/icons-material/ShareSharp";
 import { Snackbar } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import DownloadModal from "../components/DownloadModal";
+import { ImagesContext } from "../components/ImagesContext";
 
 const Gallery = () => {
   const [searchParams] = useSearchParams();
@@ -18,6 +19,8 @@ const Gallery = () => {
   const [error, setError] = useState(null);
   const [modalData, setModalData] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const { setSearchQuery } = useContext(ImagesContext);
+  const navigate = useNavigate();
 
   const handleCloseSnackbar = (event, reason) => {
     if (reason === "clickaway") {
@@ -29,6 +32,11 @@ const Gallery = () => {
   const setOpenModal = (image) => {
     setModalData(image);
     console.log(modalData);
+  };
+
+  const handleSearch = (value) => {
+    setSearchQuery(value);
+    navigate(`/search/${value}`);
   };
 
   const handleDownload = async (url, filename, format = "png") => {
@@ -138,7 +146,7 @@ const Gallery = () => {
 
   return (
     <div className="flex flex-col items-center mt-20 sm:mt-32 text-white w-full">
-      <div className="w-[90%] flex flex-col sm:flex-row items-center sm:items-start space-y-24 justify-between">
+      <div className="w-[90%] flex flex-col sm:flex-row items-center sm:items-start space-y-24 sm:space-y-0 justify-between">
         <div className="relative bg-[#2B2929] w-full sm:w-[50%] h-[270px]">
           <img
             className="w-full h-full object-contain"

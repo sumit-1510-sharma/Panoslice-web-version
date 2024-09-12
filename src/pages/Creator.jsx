@@ -1,4 +1,10 @@
-import React, { useEffect, useState, Suspense, useMemo } from "react";
+import React, {
+  useEffect,
+  useState,
+  Suspense,
+  useMemo,
+  useContext,
+} from "react";
 import { collection, getDocs, limit, query, where } from "firebase/firestore";
 import Masonry from "@mui/lab/Masonry";
 import { motion } from "framer-motion";
@@ -12,12 +18,14 @@ import creatorImage from "../assets/dipin_creatorimage.jpeg";
 import { Snackbar } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import DownloadModal from "../components/DownloadModal";
+import { ImagesContext } from "../components/ImagesContext";
 
 const Creator = () => {
-  const [images, setImages] = useState([]);
+  const [displayedImages, setDisplayedImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalData, setModalData] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const { images } = useContext(ImagesContext);
 
   const handleCloseSnackbar = (event, reason) => {
     if (reason === "clickaway") {
@@ -26,31 +34,23 @@ const Creator = () => {
     setSnackbarOpen(false);
   };
 
+  // Assuming allImages is the list of images in the context
+
   useEffect(() => {
-    const fetchImages = async () => {
+    const fetchImages = () => {
       try {
-        const q = query(
-          collection(db, "AI and ML"),
-          where("creator", "==", "Dipin Chopra")
+        const filteredImages = images.filter(
+          (img) => img.creator === "Dipin Chopra"
         );
-        const querySnapshot = await getDocs(q);
-
-        // Map through the querySnapshot to get both downloadURL and the document ID (imageId)
-        const fetchedImages = querySnapshot.docs.map((doc) => ({
-          imageUrl: doc.data().downloadURL, // Fetch the downloadURL field
-          imageId: doc.data().imageId, // Fetch the document ID
-        }));
-
-        // Set the combined data in the state
-        setImages(fetchedImages);
+        setDisplayedImages(filteredImages);
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching images: ", error);
+        console.error("Error filtering images: ", error);
       }
     };
 
     fetchImages();
-  }, []);
+  }, [images]);
 
   const setOpenModal = (image) => {
     setModalData(image);
@@ -116,7 +116,7 @@ const Creator = () => {
     window.location.href = "https://twitter.com/redeyereduction";
   };
 
-  const memoizedImages = useMemo(() => images, [images]);
+  const memoizedImages = useMemo(() => displayedImages, [displayedImages]);
 
   return (
     <div className="flex flex-col items-center mx-2 sm:mx-6 mt-28 text-white">
@@ -154,7 +154,7 @@ const Creator = () => {
             >
               <div className="bg-gray-700 bg-opacity-50">
                 <img
-                  src={image.imageUrl}
+                  src={image.downloadURL}
                   alt=""
                   loading="lazy"
                   decoding="async"
@@ -165,7 +165,7 @@ const Creator = () => {
                   className="absolute bottom-2 left-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
                   onClick={(e) => {
                     e.stopPropagation(); // Prevent image click from triggering
-                    handleDownload(image.imageUrl, `${image.imageId}.webp`);
+                    handleDownload(image.downloadURL, `${image.imageId}.webp`);
                   }}
                 >
                   <SaveAltIcon className="cursor-pointer text-white" />
@@ -203,7 +203,7 @@ const Creator = () => {
 
       {modalData && (
         <DownloadModal
-          imageUrl={modalData.imageUrl}
+          downloadURL={modalData.downloadURL}
           imageId={modalData.imageId}
           onClose={() => setOpenModal(null)}
         />

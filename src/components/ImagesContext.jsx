@@ -1,42 +1,27 @@
 import React, { createContext, useState, useEffect } from "react";
 import { db } from "../firebase";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 
 export const ImagesContext = createContext();
 
 export const ImagesProvider = ({ children }) => {
   const [images, setImages] = useState([]);
-  const [searchQuery, setSearchQuery] = useState(""); // Initialize searchQuery without localStorage
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const fetchImages = async () => {
-      let allResults = [];
-
-      // Convert the search query to lowercase
-      const tagsArray = searchQuery
-        .toLowerCase() // Convert the search query to lowercase
-        .split(" ")
-        .filter((tag) => tag.trim() !== "");
-
-      if (tagsArray.length > 0) {
-        const q = query(
-          collection(db, "AI and ML"),
-          where("tags", "array-contains-any", tagsArray)
-        );
-        const querySnapshot = await getDocs(q);
-        const fetchedImages = querySnapshot.docs.map((doc) => doc.data());
-        allResults = [...allResults, ...fetchedImages];
-      } else {
+      try {
         const querySnapshot = await getDocs(collection(db, "AI and ML"));
         const fetchedImages = querySnapshot.docs.map((doc) => doc.data());
-        allResults = [...allResults, ...fetchedImages];
+        console.log(fetchedImages);
+        setImages(fetchedImages);
+      } catch (error) {
+        console.error("Error fetching images: ", error);
       }
-
-      setImages(allResults);
     };
 
     fetchImages();
-  }, [searchQuery]);
+  }, []); // No dependencies as searchQuery is no longer needed
 
   return (
     <ImagesContext.Provider value={{ images, searchQuery, setSearchQuery }}>

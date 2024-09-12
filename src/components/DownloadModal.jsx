@@ -6,15 +6,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate } from "react-router-dom";
 import { ImagesContext } from "./ImagesContext";
 import { db } from "../firebase"; // Assuming you have a firebaseConfig file
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-  doc,
-  updateDoc,
-  increment,
-} from "firebase/firestore";
+import { doc, updateDoc, increment } from "firebase/firestore";
 import MuiAlert from "@mui/material/Alert";
 import creatorImage from "../assets/dipin_creatorimage.jpeg";
 
@@ -34,10 +26,10 @@ const modalStyle = {
   pr: 2,
 };
 
-const DownloadModal = ({ imageUrl, imageId, onClose }) => {
+const DownloadModal = ({ downloadURL, imageId, onClose }) => {
   const navigate = useNavigate();
   const [fitMode, setFitMode] = useState("object-contain");
-  const { setSearchQuery } = useContext(ImagesContext);
+  const { images, setSearchQuery } = useContext(ImagesContext); // Access images from context
   const [imageData, setImageData] = useState(null);
   const [tags, setTags] = useState([]);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -61,24 +53,10 @@ const DownloadModal = ({ imageUrl, imageId, onClose }) => {
   // Function to increment download count
   const incrementDownloadCount = async (imageId) => {
     try {
-      // Query Firestore to find the document with the matching imageId
-      const q = query(
-        collection(db, "AI and ML"),
-        where("imageId", "==", imageId)
-      );
-      const querySnapshot = await getDocs(q);
-
-      if (!querySnapshot.empty) {
-        const docRef = querySnapshot.docs[0].ref; // Get the reference of the first matching document
-        console.log(
-          "Incrementing download count for document with imageId:",
-          imageId
-        );
-
-        // Increment the download count by 1
+      const image = images.find((img) => img.imageId === imageId);
+      if (image) {
+        const docRef = doc(db, "AI and ML", image.docId); // Assume `docId` is stored in the context images
         await updateDoc(docRef, { downloads: increment(1) });
-      } else {
-        console.error("No document found with imageId:", imageId);
       }
     } catch (error) {
       console.error("Error incrementing download count:", error);
@@ -86,31 +64,17 @@ const DownloadModal = ({ imageUrl, imageId, onClose }) => {
   };
 
   useEffect(() => {
-    const fetchImageDoc = async () => {
-      if (!imageUrl) return;
-
-      try {
-        const q = query(
-          collection(db, "AI and ML"),
-          where("downloadURL", "==", imageUrl)
-        );
-        const querySnapshot = await getDocs(q);
-
-        if (!querySnapshot.empty) {
-          const doc = querySnapshot.docs[0];
-          setImageData(doc.data());
-          setTags(doc.data().tags || []);
-
-          // Increment view count when the modal opens
-          incrementViewCount(doc.id);
-        }
-      } catch (error) {
-        console.error("Error fetching image document:", error);
+    const fetchImageDataFromContext = () => {
+      const selectedImage = images.find((img) => img.imageId === imageId);
+      if (selectedImage) {
+        setImageData(selectedImage);
+        setTags(selectedImage.tags || []);
+        // incrementViewCount(selectedImage.docId); // Use the document ID stored in context
       }
     };
 
-    fetchImageDoc();
-  }, [imageUrl]);
+    fetchImageDataFromContext();
+  }, [imageId, images]);
 
   const handleShare = (imageId) => {
     const url = `${window.location.origin}/gallery?imageId=${imageId}`;
@@ -158,13 +122,13 @@ const DownloadModal = ({ imageUrl, imageId, onClose }) => {
 
   const handleSearch = (value) => {
     setSearchQuery(value);
-    navigate(`/gallery/${value}`);
+    navigate(`/search/${value}`);
   };
 
   return (
     <>
       <Modal
-        open={!!imageUrl}
+        open={!!downloadURL}
         onClose={onClose}
         aria-labelledby="modal-title"
         aria-describedby="modal-description"
@@ -193,7 +157,7 @@ const DownloadModal = ({ imageUrl, imageId, onClose }) => {
               <div className="w-full max-h-[220px] sm:max-h-none sm:h-[60%] md:h-[70%] flex bg-[#1D1D1D] items-center justify-center relative rounded-md">
                 <img
                   className={`rounded-md w-full h-full ${fitMode}`}
-                  src={imageUrl}
+                  src={downloadURL}
                   alt="Preview"
                 />
                 <div className="absolute text-xs flex items-center space-x-3 -bottom-5 right-1 opacity-40">
@@ -240,7 +204,7 @@ const DownloadModal = ({ imageUrl, imageId, onClose }) => {
             </div>
 
             <div
-              onClick={() => handleDownload(imageUrl, `${imageId}.webp`)}
+              onClick={() => handleDownload(downloadURL, `${imageId}.webp`)}
               className="cursor-pointer flex items-center absolute -bottom-4 right-28 text-xs sm:text-sm bg-[#1D1D1D] rounded-md border border-white border-opacity-20 text-white px-4 py-1 space-x-2"
             >
               <button>Download</button>

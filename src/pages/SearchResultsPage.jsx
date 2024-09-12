@@ -22,7 +22,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 const SearchResultsPage = () => {
   const { images, searchQuery, setSearchQuery } = useContext(ImagesContext);
   const { query } = useParams(); // Get the query from the URL
-  const navigate = useNavigate(); // Use useNavigate instead of useHistory
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [showLeftButton, setShowLeftButton] = useState(false);
   const scrollRef = useRef(null);
@@ -30,11 +30,12 @@ const SearchResultsPage = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [modalData, setModalData] = useState(null);
 
+  // Function to open the modal for a selected image
   const setOpenModal = (image) => {
     setModalData(image);
-    console.log(modalData);
   };
 
+  // Close the snackbar
   const handleCloseSnackbar = (event, reason) => {
     if (reason === "clickaway") {
       return;
@@ -42,6 +43,7 @@ const SearchResultsPage = () => {
     setSnackbarOpen(false);
   };
 
+  // Scroll the image categories horizontally
   const handleScroll = (direction) => {
     if (scrollRef.current) {
       scrollRef.current.scrollBy({
@@ -51,10 +53,12 @@ const SearchResultsPage = () => {
     }
   };
 
+  // Check if the left scroll button should be shown
   const handleScrollCheck = () => {
     setShowLeftButton(scrollRef.current.scrollLeft > 0);
   };
 
+  // Handle category button click
   const handleButtonClick = (cat) => {
     if (searchQuery !== cat) {
       // Prevent unnecessary updates
@@ -63,6 +67,7 @@ const SearchResultsPage = () => {
     }
   };
 
+  // Update search query based on the URL param
   useEffect(() => {
     if (query) {
       setSearchQuery(query);
@@ -95,40 +100,27 @@ const SearchResultsPage = () => {
     "Remote Work",
   ];
 
+  // Download the image
   const handleDownload = async (url, filename, format = "png") => {
     try {
-      // Fetch the image as a blob
       const response = await fetch(url);
       const blob = await response.blob();
-
-      // Create a temporary image element to load the blob
       const image = new Image();
       const blobURL = URL.createObjectURL(blob);
       image.src = blobURL;
 
       image.onload = () => {
-        // Create a canvas to convert the image format
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
-
-        // Set canvas size to the image size
         canvas.width = image.width;
         canvas.height = image.height;
-
-        // Draw the image onto the canvas
         ctx.drawImage(image, 0, 0);
-
-        // Convert the canvas to the desired format (JPG or PNG)
         const convertedImage = canvas.toDataURL(`image/${format}`);
-
-        // Create an anchor element and trigger a download
         const link = document.createElement("a");
         link.href = convertedImage;
         link.download = `${filename}.${format}`;
         document.body.appendChild(link);
         link.click();
-
-        // Clean up
         link.remove();
         URL.revokeObjectURL(blobURL);
       };
@@ -137,6 +129,7 @@ const SearchResultsPage = () => {
     }
   };
 
+  // Share the image link
   const handleShare = (imageId) => {
     const url = `${window.location.origin}/gallery?imageId=${imageId}`;
     navigator.clipboard.writeText(url).then(() => {
@@ -144,32 +137,30 @@ const SearchResultsPage = () => {
     });
   };
 
-  const memoizedImages = useMemo(
-    () =>
-      images.map(({ downloadURL, imageId }) => ({
-        imageUrl: downloadURL,
-        imageId,
-      })),
-    [images]
-  );
+  // Filter images based on searchQuery using useMemo
+  const filteredImages = useMemo(() => {
+    if (!searchQuery || searchQuery === "All") {
+      return images; // If no search query or "All" is selected, show all images
+    }
+    return images.filter((image) =>
+      image.tags.some((tag) =>
+        tag.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    );
+  }, [images, searchQuery]);
 
   return (
-    <div className="mt-24 md:my-28 lg:my-40 text-white ml-4 sm:ml-4">
-      <div className="w-full flex justify-start space-x-6">
-        <button onClick={() => navigate("/")} className="">
-          <ArrowBackIcon />
-        </button>
-        <h1 className="mb-2 text-2xl md:text-4xl 2xl:text-6xl max-w-[50%]">
-          "{query}"
-        </h1>
-      </div>
+    <div className="mt-24 md:my-28 lg:my-40 text-white ml-4 sm:ml-8 sm:mr-4">
+      <h1 className="mb-2 text-2xl md:text-4xl 2xl:text-6xl max-w-[50%]">
+        "{query}"
+      </h1>
 
-      <div className="flex items-center justify-between w-[97%] sm:w-[96%] md:w-[97%] lg:w-[99%] ml-2 mt-14 mb-8 sticky top-[42px] sm:top-[58px] py-4 border-b border-[#B276AA] border-opacity-25 bg-[#161616] z-30">
+      <div className="flex items-center justify-between w-full pl-2 mt-14 mb-8 sticky top-[42px] sm:top-[58px] py-4 border-b border-[#B276AA] border-opacity-25 bg-[#161616] z-30">
         <div className="hidden md:flex">
           <p>Browse Images</p>
         </div>
 
-        <div className="relative flex items-center justify-center w-[91.5%] sm:w-[97%] md:w-[73%] lg:w-[77%] xl:w-[80%] sm:mr-8">
+        <div className="relative flex items-center justify-center w-[91.5%] sm:w-[95%] md:w-[73%] md:mr-12 lg:w-[77%] xl:w-[80%] sm:mr-8">
           {showLeftButton && (
             <button
               className="absolute -left-7 md:-left-10 z-10 p-1 bg-opacity-50 rounded-full"
@@ -208,7 +199,7 @@ const SearchResultsPage = () => {
 
       <Suspense fallback={<div>Loading...</div>}>
         <Masonry columns={{ xs: 1, sm: 2, md: 3 }} spacing={2}>
-          {memoizedImages.map((image, index) => (
+          {filteredImages.map((image, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 30 }}
@@ -218,7 +209,7 @@ const SearchResultsPage = () => {
             >
               <img
                 loading="lazy"
-                src={image.imageUrl}
+                src={image.downloadURL}
                 alt={`Image ${index + 1}`}
                 className="w-full h-auto rounded-sm"
                 onClick={() => setOpenModal(image)}
@@ -227,7 +218,7 @@ const SearchResultsPage = () => {
                 className="absolute bottom-2 left-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleDownload(image.imageUrl, `${image.imageId}.webp`);
+                  handleDownload(image.downloadURL, `${image.imageId}.webp`);
                 }}
               >
                 <SaveAltIcon className="cursor-pointer text-white" />
@@ -246,29 +237,27 @@ const SearchResultsPage = () => {
         </Masonry>
       </Suspense>
 
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={3000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <MuiAlert
-          elevation={6}
-          variant="filled"
-          onClose={handleCloseSnackbar}
-          severity="success"
-        >
-          Image link copied to clipboard!
-        </MuiAlert>
-      </Snackbar>
-
       {modalData && (
         <DownloadModal
-          imageUrl={modalData.imageUrl}
+          downloadURL={modalData.downloadURL}
           imageId={modalData.imageId}
-          onClose={() => setModalData(null)}
+          onClose={() => setOpenModal(null)}
         />
       )}
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={2000}
+        onClose={handleCloseSnackbar}
+      >
+        <MuiAlert
+          onClose={handleCloseSnackbar}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          Link copied to clipboard!
+        </MuiAlert>
+      </Snackbar>
     </div>
   );
 };

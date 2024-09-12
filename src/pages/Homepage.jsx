@@ -14,7 +14,7 @@ import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import ShareSharpIcon from "@mui/icons-material/ShareSharp";
 import DownloadModal from "../components/DownloadModal";
 import Marquee from "react-fast-marquee";
-import { Skeleton, Snackbar } from "@mui/material";
+import { Snackbar } from "@mui/material";
 import { ImagesContext } from "../components/ImagesContext";
 import carouselMaker from "../assets/carouselmaker.png";
 import blogToCarousel from "../assets/blogtocarousel.png";
@@ -39,7 +39,7 @@ const Homepage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
-  const { setSearchQuery } = useContext(ImagesContext);
+  const { images } = useContext(ImagesContext);
   const [showLeftButton, setShowLeftButton] = useState(false);
   const scrollRef = useRef(null);
   const [modalData, setModalData] = useState(null);
@@ -59,26 +59,13 @@ const Homepage = () => {
   };
 
   useEffect(() => {
-    const fetchAIAndMLCollection = async () => {
-      try {
-        const q = query(collection(db, "AI and ML"));
-        const querySnapshot = await getDocs(q);
-        const docs = querySnapshot.docs.map((doc) => ({
-          imageId: doc.data().imageId,
-          imageUrl: doc.data().downloadURL,
-          category: doc.data().category || "All", // Assuming 'category' is a field in Firestore
-        }));
-
-        setDisplayedImages(docs);
-        setFilteredImages(docs); // Initially, show all images
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error fetching documents: ", error);
-      }
-    };
-
-    fetchAIAndMLCollection();
-  }, []);
+    if (images.length > 0) {
+      // Only set displayed and filtered images once images are fetched from context
+      setDisplayedImages(images);
+      setFilteredImages(images); // Initially, show all images
+      setIsLoading(false);
+    }
+  }, [images]);
 
   const handleScroll = (direction) => {
     if (scrollRef.current) {
@@ -321,9 +308,9 @@ const Homepage = () => {
               className="relative group"
             >
               <img
-                loading="lazy"
+                loading="eager"
                 decoding="async"
-                src={image.imageUrl}
+                src={image.downloadURL}
                 alt={`Image ${index + 1}`}
                 className="w-full h-auto rounded-sm cursor-pointer object-cover"
                 onClick={() => setOpenModal(image)}
@@ -333,7 +320,7 @@ const Homepage = () => {
                 className="absolute bottom-2 left-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
                 onClick={(e) => {
                   e.stopPropagation(); // Prevent image click from triggering
-                  handleDownload(image.imageUrl, `${image.imageId}.webp`);
+                  handleDownload(image.downloadURL, `${image.imageId}.webp`);
                 }}
               >
                 <SaveAltIcon className="cursor-pointer text-white" />
@@ -370,7 +357,7 @@ const Homepage = () => {
 
       {modalData && (
         <DownloadModal
-          imageUrl={modalData.imageUrl}
+          downloadURL={modalData.downloadURL}
           imageId={modalData.imageId}
           onClose={() => setOpenModal(null)}
         />

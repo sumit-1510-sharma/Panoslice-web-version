@@ -5,6 +5,8 @@ import downloadIcon from "../assets/downloadIcon.png";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import "./Generate.css";
 import { Alert, Snackbar } from "@mui/material";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import { green } from "@mui/material/colors";
 
 const Generate = () => {
   const [imageUrl, setImageUrl] = useState("");
@@ -15,6 +17,7 @@ const Generate = () => {
   const [generatedImages, setGeneratedImages] = useState([]);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const stylePredefinedStrings = {
     illustration:
@@ -54,25 +57,45 @@ const Generate = () => {
     }
   };
 
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
   const clearExpiredImages = () => {
+    // Retrieve stored images from localStorage or initialize to an empty array
     const storedImages =
       JSON.parse(localStorage.getItem("generatedImages")) || [];
+
+    // Get current time in milliseconds
     const currentTime = Date.now();
+
+    // Filter out expired images (older than 1 hour)
     const filteredImages = storedImages.filter((image) => {
-      return currentTime - image.timestamp < 2 * 60 * 60 * 1000; // 2 hours
+      return (
+        image &&
+        image.timestamp &&
+        currentTime - image.timestamp < 1 * 60 * 60 * 1000 // 1 hour in milliseconds
+      );
     });
+
+    // Update localStorage with valid images only
     localStorage.setItem("generatedImages", JSON.stringify(filteredImages));
+
+    // Update the state with only valid image URLs
     setGeneratedImages(filteredImages.map((image) => image.url));
   };
 
+  // Function to generate a new image using the API
   const generateImage = async () => {
     setLoading(true);
+
     const url = "https://api.getimg.ai/v1/flux-schnell/text-to-image";
     const apiKey =
-      "key-3kGXa8tdB06z9j7dJ9LypacAAM4598Tsa8rlZzKCNplyIaKPoMBy1GzYAJwRjUqg7xyjujFiBhrCaRftM16xTjmRKEggGB0O"; // Replace with your actual API key
+      "key-4axDMYKIY4ETE6g3OVsPTY6VJCLc1mhLybosOGSrldAgpON1znOg8VcEzhIjRHxtU9AkheukhHPWk3wgJMOG35c3NpurVrQf"; // Load API key from environment variables
 
     const seed = Math.floor(Math.random() * 100) + 1;
     const steps = Math.floor(Math.random() * 4) + 2;
+
     const { width, height } = getAspectRatioDimensions(selectedFormat);
     const appendedPrompt = `${prompt} ${stylePredefinedStrings[selectedStyle]}`;
 
@@ -105,14 +128,18 @@ const Generate = () => {
 
       const newImage = { url: generatedImageUrl, timestamp: Date.now() };
 
-      setGeneratedImages((prevImages) => {
-        const updatedImages = [...prevImages, newImage];
-        localStorage.setItem("generatedImages", JSON.stringify(updatedImages));
-        return updatedImages.map((image) => image.url);
-      });
+      // Retrieve the existing images from localStorage
+      const storedImages =
+        JSON.parse(localStorage.getItem("generatedImages")) || [];
 
-      // Set a timeout to clear the image after 2 hours
-      setTimeout(clearExpiredImages, 2 * 60 * 60 * 1000); // 2 hours
+      // Avoid duplicate entries in case the same image is generated twice
+      const updatedImages = [...storedImages, newImage];
+
+      // Update localStorage with the combined images (only unique)
+      localStorage.setItem("generatedImages", JSON.stringify(updatedImages));
+
+      // Update state with the new images list (URLs only)
+      setGeneratedImages(updatedImages.map((image) => image.url));
     } catch (error) {
       setSnackbarMessage(error.message);
       setSnackbarOpen(true);
@@ -121,8 +148,9 @@ const Generate = () => {
     }
   };
 
+  // In your component's useEffect or on initial render, you should clear expired images:
   useEffect(() => {
-    clearExpiredImages(); // Clear expired images when component mounts
+    clearExpiredImages(); // This will clean up expired images on component load
   }, []);
 
   const handleCloseSnackbar = () => {
@@ -146,8 +174,43 @@ const Generate = () => {
       </Snackbar>
       <div className="flex items-center text-white mb-6 space-x-3">
         <p>Prompt</p>
-        <InfoOutlinedIcon className="text-[#D398C3]" fontSize="" />
+        <div className="relative">
+          <InfoOutlinedIcon
+            onClick={toggleDropdown}
+            className="cursor-pointer text-[#D398C3]"
+            fontSize=""
+          />
+          {isDropdownOpen && (
+            <div className="absolute text-sm w-[200px] sm:w-[400px] top-2 left-6 sm:left-8 bg-[#161616] opacity-85 border border-[#707070] text-white p-4 rounded-md shadow-md z-40">
+              <p>
+                Create images by just providing the text or topic of what you
+                want to create.
+              </p>
+              <div className="mt-4 text-xs space-y-2">
+                <div className="flex items-center space-x-2">
+                  <div className="text-green-600">
+                    <CheckCircleOutlineIcon fontSize="small" />
+                  </div>
+                  <p>
+                    Just enter the topic. (Don’t need to enter “Create an image
+                    of…”)
+                  </p>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="text-green-600">
+                    <CheckCircleOutlineIcon fontSize="small" />
+                  </div>
+                  <p>
+                    Just select the style. (No need for descriptions apart from
+                    the topic)
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
+
       <div className="flex flex-col md:flex-row items-start">
         {/* Left side: Text area for input */}
         <div className="w-[100%] md:w-[40%]">
@@ -232,7 +295,7 @@ const Generate = () => {
       </div>
 
       {generatedImages.length > 0 && (
-        <div>
+        <div className="mb-32">
           <h2 className="text-white text-lg mb-4">Generated Images</h2>
           <div className="flex flex-wrap gap-4">
             {generatedImages.map((image, index) => (
