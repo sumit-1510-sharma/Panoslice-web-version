@@ -137,7 +137,7 @@ const Creator = () => {
         </div>
       </div>
 
-      <div className="flex items-center justify-between w-[98%] mt-2 mb-8 sticky top-[44px] sm:top-[60px] py-4 border-b border-[#B276AA] border-opacity-25 bg-[#161616] z-10">
+      <div className="flex items-center justify-between w-full mt-2 mb-8 sticky top-[44px] sm:top-[60px] py-4 border-b border-[#B276AA] border-opacity-25 bg-[#161616] z-10">
         <p>More By the Creator</p>
       </div>
 
@@ -158,51 +158,52 @@ const Creator = () => {
         </Masonry>
       </ResponsiveMasonry> */}
 
-      <ResponsiveMasonry
-        columnsCountBreakPoints={{ 350: 1, 750: 2, 1024: 3, 1280: 4 }}
-      >
-        <Masonry gutter="12px">
-          {memoizedImages.map((image, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="cursor-pointer relative group hover:opacity-85 transition-opacity duration-300 p-1"
-              onClick={() => setOpenModal(image)}
-            >
-              <img
-                src={image.downloadURL}
-                alt=""
-                loading="lazy"
-                decoding="async"
-                className="border border-[#B276AA] border-opacity-25 rounded-sm w-full h-auto object-cover"
-              />
-              {/* Download button, only visible on hover */}
-              <div
-                className="absolute bottom-2 left-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
-                onClick={(e) => {
-                  e.stopPropagation(); // Prevent image click from triggering
-                  handleDownload(image.downloadURL, `${image.imageId}.webp`);
-                }}
+      <div className="w-full block">
+        <ResponsiveMasonry
+          columnsCountBreakPoints={{ 350: 1, 750: 2, 1024: 3, 1280: 4 }}
+        >
+          <Masonry gutter="16px">
+            {memoizedImages.map((image, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="cursor-pointer relative group hover:opacity-85 transition-opacity duration-300"
+                onClick={() => setOpenModal(image)}
               >
-                <SaveAltIcon className="cursor-pointer text-white" />
-              </div>
-              {/* Share button, only visible on hover */}
-              <div
-                className="absolute bottom-2 right-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
-                onClick={(e) => {
-                  e.stopPropagation(); // Prevent image click from triggering
-                  handleShare(image.imageId);
-                }}
-              >
-                <ShareSharpIcon className="cursor-pointer text-white" />
-              </div>
-            </motion.div>
-          ))}
-        </Masonry>
-      </ResponsiveMasonry>
-
+                <img
+                  src={image.downloadURL}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  className="border border-[#B276AA] border-opacity-25 rounded-sm w-full h-auto object-cover"
+                />
+                {/* Download button, only visible on hover */}
+                <div
+                  className="absolute bottom-2 left-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent image click from triggering
+                    handleDownload(image.downloadURL, `${image.imageId}.webp`);
+                  }}
+                >
+                  <SaveAltIcon className="cursor-pointer text-white" />
+                </div>
+                {/* Share button, only visible on hover */}
+                <div
+                  className="absolute bottom-2 right-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent image click from triggering
+                    handleShare(image.imageId);
+                  }}
+                >
+                  <ShareSharpIcon className="cursor-pointer text-white" />
+                </div>
+              </motion.div>
+            ))}
+          </Masonry>
+        </ResponsiveMasonry>
+      </div>
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={3000}

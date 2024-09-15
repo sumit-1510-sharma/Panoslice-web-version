@@ -214,6 +214,7 @@ const Gallery = () => {
                 alt={`Image ${index + 1}`}
                 className="mb-5 border border-[#B276AA] border-opacity-25 rounded-sm"
                 onClick={() => setOpenModal(image)}
+                loading="lazy"
               />
               <div
                 className="absolute bottom-2 left-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
