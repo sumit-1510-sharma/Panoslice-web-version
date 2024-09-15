@@ -57,7 +57,7 @@ const BlogPost = () => {
           Published on: {new Date(publishDate).toDateString()}
         </p>
       </div>
-      <div className="prose prose-lg max-w-full">
+      <div className="prose prose-lg prose-invert max-w-full text-white">
         {/* Assuming body is rich text */}
         {content && documentToReactComponents(content)}
         {/* Adjust based on how you store the body */}
