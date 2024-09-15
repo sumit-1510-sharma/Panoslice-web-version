@@ -6,7 +6,6 @@ import React, {
   useContext,
 } from "react";
 import { collection, getDocs, limit, query, where } from "firebase/firestore";
-import Masonry from "@mui/lab/Masonry";
 import { motion } from "framer-motion";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
@@ -19,6 +18,7 @@ import { Snackbar } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import DownloadModal from "../components/DownloadModal";
 import { ImagesContext } from "../components/ImagesContext";
+import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 
 const Creator = () => {
   const [displayedImages, setDisplayedImages] = useState([]);
@@ -119,7 +119,7 @@ const Creator = () => {
   const memoizedImages = useMemo(() => displayedImages, [displayedImages]);
 
   return (
-    <div className="flex flex-col items-center mx-2 sm:mx-6 mt-28 text-white">
+    <div className="mx-2 sm:mx-6 mt-28 text-white">
       <div className="w-full flex flex-col items-center space-y-4 mb-12">
         <img
           className="object-cover rounded-full w-14 h-14"
@@ -141,50 +141,67 @@ const Creator = () => {
         <p>More By the Creator</p>
       </div>
 
-      <Suspense fallback={<div>Loading...</div>}>
-        <Masonry columns={{ xs: 1, sm: 2, md: 3 }} spacing={2}>
+      {/* <ResponsiveMasonry
+        columnsCountBreakPoints={{ 350: 1, 750: 2, 1024: 3, 1280: 4 }}
+      >
+        <Masonry gutter="16px">
+          {memoizedImages.map((image, index) => (
+            <img
+              key={index}
+              src={image.downloadURL}
+              alt={`image-${index}`}
+              loading="lazy"
+              decoding="async"
+              className="border border-[#B276AA] border-opacity-25 rounded-sm w-full h-auto object-cover"
+            />
+          ))}
+        </Masonry>
+      </ResponsiveMasonry> */}
+
+      <ResponsiveMasonry
+        columnsCountBreakPoints={{ 350: 1, 750: 2, 1024: 3, 1280: 4 }}
+      >
+        <Masonry gutter="12px">
           {memoizedImages.map((image, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="masonry-item cursor-pointer relative group hover:opacity-85 transition-opacity duration-300 mb-5 p-1"
+              className="cursor-pointer relative group hover:opacity-85 transition-opacity duration-300 p-1"
               onClick={() => setOpenModal(image)}
             >
-              <div className="bg-gray-700 bg-opacity-50">
-                <img
-                  src={image.downloadURL}
-                  alt=""
-                  loading="lazy"
-                  decoding="async"
-                  className="border border-[#B276AA] border-opacity-25 rounded-sm w-full h-auto object-cover"
-                />
-                {/* Download button, only visible on hover */}
-                <div
-                  className="absolute bottom-2 left-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
-                  onClick={(e) => {
-                    e.stopPropagation(); // Prevent image click from triggering
-                    handleDownload(image.downloadURL, `${image.imageId}.webp`);
-                  }}
-                >
-                  <SaveAltIcon className="cursor-pointer text-white" />
-                </div>
-                {/* Share button, only visible on hover */}
-                <div
-                  className="absolute bottom-2 right-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
-                  onClick={(e) => {
-                    e.stopPropagation(); // Prevent image click from triggering
-                    handleShare(image.imageId);
-                  }}
-                >
-                  <ShareSharpIcon className="cursor-pointer text-white" />
-                </div>
+              <img
+                src={image.downloadURL}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                className="border border-[#B276AA] border-opacity-25 rounded-sm w-full h-auto object-cover"
+              />
+              {/* Download button, only visible on hover */}
+              <div
+                className="absolute bottom-2 left-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent image click from triggering
+                  handleDownload(image.downloadURL, `${image.imageId}.webp`);
+                }}
+              >
+                <SaveAltIcon className="cursor-pointer text-white" />
+              </div>
+              {/* Share button, only visible on hover */}
+              <div
+                className="absolute bottom-2 right-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent image click from triggering
+                  handleShare(image.imageId);
+                }}
+              >
+                <ShareSharpIcon className="cursor-pointer text-white" />
               </div>
             </motion.div>
           ))}
         </Masonry>
-      </Suspense>
+      </ResponsiveMasonry>
 
       <Snackbar
         open={snackbarOpen}

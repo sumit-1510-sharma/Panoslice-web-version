@@ -11,6 +11,7 @@ import { ImagesProvider } from "./components/ImagesContext"; // Import the provi
 import SearchResultsPage from "./pages/SearchResultsPage";
 import Gallery from "./pages/Gallery";
 import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
               <Route path="/toptools" element={<TopTools />} />
               <Route path="/creator" element={<Creator />} />
               <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/upload" element={<UploadImage />} />
               <Route path="/search/:query" element={<SearchResultsPage />} />
               <Route path="/gallery" element={<Gallery />} />

@@ -15,9 +15,10 @@ import ShareSharpIcon from "@mui/icons-material/ShareSharp";
 import DownloadModal from "../components/DownloadModal";
 import { Snackbar } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
-import Masonry from "@mui/lab/Masonry";
+
 import { motion } from "framer-motion";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 
 const SearchResultsPage = () => {
   const { images, searchQuery, setSearchQuery } = useContext(ImagesContext);
@@ -197,15 +198,17 @@ const SearchResultsPage = () => {
         </div>
       </div>
 
-      <Suspense fallback={<div>Loading...</div>}>
-        <Masonry columns={{ xs: 1, sm: 2, md: 3 }} spacing={2}>
+      <ResponsiveMasonry
+        columnsCountBreakPoints={{ 350: 1, 750: 2, 1024: 3, 1280: 4 }}
+      >
+        <Masonry gutter="16px">
           {filteredImages.map((image, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="relative group cursor-pointer mb-5"
+              className="relative group cursor-pointer"
             >
               <img
                 loading="lazy"
@@ -235,7 +238,7 @@ const SearchResultsPage = () => {
             </motion.div>
           ))}
         </Masonry>
-      </Suspense>
+      </ResponsiveMasonry>
 
       {modalData && (
         <DownloadModal
