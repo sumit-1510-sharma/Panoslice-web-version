@@ -1,7 +1,15 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { db } from "../firebase";
-import { collection, where, query, getDocs } from "firebase/firestore";
+import {
+  collection,
+  where,
+  query,
+  getDocs,
+  doc,
+  updateDoc,
+  increment,
+} from "firebase/firestore";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import sportImage from "../assets/sportimage.jpg";
 import creatorImage from "../assets/dipin_creatorimage.jpeg";
@@ -20,6 +28,7 @@ const Gallery = () => {
   const [modalData, setModalData] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const { setSearchQuery } = useContext(ImagesContext);
+  const { images } = useContext(ImagesContext);
   const navigate = useNavigate();
 
   const handleCloseSnackbar = (event, reason) => {
@@ -39,42 +48,49 @@ const Gallery = () => {
     navigate(`/search/${value}`);
   };
 
+  const incrementDownloadCount = async (url) => {
+    try {
+      const image = images.find((img) => img.downloadURL === url);
+      if (image) {
+        const docRef = doc(db, "AI and ML", image.docId); // Assume `docId` is stored in the context images
+        await updateDoc(docRef, { downloads: increment(1) });
+      }
+    } catch (error) {
+      console.error("Error incrementing download count:", error);
+    }
+  };
+
   const handleDownload = async (url, filename, format = "png") => {
     try {
-      // Fetch the image as a blob
       const response = await fetch(url);
       const blob = await response.blob();
 
-      // Create a temporary image element to load the blob
       const image = new Image();
       const blobURL = URL.createObjectURL(blob);
       image.src = blobURL;
 
       image.onload = () => {
-        // Create a canvas to convert the image format
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
 
-        // Set canvas size to the image size
         canvas.width = image.width;
         canvas.height = image.height;
 
-        // Draw the image onto the canvas
         ctx.drawImage(image, 0, 0);
 
-        // Convert the canvas to the desired format (JPG or PNG)
         const convertedImage = canvas.toDataURL(`image/${format}`);
 
-        // Create an anchor element and trigger a download
         const link = document.createElement("a");
         link.href = convertedImage;
         link.download = `${filename}.${format}`;
         document.body.appendChild(link);
         link.click();
 
-        // Clean up
         link.remove();
         URL.revokeObjectURL(blobURL);
+
+        // Increment download count after successful download
+        incrementDownloadCount(url);
       };
     } catch (error) {
       console.error("Error downloading the image:", error);

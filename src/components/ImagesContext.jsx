@@ -12,7 +12,11 @@ export const ImagesProvider = ({ children }) => {
     const fetchImages = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, "AI and ML"));
-        const fetchedImages = querySnapshot.docs.map((doc) => doc.data());
+        // Map docs to include both data and docId
+        const fetchedImages = querySnapshot.docs.map((doc) => ({
+          docId: doc.id,
+          ...doc.data(),
+        }));
         console.log(fetchedImages);
         setImages(fetchedImages);
       } catch (error) {

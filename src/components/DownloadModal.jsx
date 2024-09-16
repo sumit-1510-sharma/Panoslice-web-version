@@ -29,17 +29,23 @@ const modalStyle = {
 const DownloadModal = ({ downloadURL, imageId, onClose }) => {
   const navigate = useNavigate();
   const [fitMode, setFitMode] = useState("object-contain");
-  const { images, setSearchQuery } = useContext(ImagesContext); // Access images from context
+  const { images, setSearchQuery } = useContext(ImagesContext);
   const [imageData, setImageData] = useState(null);
   const [tags, setTags] = useState([]);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
 
-  const handleCloseSnackbar = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setSnackbarOpen(false);
-  };
+  useEffect(() => {
+    const fetchImageDataFromContext = () => {
+      const selectedImage = images.find((img) => img.imageId === imageId);
+      if (selectedImage) {
+        setImageData(selectedImage);
+        setTags(selectedImage.tags || []);
+        incrementViewCount(selectedImage.docId); // Use the document ID stored in context
+      }
+    };
+
+    fetchImageDataFromContext();
+  }, [imageId]); // Ensure this useEffect runs only when necessary
 
   const incrementViewCount = async (docId) => {
     try {
@@ -50,31 +56,17 @@ const DownloadModal = ({ downloadURL, imageId, onClose }) => {
     }
   };
 
-  // Function to increment download count
   const incrementDownloadCount = async (imageId) => {
     try {
       const image = images.find((img) => img.imageId === imageId);
       if (image) {
-        const docRef = doc(db, "AI and ML", image.docId); // Assume `docId` is stored in the context images
+        const docRef = doc(db, "AI and ML", image.docId);
         await updateDoc(docRef, { downloads: increment(1) });
       }
     } catch (error) {
       console.error("Error incrementing download count:", error);
     }
   };
-
-  useEffect(() => {
-    const fetchImageDataFromContext = () => {
-      const selectedImage = images.find((img) => img.imageId === imageId);
-      if (selectedImage) {
-        setImageData(selectedImage);
-        setTags(selectedImage.tags || []);
-        // incrementViewCount(selectedImage.docId); // Use the document ID stored in context
-      }
-    };
-
-    fetchImageDataFromContext();
-  }, [imageId, images]);
 
   const handleShare = (imageId) => {
     const url = `${window.location.origin}/gallery?imageId=${imageId}`;
@@ -87,7 +79,6 @@ const DownloadModal = ({ downloadURL, imageId, onClose }) => {
     try {
       const response = await fetch(url);
       const blob = await response.blob();
-
       const image = new Image();
       const blobURL = URL.createObjectURL(blob);
       image.src = blobURL;
@@ -98,7 +89,6 @@ const DownloadModal = ({ downloadURL, imageId, onClose }) => {
 
         canvas.width = image.width;
         canvas.height = image.height;
-
         ctx.drawImage(image, 0, 0);
 
         const convertedImage = canvas.toDataURL(`image/${format}`);
@@ -112,8 +102,7 @@ const DownloadModal = ({ downloadURL, imageId, onClose }) => {
         link.remove();
         URL.revokeObjectURL(blobURL);
 
-        // Increment download count after successful download
-        incrementDownloadCount(imageId);
+        incrementDownloadCount(imageId); // Increment download count after successful download
       };
     } catch (error) {
       console.error("Error downloading the image:", error);
@@ -123,6 +112,13 @@ const DownloadModal = ({ downloadURL, imageId, onClose }) => {
   const handleSearch = (value) => {
     setSearchQuery(value);
     navigate(`/search/${value}`);
+  };
+
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSnackbarOpen(false);
   };
 
   return (

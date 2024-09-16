@@ -19,6 +19,7 @@ import MuiAlert from "@mui/material/Alert";
 import { motion } from "framer-motion";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
+import { doc, increment, updateDoc } from "firebase/firestore";
 
 const SearchResultsPage = () => {
   const { images, searchQuery, setSearchQuery } = useContext(ImagesContext);
@@ -102,10 +103,23 @@ const SearchResultsPage = () => {
   ];
 
   // Download the image
+  const incrementDownloadCount = async (url) => {
+    try {
+      const image = images.find((img) => img.downloadURL === url);
+      if (image) {
+        const docRef = doc(db, "AI and ML", image.docId); // Assume `docId` is stored in the context images
+        await updateDoc(docRef, { downloads: increment(1) });
+      }
+    } catch (error) {
+      console.error("Error incrementing download count:", error);
+    }
+  };
+
   const handleDownload = async (url, filename, format = "png") => {
     try {
       const response = await fetch(url);
       const blob = await response.blob();
+
       const image = new Image();
       const blobURL = URL.createObjectURL(blob);
       image.src = blobURL;
@@ -113,17 +127,25 @@ const SearchResultsPage = () => {
       image.onload = () => {
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
+
         canvas.width = image.width;
         canvas.height = image.height;
+
         ctx.drawImage(image, 0, 0);
+
         const convertedImage = canvas.toDataURL(`image/${format}`);
+
         const link = document.createElement("a");
         link.href = convertedImage;
         link.download = `${filename}.${format}`;
         document.body.appendChild(link);
         link.click();
+
         link.remove();
         URL.revokeObjectURL(blobURL);
+
+        // Increment download count after successful download
+        incrementDownloadCount(url);
       };
     } catch (error) {
       console.error("Error downloading the image:", error);
@@ -151,9 +173,9 @@ const SearchResultsPage = () => {
   }, [images, searchQuery]);
 
   return (
-    <div className="mt-24 md:mt-28 mb-24 lg:mt-40 text-white ml-4 sm:ml-8 sm:mr-4">
+    <div className="mt-24 md:mt-28 mb-24 lg:mt-40 text-white mx-2 sm:ml-4 sm:mr-4">
       <h1 className="mb-2 text-2xl md:text-4xl 2xl:text-6xl max-w-[50%]">
-        "{query}"
+        {query}
       </h1>
 
       <div className="flex items-center justify-between w-full pl-2 mt-14 mb-8 sticky top-[42px] sm:top-[58px] py-4 border-b border-[#B276AA] border-opacity-25 bg-[#161616] z-30">
