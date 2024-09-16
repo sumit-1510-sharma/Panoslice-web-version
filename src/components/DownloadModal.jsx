@@ -204,7 +204,7 @@ const DownloadModal = ({ downloadURL, imageId, onClose }) => {
             </div>
 
             <div
-              onClick={() => handleDownload(downloadURL, `${imageId}.webp`)}
+              onClick={() => handleDownload(downloadURL, `${imageId}`)}
               className="cursor-pointer flex items-center absolute -bottom-4 right-28 text-xs sm:text-sm bg-[#1D1D1D] rounded-md border border-white border-opacity-20 text-white px-4 py-1 space-x-2"
             >
               <button>Download</button>

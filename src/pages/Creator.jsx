@@ -158,7 +158,7 @@ const Creator = () => {
         </Masonry>
       </ResponsiveMasonry> */}
 
-      <div className="w-full block">
+      <div className="w-full block mb-24">
         <ResponsiveMasonry
           columnsCountBreakPoints={{ 350: 1, 750: 2, 1024: 3, 1280: 4 }}
         >
@@ -184,7 +184,7 @@ const Creator = () => {
                   className="absolute bottom-2 left-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
                   onClick={(e) => {
                     e.stopPropagation(); // Prevent image click from triggering
-                    handleDownload(image.downloadURL, `${image.imageId}.webp`);
+                    handleDownload(image.downloadURL, `${image.imageId}`);
                   }}
                 >
                   <SaveAltIcon className="cursor-pointer text-white" />

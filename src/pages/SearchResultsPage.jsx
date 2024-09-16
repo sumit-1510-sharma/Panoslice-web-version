@@ -151,7 +151,7 @@ const SearchResultsPage = () => {
   }, [images, searchQuery]);
 
   return (
-    <div className="mt-24 md:my-28 lg:my-40 text-white ml-4 sm:ml-8 sm:mr-4">
+    <div className="mt-24 md:mt-28 mb-24 lg:mt-40 text-white ml-4 sm:ml-8 sm:mr-4">
       <h1 className="mb-2 text-2xl md:text-4xl 2xl:text-6xl max-w-[50%]">
         "{query}"
       </h1>
@@ -221,7 +221,7 @@ const SearchResultsPage = () => {
                 className="absolute bottom-2 left-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleDownload(image.downloadURL, `${image.imageId}.webp`);
+                  handleDownload(image.downloadURL, `${image.imageId}`);
                 }}
               >
                 <SaveAltIcon className="cursor-pointer text-white" />

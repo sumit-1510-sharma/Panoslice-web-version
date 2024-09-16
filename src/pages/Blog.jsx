@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import client from "../contentful/contentful"; // Import the Contentful client
 import { Link } from "react-router-dom";
-// import "./Blog.css";
+import "./Blog.css";
 
 const Blog = () => {
   const [posts, setPosts] = useState([]);

@@ -297,7 +297,7 @@ const Homepage = () => {
             </button>
           </div>
         </div>
-        <div className="w-full block ml-2">
+        <div className="w-full block ml-2 mb-24">
           <ResponsiveMasonry
             columnsCountBreakPoints={{ 350: 1, 750: 2, 1024: 3, 1280: 4 }}
           >
@@ -325,7 +325,7 @@ const Homepage = () => {
                       e.stopPropagation(); // Prevent image click from triggering
                       handleDownload(
                         image.downloadURL,
-                        `${image.imageId}.webp`
+                        `${image.imageId}`
                       );
                     }}
                   >
