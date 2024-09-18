@@ -173,8 +173,8 @@ const SearchResultsPage = () => {
   }, [images, searchQuery]);
 
   return (
-    <div className="mt-24 md:mt-28 mb-24 lg:mt-40 text-white mx-2 sm:ml-4 sm:mr-4">
-      <h1 className="mb-2 text-2xl md:text-4xl 2xl:text-6xl max-w-[50%]">
+    <div className="mt-24 md:mt-28 mb-24 lg:mt-40 text-white mx-4 sm:mx-8">
+      <h1 className="mb-2 ml-3 text-2xl md:text-4xl 2xl:text-6xl max-w-[50%]">
         {query}
       </h1>
 
@@ -186,7 +186,7 @@ const SearchResultsPage = () => {
         <div className="relative flex items-center justify-center w-[91.5%] sm:w-[95%] md:w-[73%] md:mr-12 lg:w-[77%] xl:w-[80%] sm:mr-8">
           {showLeftButton && (
             <button
-              className="absolute -left-7 md:-left-10 z-10 p-1 bg-opacity-50 rounded-full"
+              className="absolute -left-6 md:-left-10 z-10 p-1 bg-opacity-50 rounded-full"
               onClick={() => handleScroll("left")}
             >
               <ArrowLeftIcon />
@@ -212,7 +212,7 @@ const SearchResultsPage = () => {
             ))}
           </div>
           <button
-            className="absolute -right-8 md:-right-11 z-10 p-1 bg-opacity-50 rounded-full"
+            className="absolute -right-9 md:-right-11 z-10 p-1 bg-opacity-50 rounded-full"
             onClick={() => handleScroll("right")}
           >
             <ArrowRightIcon />
@@ -223,43 +223,49 @@ const SearchResultsPage = () => {
       <ResponsiveMasonry
         columnsCountBreakPoints={{ 350: 1, 750: 2, 1024: 3, 1280: 4 }}
       >
-        <Masonry gutter="16px">
-          {filteredImages.map((image, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="relative group cursor-pointer"
-            >
-              <img
-                loading="lazy"
-                src={image.downloadURL}
-                alt={`Image ${index + 1}`}
-                className="w-full h-auto rounded-sm"
-                onClick={() => setOpenModal(image)}
-              />
-              <div
-                className="absolute bottom-2 left-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDownload(image.downloadURL, `${image.imageId}`);
-                }}
+        {filteredImages.length > 0 ? (
+          <Masonry gutter="16px">
+            {filteredImages.map((image, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="relative group cursor-pointer"
               >
-                <SaveAltIcon className="cursor-pointer text-white" />
-              </div>
-              <div
-                className="absolute bottom-2 right-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleShare(image.imageId);
-                }}
-              >
-                <ShareSharpIcon className="cursor-pointer text-white" />
-              </div>
-            </motion.div>
-          ))}
-        </Masonry>
+                <img
+                  loading="lazy"
+                  src={image.downloadURL}
+                  alt={`Image ${index + 1}`}
+                  className="w-full h-auto rounded-sm"
+                  onClick={() => setOpenModal(image)}
+                />
+                <div
+                  className="absolute bottom-2 left-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDownload(image.downloadURL, `${image.imageId}`);
+                  }}
+                >
+                  <SaveAltIcon className="cursor-pointer text-white" />
+                </div>
+                <div
+                  className="absolute bottom-2 right-2 z-20 bg-black bg-opacity-80 py-0.5 px-1 rounded-md opacity-0 group-hover:opacity-85 transition-opacity duration-200"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleShare(image.imageId);
+                  }}
+                >
+                  <ShareSharpIcon className="cursor-pointer text-white" />
+                </div>
+              </motion.div>
+            ))}
+          </Masonry>
+        ) : (
+          <div className="text-center text-lg text-gray-400 mt-8">
+            No images found.
+          </div>
+        )}
       </ResponsiveMasonry>
 
       {modalData && (

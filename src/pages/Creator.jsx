@@ -135,7 +135,7 @@ const Creator = () => {
   const memoizedImages = useMemo(() => displayedImages, [displayedImages]);
 
   return (
-    <div className="mx-2 sm:mx-6 mt-28 text-white">
+    <div className="mx-4 sm:mx-8 mt-28 text-white">
       <div className="w-full flex flex-col items-center space-y-4 mb-12">
         <img
           className="object-cover rounded-full w-14 h-14"

@@ -186,7 +186,7 @@ const Homepage = () => {
 
   return (
     <div>
-      <div className="flex flex-col items-center text-white mx-2 sm:mx-6">
+      <div className="flex flex-col items-center text-white ml-3 mr-5 sm:ml-7 sm:mr-9">
         <div className="bg-[#1D1D1D] rounded-full py-1 px-4 mt-24 sm:mt-32 shadow-[0_0_24px_10px_rgba(178,118,170,0.5)] z-10">
           <div className="flex items-center w-[250px] sm:w-[350px] md:w-[450px] lg:w-[600px]">
             <p

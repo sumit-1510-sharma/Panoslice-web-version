@@ -85,13 +85,51 @@ const Generate = () => {
     setGeneratedImages(filteredImages.map((image) => image.url));
   };
 
+  const checkGenerationLimit = () => {
+    const limit = 5;
+    const today = new Date().toISOString().split("T")[0];
+    const storageKey = `imageLimit_${today}`;
+    const storageValue = localStorage.getItem(storageKey);
+
+    if (storageValue) {
+      const data = JSON.parse(storageValue);
+      if (data.count >= limit) {
+        return false;
+      } else {
+        return true;
+      }
+    }
+    localStorage.setItem(storageKey, JSON.stringify({ count: 1 }));
+    return true;
+  };
+
+  const updateGenerationCount = () => {
+    const today = new Date().toISOString().split("T")[0];
+    const storageKey = `imageLimit_${today}`;
+    const storageValue = localStorage.getItem(storageKey);
+    let data = { count: 1 };
+
+    if (storageValue) {
+      data = JSON.parse(storageValue);
+      data.count += 1;
+    }
+
+    localStorage.setItem(storageKey, JSON.stringify(data));
+  };
+
   // Function to generate a new image using the API
   const generateImage = async () => {
+    if (!checkGenerationLimit()) {
+      setSnackbarMessage("Daily limit reached. Please try again tomorrow.");
+      setSnackbarOpen(true);
+      return;
+    }
+
     setLoading(true);
 
     const url = "https://api.getimg.ai/v1/flux-schnell/text-to-image";
     const apiKey =
-      "key-4axDMYKIY4ETE6g3OVsPTY6VJCLc1mhLybosOGSrldAgpON1znOg8VcEzhIjRHxtU9AkheukhHPWk3wgJMOG35c3NpurVrQf"; // Load API key from environment variables
+      "key-4axDMYKIY4ETE6g3OVsPTY6VJCLc1mhLybosOGSrldAgpON1znOg8VcEzhIjRHxtU9AkheukhHPWk3wgJMOG35c3NpurVrQf";
 
     const seed = Math.floor(Math.random() * 100) + 1;
     const steps = Math.floor(Math.random() * 4) + 2;
@@ -127,19 +165,14 @@ const Generate = () => {
       setImageUrl(generatedImageUrl);
 
       const newImage = { url: generatedImageUrl, timestamp: Date.now() };
-
-      // Retrieve the existing images from localStorage
       const storedImages =
         JSON.parse(localStorage.getItem("generatedImages")) || [];
-
-      // Avoid duplicate entries in case the same image is generated twice
       const updatedImages = [...storedImages, newImage];
 
-      // Update localStorage with the combined images (only unique)
       localStorage.setItem("generatedImages", JSON.stringify(updatedImages));
-
-      // Update state with the new images list (URLs only)
       setGeneratedImages(updatedImages.map((image) => image.url));
+
+      updateGenerationCount();
     } catch (error) {
       setSnackbarMessage(error.message);
       setSnackbarOpen(true);
