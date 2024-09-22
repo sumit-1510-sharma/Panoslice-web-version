@@ -39,7 +39,7 @@ const BlogPost = () => {
     );
   }
 
-  const { title, coverImage, content, author, publishDate } = post.fields;
+  const { title, coverImage, content, publishDate, authorName } = post.fields;
 
   return (
     <div className="max-w-4xl mx-4 md:mx-20 lg:mx-32 px-4 py-8 my-20 text-white">
@@ -51,8 +51,8 @@ const BlogPost = () => {
           className="w-full h-auto mb-6 rounded-lg shadow-lg"
         />
       )}
-      <div className="text-gray-700 mb-6">
-        <p className="text-sm">By: {author?.fields?.name || "Unknown"}</p>
+      <div className="text-gray-500 mb-6">
+        <p className="text-sm">By: {authorName || "Unknown"}</p>
         <p className="text-sm">
           Published on: {new Date(publishDate).toDateString()}
         </p>
