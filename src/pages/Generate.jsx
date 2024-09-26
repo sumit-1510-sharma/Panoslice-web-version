@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import BrowserUpdatedIcon from "@mui/icons-material/BrowserUpdated";
 import ImageIcon from "@mui/icons-material/Image";
 import downloadIcon from "../assets/downloadIcon.png";
@@ -18,6 +18,7 @@ const Generate = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
   const [credits, setCredits] = useState(5);
 
   const stylePredefinedStrings = {
@@ -87,7 +88,7 @@ const Generate = () => {
   };
 
   const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
+    setIsDropdownOpen(true);
   };
 
   const clearExpiredImages = () => {
@@ -114,37 +115,37 @@ const Generate = () => {
     setGeneratedImages(filteredImages.map((image) => image.url));
   };
 
-  const checkGenerationLimit = () => {
-    const limit = 5;
-    const today = new Date().toISOString().split("T")[0];
-    const storageKey = `imageLimit_${today}`;
-    const storageValue = localStorage.getItem(storageKey);
+  // const checkGenerationLimit = () => {
+  //   const limit = 5;
+  //   const today = new Date().toISOString().split("T")[0];
+  //   const storageKey = `imageLimit_${today}`;
+  //   const storageValue = localStorage.getItem(storageKey);
 
-    if (storageValue) {
-      const data = JSON.parse(storageValue);
-      if (data.count >= limit) {
-        return false;
-      } else {
-        return true;
-      }
-    }
-    localStorage.setItem(storageKey, JSON.stringify({ count: 1 }));
-    return true;
-  };
+  //   if (storageValue) {
+  //     const data = JSON.parse(storageValue);
+  //     if (data.count >= limit) {
+  //       return false;
+  //     } else {
+  //       return true;
+  //     }
+  //   }
+  //   localStorage.setItem(storageKey, JSON.stringify({ count: 1 }));
+  //   return true;
+  // };
 
-  const updateGenerationCount = () => {
-    const today = new Date().toISOString().split("T")[0];
-    const storageKey = `imageLimit_${today}`;
-    const storageValue = localStorage.getItem(storageKey);
-    let data = { count: 1 };
+  // const updateGenerationCount = () => {
+  //   const today = new Date().toISOString().split("T")[0];
+  //   const storageKey = `imageLimit_${today}`;
+  //   const storageValue = localStorage.getItem(storageKey);
+  //   let data = { count: 1 };
 
-    if (storageValue) {
-      data = JSON.parse(storageValue);
-      data.count += 1;
-    }
+  //   if (storageValue) {
+  //     data = JSON.parse(storageValue);
+  //     data.count += 1;
+  //   }
 
-    localStorage.setItem(storageKey, JSON.stringify(data));
-  };
+  //   localStorage.setItem(storageKey, JSON.stringify(data));
+  // };
 
   // Function to generate a new image using the API
   const generateImage = async () => {
@@ -156,8 +157,7 @@ const Generate = () => {
 
     setLoading(true);
     const url = "https://api.getimg.ai/v1/flux-schnell/text-to-image";
-    const apiKey =
-      "key-4axDMYKIY4ETE6g3OVsPTY6VJCLc1mhLybosOGSrldAgpON1znOg8VcEzhIjRHxtU9AkheukhHPWk3wgJMOG35c3NpurVrQf";
+    const apiKey = import.meta.env.VITE_IMAGE_API_KEY;
     const seed = Math.floor(Math.random() * 100) + 1;
     const steps = Math.floor(Math.random() * 4) + 2;
     const { width, height } = getAspectRatioDimensions(selectedFormat);
@@ -212,6 +212,25 @@ const Generate = () => {
     initializeCredits(); // Initialize or reset credits based on the date
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false); // Close the dropdown if clicked outside
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    // Cleanup event listener when component unmounts or isDropdownOpen changes
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isDropdownOpen]);
+
   const handleCloseSnackbar = () => {
     setSnackbarOpen(false);
   };
@@ -240,7 +259,10 @@ const Generate = () => {
             fontSize=""
           />
           {isDropdownOpen && (
-            <div className="absolute text-sm w-[200px] sm:w-[400px] top-2 left-6 sm:left-8 bg-[#161616] opacity-85 border border-[#707070] text-white p-4 rounded-md shadow-md z-40">
+            <div
+              ref={dropdownRef}
+              className="absolute text-sm w-[200px] sm:w-[400px] top-2 left-6 sm:left-8 bg-[#161616] opacity-85 border border-[#707070] text-white p-4 rounded-md shadow-md z-40"
+            >
               <p>
                 Create images by just providing the text or topic of what you
                 want to create.

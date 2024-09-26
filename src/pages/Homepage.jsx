@@ -253,7 +253,7 @@ const Homepage = () => {
         </div>
 
         <div className="relative flex flex-col items-center space-y-5 mt-12">
-          <p className="text-[40px] sm:text-[44px] leading-tight sm:leading-tight max-w-lg text-center">
+          <p className="mx-1 text-[40px] sm:text-[44px] leading-tight sm:leading-tight max-w-lg text-center">
             Create anything you imagine, in seconds
           </p>
 

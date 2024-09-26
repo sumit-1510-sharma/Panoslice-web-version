@@ -14,6 +14,7 @@ import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
@@ -31,9 +32,10 @@ function App() {
               <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/terms-of-service" element={<Terms />} />
               <Route path="/privacy-policy" element={<Privacy />} />
-              <Route path="/upload" element={<UploadImage />} />
+              {/* <Route path="/upload" element={<UploadImage />} /> */}
               <Route path="/search/:query" element={<SearchResultsPage />} />
               <Route path="/gallery" element={<Gallery />} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </div>
           <Footer />
