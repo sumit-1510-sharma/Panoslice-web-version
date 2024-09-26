@@ -7,7 +7,7 @@ const ToolCard = ({ title, media, mediaType }) => {
         {mediaType === "video" ? (
           <video
             src={media}
-            className="border border-[#B276AA] border-opacity-25 rounded-sm object-cover mx-auto"
+            className="border w-full h-full border-[#B276AA] border-opacity-25 rounded-sm object-cover mx-auto"
             loop
             autoPlay
             muted

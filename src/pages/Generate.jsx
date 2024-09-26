@@ -13,11 +13,12 @@ const Generate = () => {
   const [prompt, setPrompt] = useState("");
   const [selectedFormat, setSelectedFormat] = useState("option1");
   const [selectedStyle, setSelectedStyle] = useState("illustration");
-  const [loading, setLoading] = useState(false); // New state for loading
+  const [loading, setLoading] = useState(false);
   const [generatedImages, setGeneratedImages] = useState([]);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [credits, setCredits] = useState(5);
 
   const stylePredefinedStrings = {
     illustration:
@@ -54,6 +55,34 @@ const Generate = () => {
         return { width: 800, height: 1000 }; // 4:5
       default:
         return { width: 1080, height: 1080 }; // Default to 1:1
+    }
+  };
+
+  const initializeCredits = () => {
+    const today = new Date().toISOString().split("T")[0]; // Get current date in YYYY-MM-DD
+    const storedData = JSON.parse(localStorage.getItem("creditData")) || {};
+
+    // If no stored data or if 24 hours have passed, reset credits to 5
+    if (!storedData.date || storedData.date !== today) {
+      const newCreditData = { date: today, credits: 5 };
+      localStorage.setItem("creditData", JSON.stringify(newCreditData));
+      setCredits(5); // Reset state to 5 credits
+    } else {
+      setCredits(storedData.credits); // Load remaining credits
+    }
+  };
+
+  const reduceCredits = () => {
+    const today = new Date().toISOString().split("T")[0];
+    const storedData = JSON.parse(localStorage.getItem("creditData")) || {
+      date: today,
+      credits: 5,
+    };
+
+    if (storedData.credits > 0) {
+      storedData.credits -= 1;
+      localStorage.setItem("creditData", JSON.stringify(storedData));
+      setCredits(storedData.credits); // Update state with new credit count
     }
   };
 
@@ -119,21 +148,18 @@ const Generate = () => {
 
   // Function to generate a new image using the API
   const generateImage = async () => {
-    if (!checkGenerationLimit()) {
-      setSnackbarMessage("Daily limit reached. Please try again tomorrow.");
+    if (credits <= 0) {
+      setSnackbarMessage("Insufficient credits. Please try again tomorrow.");
       setSnackbarOpen(true);
       return;
     }
 
     setLoading(true);
-
     const url = "https://api.getimg.ai/v1/flux-schnell/text-to-image";
     const apiKey =
       "key-4axDMYKIY4ETE6g3OVsPTY6VJCLc1mhLybosOGSrldAgpON1znOg8VcEzhIjRHxtU9AkheukhHPWk3wgJMOG35c3NpurVrQf";
-
     const seed = Math.floor(Math.random() * 100) + 1;
     const steps = Math.floor(Math.random() * 4) + 2;
-
     const { width, height } = getAspectRatioDimensions(selectedFormat);
     const appendedPrompt = `${prompt} ${stylePredefinedStrings[selectedStyle]}`;
 
@@ -163,7 +189,6 @@ const Generate = () => {
       const generatedImageUrl = data.url;
 
       setImageUrl(generatedImageUrl);
-
       const newImage = { url: generatedImageUrl, timestamp: Date.now() };
       const storedImages =
         JSON.parse(localStorage.getItem("generatedImages")) || [];
@@ -172,7 +197,7 @@ const Generate = () => {
       localStorage.setItem("generatedImages", JSON.stringify(updatedImages));
       setGeneratedImages(updatedImages.map((image) => image.url));
 
-      updateGenerationCount();
+      reduceCredits(); // Reduce credits after successful image generation
     } catch (error) {
       setSnackbarMessage(error.message);
       setSnackbarOpen(true);
@@ -184,6 +209,7 @@ const Generate = () => {
   // In your component's useEffect or on initial render, you should clear expired images:
   useEffect(() => {
     clearExpiredImages(); // This will clean up expired images on component load
+    initializeCredits(); // Initialize or reset credits based on the date
   }, []);
 
   const handleCloseSnackbar = () => {
@@ -246,13 +272,16 @@ const Generate = () => {
 
       <div className="flex flex-col md:flex-row items-start">
         {/* Left side: Text area for input */}
-        <div className="w-[100%] md:w-[40%]">
+        <div className="relative w-[100%] md:w-[40%]">
           <textarea
             className="w-full text-white h-32 sm:h-44 md:h-60 p-4 bg-[#343434] rounded-md resize-y focus:outline-none"
             placeholder="Enter your prompt here..."
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
           ></textarea>
+          <button className="absolute -top-12 right-0 text-sm text-[#73D484] px-5 py-1 border border-[#2F483A] bg-[#1F2823] rounded-md">
+            Credits: {credits}
+          </button>
 
           <div className="flex items-center justify-between">
             <select

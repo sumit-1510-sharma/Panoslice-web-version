@@ -12,6 +12,8 @@ import SearchResultsPage from "./pages/SearchResultsPage";
 import Gallery from "./pages/Gallery";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
 
 function App() {
   return (
@@ -27,6 +29,8 @@ function App() {
               <Route path="/creator" element={<Creator />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogPost />} />
+              <Route path="/terms-of-service" element={<Terms />} />
+              <Route path="/privacy-policy" element={<Privacy />} />
               <Route path="/upload" element={<UploadImage />} />
               <Route path="/search/:query" element={<SearchResultsPage />} />
               <Route path="/gallery" element={<Gallery />} />

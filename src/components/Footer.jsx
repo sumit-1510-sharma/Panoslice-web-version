@@ -12,6 +12,14 @@ const Footer = () => {
     navigate("/blog");
   };
 
+  const handleTermsClick = () => {
+    navigate("/terms-of-service");
+  };
+
+  const handlePrivacyPolicyClick = () => {
+    navigate("/privacy-policy");
+  };
+
   const handleContactClick = () => {
     window.location.href =
       "mailto:dipin@blankcanvasdesign.co?subject=Contact%20Inquiry&body=Hello%20there%2C%0A%0A...";
@@ -31,18 +39,21 @@ const Footer = () => {
           >
             Blank Canvas Design Co.
           </div>
-          <div className="text-sm sm:text-base flex space-x-8 ml-12 whitespace-nowrap">
-            <p onClick={handleBlogClick} className="cursor-pointer opacity-65">
+          <div className="text-sm sm:text-base flex space-x-8 ml-12 whitespace-nowrap opacity-65">
+            <p onClick={handleBlogClick} className="cursor-pointer">
               Blog
             </p>
-            <p
-              onClick={handleContactClick}
-              className="cursor-pointer opacity-65"
-            >
+            <p onClick={handleContactClick} className="cursor-pointer">
               Contact
             </p>
             <p onClick={handleBecomeACr8rClick} className="cursor-pointer">
               Become a cr8r
+            </p>
+            <p onClick={handleTermsClick} className="cursor-pointer">
+              Terms of Service
+            </p>
+            <p onClick={handlePrivacyPolicyClick} className="cursor-pointer">
+              Privacy Policy
             </p>
           </div>
         </div>
