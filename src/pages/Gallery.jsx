@@ -178,7 +178,7 @@ const Gallery = () => {
                 )
               }
             >
-              Download
+              Down
             </button>
             <SaveAltIcon />
           </div>
