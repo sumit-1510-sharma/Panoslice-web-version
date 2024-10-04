@@ -1,42 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>https://www.example.com/</loc>
+        <loc>https://cr8r.ai/</loc>
         <lastmod>2024-10-02</lastmod>
         <priority>1.0</priority>
     </url>
     <url>
-        <loc>https://www.example.com/generate</loc>
+        <loc>https://cr8r.ai/generate</loc>
         <lastmod>2024-10-02</lastmod>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://www.example.com/toptools</loc>
+        <loc>https://cr8r.ai/toptools</loc>
         <lastmod>2024-10-02</lastmod>
         <priority>0.7</priority>
     </url>
     <url>
-        <loc>https://www.example.com/creator</loc>
+        <loc>https://cr8r.ai/creator</loc>
         <lastmod>2024-10-02</lastmod>
         <priority>0.7</priority>
     </url>
     <url>
-        <loc>https://www.example.com/blog</loc>
+        <loc>https://cr8r.ai/blog</loc>
         <lastmod>2024-10-02</lastmod>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://www.example.com/terms-of-service</loc>
+        <loc>https://cr8r.ai/terms-of-service</loc>
         <lastmod>2024-10-02</lastmod>
         <priority>0.5</priority>
     </url>
     <url>
-        <loc>https://www.example.com/privacy-policy</loc>
+        <loc>https://cr8r.ai/privacy-policy</loc>
         <lastmod>2024-10-02</lastmod>
         <priority>0.5</priority>
     </url>
     <url>
-        <loc>https://www.example.com/gallery</loc>
+        <loc>https://cr8r.ai/gallery</loc>
         <lastmod>2024-10-02</lastmod>
         <priority>0.6</priority>
     </url>
