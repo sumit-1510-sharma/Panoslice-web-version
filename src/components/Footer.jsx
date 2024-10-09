@@ -33,28 +33,18 @@ const Footer = () => {
     <div className="z-50">
       <div className="bg-[#1D1D1D] h-[40px] sm:h-[60px] text-white fixed -bottom-0.5 w-full">
         <div className="mx-4 sm:mx-8 py-[8.5px] sm:py-[17px] flex items-center justify-between overflow-x-auto">
-          <div
+          <button
             onClick={handleRedirectBlankCanvas}
-            className="cursor-pointer opacity-60 text-sm sm:text-base whitespace-nowrap"
+            className="opacity-60 text-sm sm:text-base whitespace-nowrap"
           >
             Blank Canvas Design Co.
-          </div>
+          </button>
           <div className="text-sm sm:text-base flex space-x-8 ml-12 whitespace-nowrap opacity-65">
-            <p onClick={handleBlogClick} className="cursor-pointer">
-              Blog
-            </p>
-            <p onClick={handleContactClick} className="cursor-pointer">
-              Contact
-            </p>
-            <p onClick={handleBecomeACr8rClick} className="cursor-pointer">
-              Become a cr8r
-            </p>
-            <p onClick={handleTermsClick} className="cursor-pointer">
-              Terms of Service
-            </p>
-            <p onClick={handlePrivacyPolicyClick} className="cursor-pointer">
-              Privacy Policy
-            </p>
+            <button onClick={handleBlogClick}>Blog</button>
+            <button onClick={handleContactClick}>Contact</button>
+            <button onClick={handleBecomeACr8rClick}>Become a cr8r</button>
+            <button onClick={handleTermsClick}>Terms of Service</button>
+            <button onClick={handlePrivacyPolicyClick}>Privacy Policy</button>
           </div>
         </div>
       </div>
