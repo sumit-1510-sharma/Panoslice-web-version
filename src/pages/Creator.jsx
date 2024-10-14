@@ -193,7 +193,7 @@ const Creator = () => {
                   alt=""
                   loading="lazy"
                   decoding="async"
-                  className="border border-[#B276AA] border-opacity-25 rounded-sm w-full h-auto object-cover"
+                  className="rounded-sm w-full h-auto object-cover"
                 />
                 {/* Download button, only visible on hover */}
                 <div

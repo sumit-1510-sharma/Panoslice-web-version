@@ -182,7 +182,7 @@ const Gallery = () => {
             </button>
             <SaveAltIcon />
           </div>
-          <div className="absolute -bottom-14 sm:-bottom-10 flex items-center space-x-4">
+          <div onClick={() => navigate("/creator")} className="cursor-pointer absolute -bottom-14 sm:-bottom-10 flex items-center space-x-4">
             <img
               className="rounded-full w-6 h-6 sm:w-6 sm:h-6"
               src={creatorImage}
@@ -228,7 +228,7 @@ const Gallery = () => {
               <img
                 src={image.downloadURL || sportImage}
                 alt={`Image ${index + 1}`}
-                className="mb-5 border border-[#B276AA] border-opacity-25 rounded-sm"
+                className="mb-5 rounded-sm"
                 onClick={() => setOpenModal(image)}
                 loading="lazy"
               />
