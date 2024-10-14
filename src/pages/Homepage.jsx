@@ -25,6 +25,7 @@ import aiColorGrader from "../assets/aicolorgrader.png";
 import aiHashtagGenerator from "../assets/aihashtaggenerator.png";
 import aiCaptionWriter from "../assets/aicaptionwriter.png";
 import bulkEditor from "../assets/bulkeditor.png";
+import linkedinGhostwriter from "../assets/linkedinghostwriter.png";
 import "./Homepage.css";
 import { db } from "../firebase"; // Adjust this import path to your firebase config file
 import {
@@ -171,6 +172,11 @@ const Homepage = () => {
       "https://apps.apple.com/in/app/lono-ai-reel-video-editor/id1632742723";
   };
 
+  const handleRedirectLek = () => {
+    window.location.href =
+      "https://apps.apple.com/in/app/lek-ghost-writer-for-branding/id6702005680";
+  };
+
   const handleButtonClick = (cat) => {
     setCategory(cat);
     if (cat === "All") {
@@ -245,6 +251,12 @@ const Homepage = () => {
                   </div>
                   <div className="cursor-pointer" onClick={handleRedirectLono}>
                     <Tool title="Batch Editor" image={bulkEditor} />
+                  </div>
+                  <div className="cursor-pointer" onClick={handleRedirectLek}>
+                    <Tool
+                      title="AI Linkedin Ghostwriter"
+                      image={linkedinGhostwriter}
+                    />
                   </div>
                 </div>
               </Marquee>

@@ -10,6 +10,7 @@ import aiColorGrader from "../assets/aicolorgrading.webp";
 import aiHashtagGenerator from "../assets/hashtaggenerator.webp";
 import captionWriter from "../assets/captionwriter.webp";
 import batchEditor from "../assets/batcheditor.mp4";
+import linkedinGhostwriter from "../assets/linkedinGhostwriterToolpage.png";
 
 const TopTools = () => {
   const navigate = useNavigate();
@@ -24,6 +25,13 @@ const TopTools = () => {
   const handleRedirectLono = () => {
     window.open(
       "https://apps.apple.com/in/app/lono-ai-reel-video-editor/id1632742723",
+      "_blank"
+    );
+  };
+
+  const handleRedirectLek = () => {
+    window.open(
+      "https://apps.apple.com/in/app/lek-ghost-writer-for-branding/id6702005680",
       "_blank"
     );
   };
@@ -106,6 +114,12 @@ const TopTools = () => {
             title={"Batch Editor for Video"}
             media={batchEditor}
             mediaType={"video"}
+          />
+        </div>
+        <div onClick={handleRedirectLek}>
+          <ToolCard
+            title={"AI Linkedin Ghostwriter"}
+            media={linkedinGhostwriter}
           />
         </div>
       </div>
